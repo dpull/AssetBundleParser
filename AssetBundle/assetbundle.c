@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <errno.h>
 #include "AssetBundle.h"
 #include "tools.h"
 
@@ -88,17 +89,59 @@ size_t assetbundle_header_save(struct assetbundle_header* header, unsigned char*
     return offset - start;
 }
 
+struct assetbundle_entryinfo
+{
+	char* name;
+	size_t offset;
+	size_t size;
+	struct assetfile* file;
+};
+
 struct assetbundle
 {
 	struct assetbundle_header header;
+	size_t entryinfo_count;
+	struct assetbundle_entryinfo* entryinfo;
+
+	unsigned char* data;
+	size_t length;
 };
 
-struct assetbundle* _assetbundle_load(unsigned char* data, size_t length)
+size_t assetbundle_entryinfo_load(struct assetbundle* bundle, unsigned char* data, size_t offset)
 {
-    struct assetbundle* bundle = (struct assetbundle*)malloc(sizeof(struct assetbundle));
-    size_t offset = 0;
-    assetbundle_header_load(&bundle->header, data, offset);
-    return NULL;
+	size_t start = offset;
+	offset += read_uint32(data, offset, &bundle->entryinfo_count, false);
+
+	bundle->entryinfo = (struct assetbundle_entryinfo*)malloc(sizeof(*bundle->entryinfo) * bundle->entryinfo_count);
+	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
+		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
+		offset += read_string(data, offset, &entryinfo->name);
+		offset += read_uint32(data, offset, &entryinfo->offset, false);
+		offset += read_uint32(data, offset, &entryinfo->size, false);
+		entryinfo->file = NULL;
+	}
+
+    return offset - start;
+}
+
+size_t assetbundle_entryinfo_save(struct assetbundle* bundle, unsigned char* data, size_t offset)
+{
+	size_t start = offset;
+	offset += write_uint32(data, offset, bundle->entryinfo_count, false);
+
+	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
+		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
+		offset += write_string(data, offset, entryinfo->name);
+		offset += write_uint32(data, offset, entryinfo->offset, false);
+		offset += write_uint32(data, offset, entryinfo->size, false);
+	}
+
+    return offset - start;
+}
+
+void assetbundle_entryinfo_destory(struct assetbundle* bundle)
+{
+	free(bundle->entryinfo);	
 }
 
 struct assetbundle* assetbundle_load(char* file)
@@ -108,26 +151,67 @@ struct assetbundle* assetbundle_load(char* file)
 		return NULL;
     
     struct stat stat;
-    if (fstat(fd, &stat) == -1)
-    {
+    if (fstat(fd, &stat) == -1) {
         close(fd);
         return NULL;
     }
 
-	struct assetbundle* asset = NULL;
-	unsigned char* data = (unsigned char *)mmap(0, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
-	if (data)
-	{
-		asset = _assetbundle_load(data, stat.st_size);
+	unsigned char* data = (unsigned char *)mmap(0, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);    
+	if (data == MAP_FAILED) {
+        close(fd);
+        return NULL;
 	}
 
-	close(fd);
-	return asset;
+    close(fd);
+    
+    struct assetbundle* bundle = (struct assetbundle*)malloc(sizeof(struct assetbundle));
+    bundle->data = data;
+    bundle->length = stat.st_size;
+
+    size_t offset = 0;
+   	offset += assetbundle_header_load(&bundle->header, data, offset);
+   	offset += assetbundle_entryinfo_load(bundle, data, offset);
+
+	return bundle;
 }
 
 bool assetbundle_save(struct assetbundle* bundle, char* file)
 {
-    return  false;
+	int fd = open(file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+    if (fd == -1)
+        return false;
+	
+    if (ftruncate(fd, bundle->length) != 0){
+        close(fd);
+        return false;
+    }
+    
+	unsigned char* data = (unsigned char *)mmap(0, bundle->length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); 
+	if (data == MAP_FAILED) {
+		close(fd);
+        return false;
+	}
+    
+    close(fd);
+
+    size_t offset = 0;
+   	offset += assetbundle_header_save(&bundle->header, data, offset);
+   	offset += assetbundle_entryinfo_save(bundle, data, offset);
+
+   	for (size_t i = 0; i < offset; ++i) {
+		if (data[i] != bundle->data[i]) {
+			printf("Error");
+		}
+   	}
+
+	munmap(data, bundle->length);
+    return true;
 }
 
+void assetbundle_destory(struct assetbundle* bundle)
+{
+	assetbundle_entryinfo_destory(bundle);
+	munmap(bundle->data, bundle->length);
+	free(bundle);
+}
 

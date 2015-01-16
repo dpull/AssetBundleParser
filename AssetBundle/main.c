@@ -11,11 +11,9 @@
 #include "assetbundle.h"
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    if (assetbundle_load("/Users/dpull/Desktop/AssetBundle/AssetBundle/test.unity3d"))
-    {
-        printf("Hello, World!\n");
+    struct assetbundle* bundle = assetbundle_load("/Users/dpull/Desktop/AssetBundle/AssetBundle/test.unity3d");
+    if (bundle) {
+    	assetbundle_save(bundle, "/Users/dpull/Desktop/AssetBundle/AssetBundle/test1.unity3d");
     }
-    printf("Hello, World!\n");
     return 0;
 }

@@ -107,6 +107,5 @@ size_t read_buffer(unsigned char* data, size_t offset, unsigned char** value, si
 size_t write_buffer(unsigned char* data, size_t offset, unsigned char* value, size_t size)
 {
     memcpy(data + offset, value, size);
-    value = data + offset;
     return size;
 }

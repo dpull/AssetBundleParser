@@ -6,7 +6,9 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include "AssetBundle.h"
+#include <assert.h>
+#include "assetbundle.h"
+#include "assetfile.h"
 #include "tools.h"
 
 #pragma pack(1)
@@ -94,7 +96,7 @@ struct assetbundle_entryinfo
 	char* name;
 	size_t offset;
 	size_t size;
-	struct assetfile* file;
+	struct assetfile* assetfile;
 };
 
 struct assetbundle
@@ -118,9 +120,12 @@ size_t assetbundle_entryinfo_load(struct assetbundle* bundle, unsigned char* dat
 		offset += read_string(data, offset, &entryinfo->name);
 		offset += read_uint32(data, offset, &entryinfo->offset, false);
 		offset += read_uint32(data, offset, &entryinfo->size, false);
-		entryinfo->file = NULL;
-	}
 
+		size_t file_offset = bundle->header.header_size + entryinfo->offset;
+		assert(file_offset + entryinfo->size <= bundle->length);
+
+		entryinfo->assetfile = assetfile_load(data, file_offset, entryinfo->size);
+	}
     return offset - start;
 }
 
@@ -134,6 +139,10 @@ size_t assetbundle_entryinfo_save(struct assetbundle* bundle, unsigned char* dat
 		offset += write_string(data, offset, entryinfo->name);
 		offset += write_uint32(data, offset, entryinfo->offset, false);
 		offset += write_uint32(data, offset, entryinfo->size, false);
+
+		size_t file_offset = bundle->header.header_size + entryinfo->offset;
+        bool ret = assetfile_save(entryinfo->assetfile, data, file_offset, entryinfo->size);
+        assert(ret);
 	}
 
     return offset - start;
@@ -141,6 +150,10 @@ size_t assetbundle_entryinfo_save(struct assetbundle* bundle, unsigned char* dat
 
 void assetbundle_entryinfo_destory(struct assetbundle* bundle)
 {
+	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
+		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
+		assetfile_destory(entryinfo->assetfile);
+	}
 	free(bundle->entryinfo);	
 }
 

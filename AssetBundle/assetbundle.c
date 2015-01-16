@@ -210,14 +210,19 @@ bool assetbundle_save(struct assetbundle* bundle, char* file)
     size_t offset = 0;
    	offset += assetbundle_header_save(&bundle->header, data, offset);
    	offset += assetbundle_entryinfo_save(bundle, data, offset);
-
-   	for (size_t i = 0; i < offset; ++i) {
+    
+    int j = 0;
+    printf("begin\n");
+   	for (size_t i = 0; i < bundle->length; ++i) {
 		if (data[i] != bundle->data[i]) {
-			printf("Error");
+			printf("Error %d:[%hho]\t[%hho]\n", i, data[i], bundle->data[i]);
+            j++;
 		}
    	}
+    
+    printf("end:%d\n", j);
 
-	munmap(data, bundle->length);
+    munmap(data, bundle->length);
     return true;
 }
 

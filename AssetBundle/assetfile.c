@@ -81,7 +81,7 @@ struct objectinfo
 	unsigned char* buffer;
 };
 
-size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_t offset)
+size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_t offset, size_t buffer_base_offset)
 {
 	size_t start = offset;
 
@@ -97,15 +97,17 @@ size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_
 		offset += read_int32(data, offset, &objectinfo->type_id, true);
 		offset += read_int16(data, offset, &objectinfo->class_id, true);
 		offset += read_int16(data, offset, &objectinfo->is_destroyed, true);
-		objectinfo->buffer = NULL;
 
 		assert(objectinfo->type_id == objectinfo->class_id || (objectinfo->class_id == 114 && objectinfo->type_id < 0));
+
+		size_t buffer_offset = buffer_base_offset + file->header.data_offset + objectinfo->offset;
+		read_buffer(data, buffer_offset, &objectinfo->buffer, objectinfo->length);
 	}
     
     return offset - start;
 }
 
-size_t objectinfo_struct_save(struct assetfile* file, unsigned char* data, size_t offset)
+size_t objectinfo_struct_save(struct assetfile* file, unsigned char* data, size_t offset, size_t buffer_base_offset)
 {
 	size_t start = offset;
 
@@ -120,12 +122,15 @@ size_t objectinfo_struct_save(struct assetfile* file, unsigned char* data, size_
 		offset += write_int32(data, offset, objectinfo->type_id, true);
 		offset += write_int16(data, offset, objectinfo->class_id, true);
 		offset += write_int16(data, offset, objectinfo->is_destroyed, true);
+
+		size_t buffer_offset = buffer_base_offset + file->header.data_offset + objectinfo->offset;
+		write_buffer(data, buffer_offset, objectinfo->buffer, objectinfo->length);
 	}
     
     return offset - start;
 }
 
-const size_t guid_size = 8;
+const size_t guid_size = 16;
 
 struct fileidentifier
 {		
@@ -144,11 +149,13 @@ size_t externals_struct_load(struct assetfile* file, unsigned char* data, size_t
 
 	for (size_t i = 0; i < file->externals_struct_count; ++i) {
 		struct fileidentifier* fileidentifier = &file->externals_struct[i];
-
-		offset += read_string(data, offset, &fileidentifier->asset_path);
+        
+        if (file->header.version_info > 5) {
+            offset += read_string(data, offset, &fileidentifier->asset_path);
+        }
 		offset += read_buffer(data, offset, &fileidentifier->guid, guid_size);
-		offset += read_string(data, offset, &fileidentifier->file_path);
 		offset += read_int32(data, offset, &fileidentifier->type, true);
+		offset += read_string(data, offset, &fileidentifier->file_path);
 	}
     return offset - start;
 }
@@ -161,11 +168,13 @@ size_t externals_struct_save(struct assetfile* file, unsigned char* data, size_t
 
 	for (size_t i = 0; i < file->externals_struct_count; ++i) {
 		struct fileidentifier* fileidentifier = &file->externals_struct[i];
-
-		offset += write_string(data, offset, fileidentifier->asset_path);
+        
+        if (file->header.version_info > 5) {
+            offset += write_string(data, offset, fileidentifier->asset_path);
+        } 
 		offset += write_buffer(data, offset, fileidentifier->guid, guid_size);
-		offset += write_string(data, offset, fileidentifier->file_path);
 		offset += write_int32(data, offset, fileidentifier->type, true);
+		offset += write_string(data, offset, fileidentifier->file_path);
 	}
     return offset - start;
 }
@@ -190,20 +199,36 @@ struct assetfile* assetfile_load(unsigned char* data, size_t offset, size_t size
 		offset += read_int32(data, offset, &file->typetree_padding, true);
 	}
 
-	offset += objectinfo_struct_load(file, data, offset);
+	offset += objectinfo_struct_load(file, data, offset, start);
     assert(offset - start <= size);
 
     offset += externals_struct_load(file, data, offset);
     assert(offset - start <= size);
-
 
 	return file;
 }
 
 bool assetfile_save(struct assetfile* file, unsigned char* data, size_t offset, size_t size)
 {
-	//size_t start = offset;
+	size_t start = offset;
 	offset += assetheader_save(&file->header, data, offset);
+
+	if (file->header.version_info >= 7) {
+		offset += write_string(data, offset, file->unity_revision);
+		offset += write_int32(data, offset, file->typetree_struct_attribute, true);
+	}
+
+	offset += write_uint32(data, offset, file->typetree_struct_count, true);
+
+	if (file->header.version_info >= 7) {
+		offset += write_int32(data, offset, file->typetree_padding, true);
+	}
+
+	offset += objectinfo_struct_save(file, data, offset, start);
+    assert(offset - start <= size);
+
+    offset += externals_struct_save(file, data, offset);
+    assert(offset - start <= size);
 
 	return true;
 }

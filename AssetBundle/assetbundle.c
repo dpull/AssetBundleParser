@@ -1,136 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include "AssetBundle.h"
-
-size_t read_string(unsigned char* data, size_t offset, char** value)
-{
-    size_t start = offset;
-    *value = data + offset;
-    while (data[offset] != '\0')
-        offset++;
-    return offset - start + 1;
-}
-
-size_t write_string(unsigned char* data, size_t offset, char* value)
-{
-    size_t index = 0;
-    while (value[index] != '\0')
-    {
-        data[offset + index] = value[index];
-        index++;
-    }
-    data[offset + index] = '\0';
-    return index + 1;
-}
-
-size_t read_int16(unsigned char* data, size_t offset, short* value, bool littleEndian)
-{
-    if (!littleEndian)
-        *value = (short)((data[offset] << 8) | data[offset + 1]);
-    else
-        *value = (short)((data[offset + 1] << 8) | data[offset]);
-    return 2;
-}
-
-size_t write_int16(unsigned char* data, size_t offset, short value, bool littleEndian)
-{
-    if (!littleEndian)
-    {
-        data[offset + 1] = (unsigned char)value;
-        data[offset] = (unsigned char)(value >> 8);
-    }
-    else
-    {
-        data[offset] = (unsigned char)value;
-        data[offset + 1] = (unsigned char)(value >> 8);
-    }
-    return 2;
-}
-
-size_t read_int32(unsigned char* data, size_t offset, int* value, bool littleEndian)
-{
-    if (!littleEndian)
-        *value = (data[offset] << 24) | (data[offset + 1] << 16) | (data[offset + 2] << 8) | data[offset + 3];
-    else
-        *value = (data[offset + 3] << 24) | (data[offset + 2] << 16) | (data[offset + 1] << 8) | data[offset];
-    return 4;
-}
-
-size_t write_int32(unsigned char* data, size_t offset, int value, bool littleEndian)
-{
-    if (!littleEndian)
-    {
-        data[offset + 3] = (unsigned char)value;
-        data[offset + 2] = (unsigned char)(value >> 8);
-        data[offset + 1] = (unsigned char)(value >> 16);
-        data[offset] = (unsigned char)(value >> 24);
-    }
-    else
-    {
-        data[offset] = (unsigned char)value;
-        data[offset + 1] = (unsigned char)(value >> 8);
-        data[offset + 2] = (unsigned char)(value >> 16);
-        data[offset + 3] = (unsigned char)(value >> 24);
-    }
-    return 4;
-}
-
-size_t read_uint32(unsigned char* data, size_t offset, size_t* value, bool littleEndian)
-{
-    if (!littleEndian)
-        *value = (size_t)((data[offset] << 24) | (data[offset + 1] << 16) | (data[offset + 2] << 8) | data[offset + 3]);
-    else
-        *value = (size_t)((data[offset + 3] << 24) | (data[offset + 2] << 16) | (data[offset + 1] << 8) | data[offset]);
-    return 4;
-}
-
-size_t write_uint32(unsigned char* data, size_t offset, uint value, bool littleEndian)
-{
-    if (!littleEndian)
-    {
-        data[offset + 3] = (unsigned char)value;
-        data[offset + 2] = (unsigned char)(value >> 8);
-        data[offset + 1] = (unsigned char)(value >> 16);
-        data[offset] = (unsigned char)(value >> 24);
-    }
-    else
-    {
-        data[offset] = (unsigned char)value;
-        data[offset + 1] = (unsigned char)(value >> 8);
-        data[offset + 2] = (unsigned char)(value >> 16);
-        data[offset + 3] = (unsigned char)(value >> 24);
-    }
-    return 4;
-}
-
-size_t read_byte(unsigned char* data, size_t offset, unsigned char* value)
-{
-    *value = data[offset];
-    return 1;
-}
-
-size_t write_byte(unsigned char* data, size_t offset, unsigned char value)
-{
-    data[offset] = value;
-    return 1;
-}
-
-size_t read_buffer(unsigned char* data, size_t offset, unsigned char** value, size_t size)
-{
-    *value = data + offset;
-    return size;
-}
-
-size_t write_buffer(unsigned char* data, size_t offset, unsigned char* value, size_t size)
-{
-    memcpy(data + offset, value, size);
-    value = data + offset;
-    return size;
-}
+#include "tools.h"
 
 #pragma pack(1)
 struct level_info
@@ -144,30 +20,70 @@ struct assetbundle_header
 {
 	char* signature;
 	int format;
-	char* versionPlayer;
-	char* versionEngine;
-	size_t minimumStreamedBytes;
-	int headerSize;
-	int numberOfLevelsToDownload;
-	size_t levelByteEndCount;
-	struct level_info* levelByteEnd;
-	size_t completeFileSize;
-	size_t dataHeaderSize;
-	bool compressed; // form codingnow.com
+	char* version_player;
+	char* version_engine;
+	size_t minimum_streamed_bytes;
+	int header_size;
+	int number_of_levels_to_download;
+	size_t level_byte_end_count;
+	struct level_info* level_byte_end;
+	size_t complete_file_size;
+	size_t data_header_size;
+	unsigned char compressed; // form codingnow.com
 };
 
 size_t assetbundle_header_load(struct assetbundle_header* header, unsigned char* data, size_t offset)
 {
 	size_t start = offset;
+
 	offset += read_string(data, offset, &header->signature);
 	offset += read_int32(data, offset, &header->format, false);
-	offset += read_string(data, offset, &header->versionPlayer);
-	offset += read_string(data, offset, &header->versionEngine);
-	offset += read_uint32(data, offset, &header->minimumStreamedBytes, false);
-	offset += read_int32(data, offset, &header->headerSize, false);
-	offset += read_int32(data, offset, &header->numberOfLevelsToDownload, false);
-	offset += read_uint32(data, offset, &header->levelByteEndCount, false);
-	offset += read_buffer(data, offset, (unsigned char**)&header->levelByteEnd, sizeof(header->levelByteEnd[0]) * header->levelByteEndCount);
+	offset += read_string(data, offset, &header->version_player);
+	offset += read_string(data, offset, &header->version_engine);
+	offset += read_uint32(data, offset, &header->minimum_streamed_bytes, false);
+	offset += read_int32(data, offset, &header->header_size, false);
+	offset += read_int32(data, offset, &header->number_of_levels_to_download, false);
+	offset += read_uint32(data, offset, &header->level_byte_end_count, false);
+	offset += read_buffer(data, offset, (unsigned char**)&header->level_byte_end, sizeof(*header->level_byte_end) * header->level_byte_end_count);
+
+	header->complete_file_size = 0;
+	if (header->format >= 2) {
+		offset += read_uint32(data, offset, &header->complete_file_size, false);
+	}
+
+	header->data_header_size = 0;
+	if (header->format >= 3) {
+		offset += read_uint32(data, offset, &header->data_header_size, false);
+	}
+	
+	offset += read_byte(data, offset, &header->compressed);
+
+    return offset - start;
+}
+
+size_t assetbundle_header_save(struct assetbundle_header* header, unsigned char* data, size_t offset)
+{
+	size_t start = offset;
+
+	offset += write_string(data, offset, header->signature);
+	offset += write_int32(data, offset, header->format, false);
+	offset += write_string(data, offset, header->version_player);
+	offset += write_string(data, offset, header->version_engine);
+	offset += write_uint32(data, offset, header->minimum_streamed_bytes, false);
+	offset += write_int32(data, offset, header->header_size, false);
+	offset += write_int32(data, offset, header->number_of_levels_to_download, false);
+	offset += write_uint32(data, offset, header->level_byte_end_count, false);
+	offset += write_buffer(data, offset, (unsigned char*)header->level_byte_end, sizeof(*header->level_byte_end) * header->level_byte_end_count);
+
+	if (header->format >= 2) {
+		offset += write_uint32(data, offset, header->complete_file_size, false);
+	}
+
+	if (header->format >= 3) {
+		offset += write_uint32(data, offset, header->data_header_size, false);
+	}
+
+	offset += write_byte(data, offset, header->compressed);
 
     return offset - start;
 }

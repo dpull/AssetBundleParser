@@ -11,9 +11,9 @@
 #include "assetbundle.h"
 
 int main(int argc, const char * argv[]) {
-    struct assetbundle* bundle = assetbundle_load("/Users/dpull/Desktop/AssetBundle/AssetBundle/test.unity3d");
+    struct assetbundle* bundle = assetbundle_load("/Users/dpull/Documents/AssetBundle/AssetBundle/test.unity3d");
     if (bundle) {
-    	assetbundle_save(bundle, "/Users/dpull/Desktop/AssetBundle/AssetBundle/test1.unity3d");
+    	assetbundle_save(bundle, "/Users/dpull/Documents/AssetBundle/AssetBundle/test1.unity3d");
     }
     return 0;
 }

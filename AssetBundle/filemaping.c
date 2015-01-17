@@ -1,5 +1,7 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #ifdef _MSC_VER
 #else
 #include <unistd.h>
@@ -43,6 +45,7 @@ struct filemaping
 	unsigned char* data;
 	size_t length;
 };
+
 struct filemaping* filemaping_create_readonly(const char* file)
 {
 	int fd = open(file, O_RDONLY);

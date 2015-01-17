@@ -1,7 +1,6 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
-#include <fcntl.h>
 #include <errno.h>
 #include <assert.h>
 #include "assetbundle.h"
@@ -188,7 +187,7 @@ bool assetbundle_save(struct assetbundle* bundle, char* file)
     printf("begin\n");
 	for (size_t i = 0; i < length; ++i) {
 		if (data[i] != cmpdata[i]) {
-			printf("Error %d:[%hho]\t[%hho]\n", i, data[i], cmpdata[i]);
+			printf("Error %d:[%hho]\t[%hho]\n", (int)i, data[i], cmpdata[i]);
             j++;
 		}
    	}

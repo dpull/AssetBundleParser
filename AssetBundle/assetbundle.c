@@ -32,7 +32,7 @@ struct assetbundle_header
 	struct level_info* level_byte_end;
 	size_t complete_file_size;
 	size_t data_header_size;
-	unsigned char compressed; // form codingnow.com
+	unsigned char compressed; 
 };
 
 size_t assetbundle_header_load(struct assetbundle_header* header, unsigned char* data, size_t offset)

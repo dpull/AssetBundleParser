@@ -1,15 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
 #include <errno.h>
 #include <assert.h>
 #include "assetbundle.h"
 #include "assetfile.h"
 #include "tools.h"
+#include "filemaping.h"
 
 #pragma pack(1)
 struct level_info
@@ -105,8 +103,7 @@ struct assetbundle
 	size_t entryinfo_count;
 	struct assetbundle_entryinfo* entryinfo;
 
-	unsigned char* data;
-	size_t length;
+	struct filemaping* filemaping;
 };
 
 size_t assetbundle_entryinfo_load(struct assetbundle* bundle, unsigned char* data, size_t offset)
@@ -122,7 +119,7 @@ size_t assetbundle_entryinfo_load(struct assetbundle* bundle, unsigned char* dat
 		offset += read_uint32(data, offset, &entryinfo->size, false);
 
 		size_t file_offset = bundle->header.header_size + entryinfo->offset;
-		assert(file_offset + entryinfo->size <= bundle->length);
+		assert(file_offset + entryinfo->size <= filemaping_getlength(bundle->filemaping));
 
 		entryinfo->assetfile = assetfile_load(data, file_offset, entryinfo->size);
 	}
@@ -159,28 +156,14 @@ void assetbundle_entryinfo_destory(struct assetbundle* bundle)
 
 struct assetbundle* assetbundle_load(char* file)
 {
-    int fd = open(file, O_RDONLY);
-    if (fd == -1)
+	struct filemaping* filemaping = filemaping_create_readonly(file);
+	if (!filemaping)
 		return NULL;
-    
-    struct stat stat;
-    if (fstat(fd, &stat) == -1) {
-        close(fd);
-        return NULL;
-    }
 
-	unsigned char* data = (unsigned char *)mmap(0, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);    
-	if (data == MAP_FAILED) {
-        close(fd);
-        return NULL;
-	}
-
-    close(fd);
-    
     struct assetbundle* bundle = (struct assetbundle*)malloc(sizeof(struct assetbundle));
-    bundle->data = data;
-    bundle->length = stat.st_size;
+	bundle->filemaping = filemaping;
 
+	unsigned char* data = filemaping_getdata(filemaping);
     size_t offset = 0;
    	offset += assetbundle_header_load(&bundle->header, data, offset);
    	offset += assetbundle_entryinfo_load(bundle, data, offset);
@@ -190,46 +173,34 @@ struct assetbundle* assetbundle_load(char* file)
 
 bool assetbundle_save(struct assetbundle* bundle, char* file)
 {
-	int fd = open(file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-    if (fd == -1)
-        return false;
-	
-    if (ftruncate(fd, bundle->length) != 0){
-        close(fd);
-        return false;
-    }
-    
-	unsigned char* data = (unsigned char *)mmap(0, bundle->length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); 
-	if (data == MAP_FAILED) {
-		close(fd);
-        return false;
-	}
-    
-    close(fd);
+	size_t length = filemaping_getlength(bundle->filemaping);
+	struct filemaping* filemaping = filemaping_create_readwrite(file, length);
+	if (!filemaping)
+		return false;
 
+	unsigned char* data = filemaping_getdata(filemaping);
     size_t offset = 0;
    	offset += assetbundle_header_save(&bundle->header, data, offset);
    	offset += assetbundle_entryinfo_save(bundle, data, offset);
     
     int j = 0;
+	unsigned char* cmpdata = filemaping_getdata(bundle->filemaping);
     printf("begin\n");
-   	for (size_t i = 0; i < bundle->length; ++i) {
-		if (data[i] != bundle->data[i]) {
-			printf("Error %d:[%hho]\t[%hho]\n", i, data[i], bundle->data[i]);
+	for (size_t i = 0; i < length; ++i) {
+		if (data[i] != cmpdata[i]) {
+			printf("Error %d:[%hho]\t[%hho]\n", i, data[i], cmpdata[i]);
             j++;
 		}
    	}
-    
     printf("end:%d\n", j);
-
-    munmap(data, bundle->length);
+	filemaping_destory(filemaping);
     return true;
 }
 
 void assetbundle_destory(struct assetbundle* bundle)
 {
 	assetbundle_entryinfo_destory(bundle);
-	munmap(bundle->data, bundle->length);
+	filemaping_destory(bundle->filemaping);
 	free(bundle);
 }
 

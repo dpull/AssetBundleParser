@@ -201,6 +201,8 @@ bool assetbundle_check(struct assetbundle* bundle)
     size_t offset = 0;
 
    	offset += assetbundle_header_save(&bundle->header, dest_data, offset);
+   	assert(strcmp(bundle->header.signature, "UnityRaw") == 0); // only support uncompressed assetbundle
+
    	offset += assetbundle_entryinfo_save(bundle, dest_data, offset);
     
     int error_bytes = 0;

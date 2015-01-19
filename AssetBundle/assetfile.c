@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <assert.h>
+#include <string.h>
 #include "assetfile.h"
 #include "tools.h"
 
@@ -54,6 +55,9 @@ size_t assetheader_save(struct assetheader* header, unsigned char* data, size_t 
 	return offset - start;
 }
 
+const int assetfile_meta_align = 4096;
+const int assetfile_align = 16;
+
 struct assetfile
 {
     struct assetheader header;
@@ -65,7 +69,11 @@ struct assetfile
     struct objectinfo* objectinfo_struct;
     size_t externals_struct_count;
     struct fileidentifier* externals_struct;
+    size_t align_data_length;
+    unsigned char* align_data;
 };
+
+const int objectinfo_buffer_align = 8;
 
 struct objectinfo
 {
@@ -76,6 +84,8 @@ struct objectinfo
 	short class_id;
 	short is_destroyed;
 	unsigned char* buffer;
+    size_t align_data_length;
+    unsigned char* align_data;
 };
 
 size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_t offset, size_t buffer_base_offset)
@@ -99,7 +109,15 @@ size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_
 		assert(objectinfo->type_id == objectinfo->class_id || (objectinfo->class_id == 114 && objectinfo->type_id < 0));
 
 		size_t buffer_offset = buffer_base_offset + file->header.data_offset + objectinfo->offset;
-		read_buffer(data, buffer_offset, &objectinfo->buffer, objectinfo->length);
+        assert((buffer_offset - buffer_base_offset) % objectinfo_buffer_align == 0);
+        
+		buffer_offset += read_buffer(data, buffer_offset, &objectinfo->buffer, objectinfo->length);
+        
+        objectinfo->align_data_length = buffer_offset % objectinfo_buffer_align;
+        if (objectinfo->align_data_length != 0) {
+            objectinfo->align_data_length = objectinfo_buffer_align - objectinfo->align_data_length;
+            buffer_offset += read_buffer(data, buffer_offset, &objectinfo->align_data, objectinfo->align_data_length);
+        }
 	}
     
     return offset - start;
@@ -122,7 +140,11 @@ size_t objectinfo_struct_save(struct assetfile* file, unsigned char* data, size_
 		offset += write_int16(data, offset, objectinfo->is_destroyed, true);
 
 		size_t buffer_offset = buffer_base_offset + file->header.data_offset + objectinfo->offset;
-		write_buffer(data, buffer_offset, objectinfo->buffer, objectinfo->length);
+		buffer_offset += write_buffer(data, buffer_offset, objectinfo->buffer, objectinfo->length);
+        
+        if (objectinfo->align_data_length != 0) {
+            buffer_offset += write_buffer(data, buffer_offset, objectinfo->align_data, objectinfo->align_data_length);
+        }
 	}
     
     return offset - start;
@@ -204,7 +226,19 @@ struct assetfile* assetfile_load(unsigned char* data, size_t offset, size_t size
 
     offset += externals_struct_load(file, data, offset);
     assert(offset - start <= size);
-
+    
+    if (offset < assetfile_meta_align) {
+        file->align_data_length = assetfile_meta_align - offset;
+    } else {
+        file->align_data_length = offset % assetfile_align;
+        if (file->align_data_length != 0) {
+            file->align_data_length = assetfile_align - file->align_data_length;
+        }
+    }
+    
+    if (file->align_data_length != 0) {
+        offset += read_buffer(data, offset, &file->align_data, file->align_data_length);
+    }
 	return file;
 }
 
@@ -229,6 +263,10 @@ bool assetfile_save(struct assetfile* file, unsigned char* data, size_t offset, 
 
     offset += externals_struct_save(file, data, offset);
     assert(offset - start <= size);
+    
+    if (file->align_data_length != 0) {
+        offset += write_buffer(data, offset, file->align_data, file->align_data_length);
+    }
 
 	return true;
 }

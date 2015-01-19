@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <assert.h>
+#include <string.h>
 #include "assetbundle.h"
 #include "assetfile.h"
 #include "tools.h"
@@ -96,11 +97,15 @@ struct assetbundle_entryinfo
 	struct assetfile* assetfile;
 };
 
+const int assetbundle_entryinfo_align = 4;
+
 struct assetbundle
 {
 	struct assetbundle_header header;
 	size_t entryinfo_count;
 	struct assetbundle_entryinfo* entryinfo;
+    size_t align_data_length;
+    unsigned char* align_data;
 
 	struct filemaping* filemaping;
 };
@@ -124,6 +129,12 @@ size_t assetbundle_entryinfo_load(struct assetbundle* bundle, unsigned char* dat
 
 		entryinfo->assetfile = assetfile_load(data, file_offset, entryinfo->size);
 	}
+    
+    bundle->align_data_length = offset % assetbundle_entryinfo_align;
+    if (bundle->align_data_length != 0) {
+        bundle->align_data_length = assetbundle_entryinfo_align - bundle->align_data_length;
+        offset += read_buffer(data, offset, &bundle->align_data, bundle->align_data_length);
+    }
     return offset - start;
 }
 
@@ -142,7 +153,10 @@ size_t assetbundle_entryinfo_save(struct assetbundle* bundle, unsigned char* dat
         bool ret = assetfile_save(entryinfo->assetfile, data, file_offset, entryinfo->size);
         assert(ret);
 	}
-
+    
+    if (bundle->align_data_length != 0) {
+        offset += write_buffer(data, offset, bundle->align_data, bundle->align_data_length);
+    }
     return offset - start;
 }
 

@@ -200,7 +200,7 @@ void md5 (const char *message, long len, char *output) {
   while (status != 2) {
     WORD32 d_old[4];
     WORD32 wbuff[16];
-    int numbytes = (len-i >= 64) ? 64 : len-i;
+    int numbytes = (len-i >= 64) ? 64 : (int)(len-i);
     /*salva os valores do vetor digest*/
     d_old[0]=d[0]; d_old[1]=d[1]; d_old[2]=d[2]; d_old[3]=d[3];
     status = converte(wbuff, message+i, numbytes, status);

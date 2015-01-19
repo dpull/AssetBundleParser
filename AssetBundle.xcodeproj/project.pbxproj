@@ -11,6 +11,7 @@
 		874C1E9B1A69026600EB9999 /* assetfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 874C1E991A69026600EB9999 /* assetfile.c */; };
 		8769BB0B1A67C7F4000BFF71 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 8769BB0A1A67C7F4000BFF71 /* main.c */; };
 		8769BB131A67E491000BFF71 /* assetbundle.c in Sources */ = {isa = PBXBuildFile; fileRef = 8769BB111A67E491000BFF71 /* assetbundle.c */; };
+		87A1996D1A6CF12D00F2BBE3 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 87A1996C1A6CF12D00F2BBE3 /* md5.c */; };
 		87B29DF21A68E2670099584F /* tools.c in Sources */ = {isa = PBXBuildFile; fileRef = 87B29DF01A68E2670099584F /* tools.c */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +36,7 @@
 		8769BB0A1A67C7F4000BFF71 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		8769BB111A67E491000BFF71 /* assetbundle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = assetbundle.c; sourceTree = "<group>"; };
 		8769BB121A67E491000BFF71 /* assetbundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetbundle.h; sourceTree = "<group>"; };
+		87A1996C1A6CF12D00F2BBE3 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
 		87B29DF01A68E2670099584F /* tools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tools.c; sourceTree = "<group>"; };
 		87B29DF11A68E2670099584F /* tools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tools.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -69,6 +71,7 @@
 		8769BB091A67C7F4000BFF71 /* AssetBundle */ = {
 			isa = PBXGroup;
 			children = (
+				87A1996C1A6CF12D00F2BBE3 /* md5.c */,
 				87096FD81A6A4C4600409D52 /* filemaping.c */,
 				87096FD91A6A4C4600409D52 /* filemaping.h */,
 				874C1E991A69026600EB9999 /* assetfile.c */,
@@ -138,6 +141,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87A1996D1A6CF12D00F2BBE3 /* md5.c in Sources */,
 				874C1E9B1A69026600EB9999 /* assetfile.c in Sources */,
 				87B29DF21A68E2670099584F /* tools.c in Sources */,
 				87096FDA1A6A4C4600409D52 /* filemaping.c in Sources */,

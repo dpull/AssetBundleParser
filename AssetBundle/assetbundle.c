@@ -156,23 +156,28 @@ void assetbundle_entryinfo_destory(struct assetbundle* bundle)
 	free(bundle->entryinfo);	
 }
 
+struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
+{
+    struct assetbundle* bundle = (struct assetbundle*)malloc(sizeof(*bundle));
+    memset(bundle, 0, sizeof(*bundle));
+    
+    bundle->filemaping = filemaping;
+    
+    unsigned char* data = filemaping_getdata(filemaping);
+    size_t offset = 0;
+   	offset += assetbundle_header_load(&bundle->header, data, offset);
+   	offset += assetbundle_entryinfo_load(bundle, data, offset);
+    
+    return bundle;
+}
+
 struct assetbundle* assetbundle_load(char* file)
 {
 	struct filemaping* filemaping = filemaping_create_readonly(file);
 	if (!filemaping)
 		return NULL;
 
-    struct assetbundle* bundle = (struct assetbundle*)malloc(sizeof(*bundle));
-    memset(bundle, 0, sizeof(*bundle));
-
-	bundle->filemaping = filemaping;
-
-	unsigned char* data = filemaping_getdata(filemaping);
-    size_t offset = 0;
-   	offset += assetbundle_header_load(&bundle->header, data, offset);
-   	offset += assetbundle_entryinfo_load(bundle, data, offset);
-
-	return bundle;
+    return assetbundle_load_filemaping(filemaping);
 }
 
 bool assetbundle_check(struct assetbundle* bundle)
@@ -197,9 +202,9 @@ bool assetbundle_check(struct assetbundle* bundle)
    	free(dest_data);
 
    	if (error_bytes > 0) 
-		printf("check failed, error bytes count:%d", error_bytes);
+		printf("check failed, error bytes count:%d\n", error_bytes);
 	else
-		printf("check succeed");
+		printf("check succeed\n");
 
     return error_bytes == 0;
 }
@@ -209,5 +214,21 @@ void assetbundle_destory(struct assetbundle* bundle)
 	assetbundle_entryinfo_destory(bundle);
 	filemaping_destory(bundle->filemaping);
 	free(bundle);
+}
+
+const int hash_size = 16;
+extern void md5(const char* message, long len, char* output);
+
+struct assetbundle_diff
+{
+    char src_hash[hash_size];
+    char dst_hash[hash_size];
+
+
+};
+
+struct assetbundle_diff* assetbundle_diff(struct assetbundle* src, struct assetbundle* dst)
+{
+    return NULL;
 }
 

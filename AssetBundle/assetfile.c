@@ -88,7 +88,7 @@ struct objectinfo
     unsigned char* align_data;
 };
 
-size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_t offset, size_t buffer_base_offset)
+size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_t offset)
 {
 	size_t start = offset;
 
@@ -107,23 +107,12 @@ size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_
 		offset += read_int16(data, offset, &objectinfo->is_destroyed, true);
 
 		assert(objectinfo->type_id == objectinfo->class_id || (objectinfo->class_id == 114 && objectinfo->type_id < 0));
-
-		size_t buffer_offset = buffer_base_offset + file->header.data_offset + objectinfo->offset;
-        assert((buffer_offset - buffer_base_offset) % objectinfo_buffer_align == 0);
-        
-		buffer_offset += read_buffer(data, buffer_offset, &objectinfo->buffer, objectinfo->length);
-        
-        objectinfo->align_data_length = buffer_offset % objectinfo_buffer_align;
-        if (objectinfo->align_data_length != 0) {
-            objectinfo->align_data_length = objectinfo_buffer_align - objectinfo->align_data_length;
-            buffer_offset += read_buffer(data, buffer_offset, &objectinfo->align_data, objectinfo->align_data_length);
-        }
 	}
     
     return offset - start;
 }
 
-size_t objectinfo_struct_save(struct assetfile* file, unsigned char* data, size_t offset, size_t buffer_base_offset)
+size_t objectinfo_struct_save(struct assetfile* file, unsigned char* data, size_t offset)
 {
 	size_t start = offset;
 
@@ -138,6 +127,34 @@ size_t objectinfo_struct_save(struct assetfile* file, unsigned char* data, size_
 		offset += write_int32(data, offset, objectinfo->type_id, true);
 		offset += write_int16(data, offset, objectinfo->class_id, true);
 		offset += write_int16(data, offset, objectinfo->is_destroyed, true);
+	}
+    
+    return offset - start;
+}
+
+bool objectinfos_load(struct assetfile* file, unsigned char* data, size_t buffer_base_offset)
+{
+	for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
+		struct objectinfo* objectinfo = &file->objectinfo_struct[i];
+
+		size_t buffer_offset = buffer_base_offset + file->header.data_offset + objectinfo->offset;
+        assert((buffer_offset - buffer_base_offset) % objectinfo_buffer_align == 0);
+
+		buffer_offset += read_buffer(data, buffer_offset, &objectinfo->buffer, objectinfo->length);        
+        objectinfo->align_data_length = buffer_offset % objectinfo_buffer_align;
+        if (objectinfo->align_data_length != 0) {
+            objectinfo->align_data_length = objectinfo_buffer_align - objectinfo->align_data_length;
+            buffer_offset += read_buffer(data, buffer_offset, &objectinfo->align_data, objectinfo->align_data_length);
+        }
+	}
+    
+    return true;
+}
+
+size_t objectinfos_save(struct assetfile* file, unsigned char* data, size_t buffer_base_offset)
+{
+	for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
+		struct objectinfo* objectinfo = &file->objectinfo_struct[i];
 
 		size_t buffer_offset = buffer_base_offset + file->header.data_offset + objectinfo->offset;
 		buffer_offset += write_buffer(data, buffer_offset, objectinfo->buffer, objectinfo->length);
@@ -147,7 +164,7 @@ size_t objectinfo_struct_save(struct assetfile* file, unsigned char* data, size_
         }
 	}
     
-    return offset - start;
+    return true;
 }
 
 const size_t guid_size = 16;
@@ -221,7 +238,7 @@ struct assetfile* assetfile_load(unsigned char* data, size_t offset, size_t size
 		offset += read_int32(data, offset, &file->typetree_padding, true);
 	}
 
-	offset += objectinfo_struct_load(file, data, offset, start);
+	offset += objectinfo_struct_load(file, data, offset);
     assert(offset - start <= size);
 
     offset += externals_struct_load(file, data, offset);
@@ -239,6 +256,10 @@ struct assetfile* assetfile_load(unsigned char* data, size_t offset, size_t size
     if (file->align_data_length != 0) {
         offset += read_buffer(data, offset, &file->align_data, file->align_data_length);
     }
+
+    bool ret = objectinfos_load(file, data, start);
+    assert(ret);
+
 	return file;
 }
 
@@ -258,7 +279,7 @@ bool assetfile_save(struct assetfile* file, unsigned char* data, size_t offset, 
 		offset += write_int32(data, offset, file->typetree_padding, true);
 	}
 
-	offset += objectinfo_struct_save(file, data, offset, start);
+	offset += objectinfo_struct_save(file, data, offset);
     assert(offset - start <= size);
 
     offset += externals_struct_save(file, data, offset);
@@ -267,6 +288,9 @@ bool assetfile_save(struct assetfile* file, unsigned char* data, size_t offset, 
     if (file->align_data_length != 0) {
         offset += write_buffer(data, offset, file->align_data, file->align_data_length);
     }
+
+    bool ret = objectinfos_save(file, data, start);
+    assert(ret);
 
 	return true;
 }

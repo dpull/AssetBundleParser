@@ -84,6 +84,7 @@ size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_
 
 	offset += read_uint32(data, offset, &file->objectinfo_struct_count, true);
 	file->objectinfo_struct = (struct objectinfo*)malloc(sizeof(*file->objectinfo_struct) * file->objectinfo_struct_count);
+	memset(file->objectinfo_struct, 0, sizeof(*file->objectinfo_struct) * file->objectinfo_struct_count);
 
 	for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
 		struct objectinfo* objectinfo = &file->objectinfo_struct[i];
@@ -143,6 +144,7 @@ size_t externals_struct_load(struct assetfile* file, unsigned char* data, size_t
 
 	offset += read_uint32(data, offset, &file->externals_struct_count, true);
 	file->externals_struct = (struct fileidentifier*)malloc(sizeof(*file->externals_struct) * file->externals_struct_count);
+	memset(file->externals_struct, 0, sizeof(*file->externals_struct) * file->externals_struct_count);
 
 	for (size_t i = 0; i < file->externals_struct_count; ++i) {
 		struct fileidentifier* fileidentifier = &file->externals_struct[i];
@@ -177,9 +179,10 @@ size_t externals_struct_save(struct assetfile* file, unsigned char* data, size_t
 }
 
 struct assetfile* assetfile_load(unsigned char* data, size_t offset, size_t size)
-{
-	struct assetfile* file = (struct assetfile*)malloc(sizeof(struct assetfile));
+{	
 	size_t start = offset;
+	struct assetfile* file = (struct assetfile*)malloc(sizeof(*file));
+	memset(file, 0, sizeof(*file));
 
 	offset += assetheader_load(&file->header, data, offset);
     assert(offset - start <= size);
@@ -232,7 +235,11 @@ bool assetfile_save(struct assetfile* file, unsigned char* data, size_t offset, 
 
 void assetfile_destory(struct assetfile* file)
 {
-    free(file->externals_struct);
-    free(file->objectinfo_struct);
+	if (file->externals_struct)
+    	free(file->externals_struct);
+
+	if (file->objectinfo_struct)
+    	free(file->objectinfo_struct);
+    
 	free(file);
 }

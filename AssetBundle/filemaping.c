@@ -67,6 +67,8 @@ struct filemaping* filemaping_create_readonly(const char* file)
 	close(fd);
 
 	struct filemaping* filemaping = (struct filemaping*)malloc(sizeof(*filemaping));
+	memset(filemaping, 0, sizeof(*filemaping));
+
 	filemaping->data = data;
 	filemaping->length = stat.st_size;
 	return filemaping;
@@ -92,6 +94,8 @@ struct filemaping* filemaping_create_readwrite(const char* file, size_t length)
 	close(fd);
 
 	struct filemaping* filemaping = (struct filemaping*)malloc(sizeof(*filemaping));
+	memset(filemaping, 0, sizeof(*filemaping));
+	
 	filemaping->data = data;
 	filemaping->length = length;
 	return filemaping;

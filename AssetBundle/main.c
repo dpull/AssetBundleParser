@@ -13,7 +13,8 @@
 int main(int argc, const char * argv[]) {
     struct assetbundle* bundle = assetbundle_load("/Users/dpull/Documents/AssetBundle/AssetBundle/test.unity3d");
     if (bundle) {
-    	assetbundle_save(bundle, "/Users/dpull/Documents/AssetBundle/AssetBundle/test1.unity3d");
+    	if (!assetbundle_check(bundle))
+            printf("check failed");
     }
     return 0;
 }

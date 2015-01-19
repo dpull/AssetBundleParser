@@ -111,6 +111,8 @@ size_t assetbundle_entryinfo_load(struct assetbundle* bundle, unsigned char* dat
 	offset += read_uint32(data, offset, &bundle->entryinfo_count, false);
 
 	bundle->entryinfo = (struct assetbundle_entryinfo*)malloc(sizeof(*bundle->entryinfo) * bundle->entryinfo_count);
+	memset(bundle->entryinfo, 0, sizeof(*bundle->entryinfo) * bundle->entryinfo_count);
+
 	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
 		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
 		offset += read_string(data, offset, &entryinfo->name);
@@ -148,7 +150,8 @@ void assetbundle_entryinfo_destory(struct assetbundle* bundle)
 {
 	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
 		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
-		assetfile_destory(entryinfo->assetfile);
+		if (entryinfo->assetfile)
+			assetfile_destory(entryinfo->assetfile);
 	}
 	free(bundle->entryinfo);	
 }
@@ -159,7 +162,9 @@ struct assetbundle* assetbundle_load(char* file)
 	if (!filemaping)
 		return NULL;
 
-    struct assetbundle* bundle = (struct assetbundle*)malloc(sizeof(struct assetbundle));
+    struct assetbundle* bundle = (struct assetbundle*)malloc(sizeof(*bundle));
+    memset(bundle, 0, sizeof(*bundle));
+
 	bundle->filemaping = filemaping;
 
 	unsigned char* data = filemaping_getdata(filemaping);
@@ -170,30 +175,33 @@ struct assetbundle* assetbundle_load(char* file)
 	return bundle;
 }
 
-bool assetbundle_save(struct assetbundle* bundle, char* file)
+bool assetbundle_check(struct assetbundle* bundle)
 {
 	size_t length = filemaping_getlength(bundle->filemaping);
-	struct filemaping* filemaping = filemaping_create_readwrite(file, length);
-	if (!filemaping)
-		return false;
-
-	unsigned char* data = filemaping_getdata(filemaping);
+	unsigned char* dest_data = (unsigned char*)malloc(length);
     size_t offset = 0;
-   	offset += assetbundle_header_save(&bundle->header, data, offset);
-   	offset += assetbundle_entryinfo_save(bundle, data, offset);
+
+   	offset += assetbundle_header_save(&bundle->header, dest_data, offset);
+   	offset += assetbundle_entryinfo_save(bundle, dest_data, offset);
     
-    int j = 0;
-	unsigned char* cmpdata = filemaping_getdata(bundle->filemaping);
-    printf("begin\n");
+    int error_bytes = 0;
+	unsigned char* src_data = filemaping_getdata(bundle->filemaping);
+
 	for (size_t i = 0; i < length; ++i) {
-		if (data[i] != cmpdata[i]) {
-			printf("Error %d:[%hho]\t[%hho]\n", (int)i, data[i], cmpdata[i]);
-            j++;
+		if (src_data[i] != dest_data[i]) {
+			printf("offset %d:[%hho]\t[%hho]\n", (int)i, src_data[i], dest_data[i]);
+            error_bytes++;
 		}
    	}
-    printf("end:%d\n", j);
-	filemaping_destory(filemaping);
-    return true;
+
+   	free(dest_data);
+
+   	if (error_bytes > 0) 
+		printf("check failed, error bytes count:%d", error_bytes);
+	else
+		printf("check succeed");
+
+    return error_bytes == 0;
 }
 
 void assetbundle_destory(struct assetbundle* bundle)

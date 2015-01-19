@@ -123,11 +123,6 @@ size_t assetbundle_entryinfo_load(struct assetbundle* bundle, unsigned char* dat
 		offset += read_string(data, offset, &entryinfo->name);
 		offset += read_uint32(data, offset, &entryinfo->offset, false);
 		offset += read_uint32(data, offset, &entryinfo->size, false);
-
-		size_t file_offset = bundle->header.header_size + entryinfo->offset;
-		assert(file_offset + entryinfo->size <= filemaping_getlength(bundle->filemaping));
-
-		entryinfo->assetfile = assetfile_load(data, file_offset, entryinfo->size);
 	}
     
     bundle->align_data_length = offset % assetbundle_entryinfo_align;
@@ -148,16 +143,37 @@ size_t assetbundle_entryinfo_save(struct assetbundle* bundle, unsigned char* dat
 		offset += write_string(data, offset, entryinfo->name);
 		offset += write_uint32(data, offset, entryinfo->offset, false);
 		offset += write_uint32(data, offset, entryinfo->size, false);
-
-		size_t file_offset = bundle->header.header_size + entryinfo->offset;
-        bool ret = assetfile_save(entryinfo->assetfile, data, file_offset, entryinfo->size);
-        assert(ret);
 	}
     
     if (bundle->align_data_length != 0) {
         offset += write_buffer(data, offset, bundle->align_data, bundle->align_data_length);
     }
     return offset - start;
+}
+
+bool assetfiles_load(struct assetbundle* bundle, unsigned char* data)
+{
+	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
+		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
+		size_t file_offset = bundle->header.header_size + entryinfo->offset;
+		assert(file_offset + entryinfo->size <= filemaping_getlength(bundle->filemaping));
+
+		entryinfo->assetfile = assetfile_load(data, file_offset, entryinfo->size);
+    	assert(entryinfo->assetfile);
+	} 
+	return true;
+}
+
+bool assetfiles_save(struct assetbundle* bundle, unsigned char* data)
+{
+	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
+		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
+		size_t file_offset = bundle->header.header_size + entryinfo->offset;
+		
+        bool ret = assetfile_save(entryinfo->assetfile, data, file_offset, entryinfo->size);
+        assert(ret);
+	} 
+	return true;
 }
 
 void assetbundle_entryinfo_destory(struct assetbundle* bundle)
@@ -181,7 +197,10 @@ struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
     size_t offset = 0;
    	offset += assetbundle_header_load(&bundle->header, data, offset);
    	offset += assetbundle_entryinfo_load(bundle, data, offset);
-    
+
+  	bool ret = assetfiles_load(bundle, data);
+    assert(ret);
+
     return bundle;
 }
 
@@ -204,6 +223,9 @@ bool assetbundle_check(struct assetbundle* bundle)
    	assert(strcmp(bundle->header.signature, "UnityRaw") == 0); // only support uncompressed assetbundle
 
    	offset += assetbundle_entryinfo_save(bundle, dest_data, offset);
+
+  	bool ret = assetfiles_save(bundle, dest_data);
+    assert(ret);
     
     int error_bytes = 0;
 	unsigned char* src_data = filemaping_getdata(bundle->filemaping);

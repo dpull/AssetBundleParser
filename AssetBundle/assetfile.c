@@ -306,11 +306,6 @@ void assetfile_destory(struct assetfile* file)
 	free(file);
 }
 
-struct assetfile_diff
-{
-	int path_id;
-};
-
 struct objectinfo* objectinfo_findsame(struct assetfile* file, struct objectinfo* objectinfo) 
 {
 	for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
@@ -340,34 +335,79 @@ char* objectinfo_getname(struct objectinfo* objectinfo)
     return name;
 }
 
+struct objectinfo_modify
+{
+	int dst_path_id;
+	unsigned char* buffer;
+	size_t length;
+};
+
+struct objectinfo_same
+{
+	int dst_path_id;
+	size_t src_files_index;
+	int src_path_id;
+};
+
+struct assetfile_diff
+{
+	size_t objectinfo_modify_count;
+	struct objectinfo_modify* objectinfo_modify;
+
+	size_t objectinfo_same_count;
+	struct objectinfo_same* objectinfo_same;
+};
+
 struct assetfile_diff* assetfile_diff(struct assetfile** src_files, size_t src_files_count, struct assetfile* dst_file)
 {
+	struct assetfile_diff* diff = (struct assetfile_diff*)malloc(sizeof(*diff));
+
+	diff->objectinfo_modify_count = 0;
+	diff->objectinfo_modify = (struct objectinfo_modify*)malloc(sizeof(*diff->objectinfo_modify) * dst_file->objectinfo_struct_count);
+	diff->objectinfo_same_count = 0;
+	diff->objectinfo_same = (struct objectinfo_same*)malloc(sizeof(*diff->objectinfo_same) * dst_file->objectinfo_struct_count);
+
 	for (size_t i = 0; i < dst_file->objectinfo_struct_count; ++i) {
 		struct objectinfo* dst_objectinfo = &dst_file->objectinfo_struct[i];
-		struct assetfile* src_file = NULL;
+		size_t src_files_index = 0;
 		struct objectinfo* src_objectinfo = NULL;
 
 		for (size_t j = 0; j < src_files_count; ++j) {
-			src_file = src_files[j];
+			struct assetfile* src_file = src_files[j];
+            
 			src_objectinfo = objectinfo_findsame(src_file, dst_objectinfo);
-			if (src_objectinfo)
+			if (src_objectinfo) {
+                assert(memcmp(dst_objectinfo->buffer, src_objectinfo->buffer, dst_objectinfo->length + dst_objectinfo->align_data_length) == 0);
+
+                src_files_index = j;
 				break;
+			}
 		}
 
+		
 		if (src_objectinfo) {
-			int ret = memcmp(src_objectinfo->buffer, dst_objectinfo->buffer, src_objectinfo->length + src_objectinfo->align_data_length);
-			assert(ret == 0);
-            printf("same\t");
+			struct objectinfo_same* objectinfo_same = &diff->objectinfo_same[diff->objectinfo_same_count];
+			diff->objectinfo_same_count++;
+
+			objectinfo_same->dst_path_id = dst_objectinfo->path_id;
+			objectinfo_same->src_files_index = src_files_index;
+			objectinfo_same->dst_path_id = src_objectinfo->path_id;
 		} else {
-            printf("modify\t");
+			struct objectinfo_modify* objectinfo_modify = &diff->objectinfo_modify[diff->objectinfo_modify_count];
+			diff->objectinfo_modify_count++;
+
+			objectinfo_modify->dst_path_id = dst_objectinfo->path_id;
+			objectinfo_modify->buffer = dst_objectinfo->buffer;
+			objectinfo_modify->length = dst_objectinfo->length + dst_objectinfo->align_data_length;
 		}
-        
-		char* name = objectinfo_getname(dst_objectinfo);
-        if (name)
-            printf("%s\n", name);
-        else
-           printf("NULL\n");
 	}
     
-    return NULL;
+    return diff;
+}
+
+void assetfile_diff_destory(struct assetfile_diff* diff)
+{
+    free(diff->objectinfo_modify);
+    free(diff->objectinfo_same);
+    free(diff);
 }

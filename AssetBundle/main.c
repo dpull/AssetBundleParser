@@ -32,8 +32,17 @@ int main(int argc, const char * argv[]) {
     ret = assetbundle_check(bundle2);
     assert(ret);
 
-	struct assetbundle_diff* diff = assetbundle_diff(bundle1, bundle2);
-    assert(diff);
+    struct assetbundle* bundle3 = assetbundle_load("/Users/dpull/Documents/AssetBundle/AssetBundle/test3.unity3d");
+    assert(bundle3);
+
+    ret = assetbundle_check(bundle3);
+    assert(ret);    
+
+    printf("cmp test1, test2. change 1(txt file), add 4 files(1 prefab)\n");
+	struct assetbundle_diff* diff1 = assetbundle_diff(bundle1, bundle2);
+
+    printf("cmp test2, test3. change 1(prefab)\n");
+    struct assetbundle_diff* diff2 = assetbundle_diff(bundle2, bundle3);
     
     return 0;
 }

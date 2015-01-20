@@ -74,7 +74,6 @@ struct assetfile
 };
 
 const int objectinfo_buffer_align = 8;
-
 struct objectinfo
 {
 	int path_id;
@@ -83,9 +82,12 @@ struct objectinfo
 	int type_id;
 	short class_id;
 	short is_destroyed;
+    
 	unsigned char* buffer;
     size_t align_data_length;
     unsigned char* align_data;
+
+    char* name;
 };
 
 size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_t offset)
@@ -145,6 +147,18 @@ bool objectinfos_load(struct assetfile* file, unsigned char* data, size_t buffer
         if (objectinfo->align_data_length != 0) {
             objectinfo->align_data_length = objectinfo_buffer_align - objectinfo->align_data_length;
             buffer_offset += read_buffer(data, buffer_offset, &objectinfo->align_data, objectinfo->align_data_length);
+        }
+
+        int name_len;
+        size_t name_offset = 0;
+        name_offset += read_int32(objectinfo->buffer, name_offset, &name_len, true);
+        assert(name_len >= 0);
+        assert(name_len <= objectinfo->length);
+        
+        if (name_len > 0) {
+            objectinfo->name = malloc(name_len + 1);
+            memcpy(objectinfo->name, objectinfo->buffer + name_offset, name_len);
+            objectinfo->name[name_len] = '\0';
         }
 	}
     
@@ -300,8 +314,63 @@ void assetfile_destory(struct assetfile* file)
 	if (file->externals_struct)
     	free(file->externals_struct);
 
-	if (file->objectinfo_struct)
+	if (file->objectinfo_struct) {
+		for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
+			struct objectinfo* objectinfo = &file->objectinfo_struct[i];
+			if (objectinfo->name)
+				free(objectinfo->name);
+		}
     	free(file->objectinfo_struct);
+	}
     
 	free(file);
+}
+
+struct assetfile_diff
+{
+	int path_id;
+};
+
+struct objectinfo* objectinfo_find(struct assetfile* file, struct objectinfo* objectinfo) 
+{
+    if (!objectinfo->name)
+        return NULL;
+    
+	for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
+		struct objectinfo* cur_objectinfo = &file->objectinfo_struct[i];
+		if (cur_objectinfo->name && strcmp(cur_objectinfo->name, objectinfo->name) == 0)
+			return cur_objectinfo;
+	}
+	return NULL;
+}
+
+struct assetfile_diff* assetfile_diff(struct assetfile** src_files, size_t src_files_count, struct assetfile* dst_file)
+{
+	for (size_t i = 0; i < dst_file->objectinfo_struct_count; ++i) {
+		struct objectinfo* dst_objectinfo = &dst_file->objectinfo_struct[i];
+		struct assetfile* src_file = NULL;
+		struct objectinfo* src_objectinfo = NULL;
+
+		for (size_t j = 0; j < src_files_count; ++j) {
+			src_file = src_files[j];
+			src_objectinfo = objectinfo_find(src_file, dst_objectinfo);
+			if (src_objectinfo)
+				break;
+		}
+
+		if (src_objectinfo && src_objectinfo->length == dst_objectinfo->length) {
+			int a1 = memcmp(src_objectinfo->buffer, dst_objectinfo->buffer, src_objectinfo->length);
+			int a2 = memcmp(src_objectinfo->buffer, dst_objectinfo->buffer, src_objectinfo->length + src_objectinfo->align_data_length);
+
+			if (a1 != 0 || a2 != 0)
+				printf("changed %d\t%d\n", a1, a2);
+            else
+               printf("same\n"); 
+ 
+		} else {
+            printf(src_objectinfo == NULL ? "not exist\n" : "changed\n");
+		}
+	}
+    
+    return NULL;
 }

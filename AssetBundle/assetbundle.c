@@ -169,7 +169,7 @@ bool assetfiles_save(struct assetbundle* bundle, unsigned char* data)
 	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
 		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
 		size_t file_offset = bundle->header.header_size + entryinfo->offset;
-		
+
         bool ret = assetfile_save(entryinfo->assetfile, data, file_offset, entryinfo->size);
         assert(ret);
 	} 
@@ -262,11 +262,24 @@ struct assetbundle_diff
     char src_hash[hash_size];
     char dst_hash[hash_size];
 
-
+	struct assetbundle* dst;
 };
 
 struct assetbundle_diff* assetbundle_diff(struct assetbundle* src, struct assetbundle* dst)
 {
+	size_t src_files_count = src->entryinfo_count;
+	struct assetfile** src_files = (struct assetfile**)malloc(sizeof(*src_files) * src_files_count);
+	memset(src_files, 0, sizeof(*src_files) * src_files_count);
+
+	for (size_t i = 0; i < src_files_count; ++i) {
+		struct assetbundle_entryinfo* entryinfo = &src->entryinfo[i];
+		src_files[i] = entryinfo->assetfile;
+	}
+
+	for (size_t i = 0; i < dst->entryinfo_count; ++i) {
+		struct assetbundle_entryinfo* entryinfo = &dst->entryinfo[i];
+		assetfile_diff(src_files, src_files_count, entryinfo->assetfile);
+	}
     return NULL;
 }
 

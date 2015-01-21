@@ -26,10 +26,24 @@ int main(int argc, const char * argv[]) {
         "/Users/dpull/Documents/AssetBundle/AssetBundle/diff_1to2"
     );
     assert(ret == 0);
-
+    
+    ret = assetbundle_merge(
+        "/Users/dpull/Documents/AssetBundle/AssetBundle/test1.unity3d",
+        "/Users/dpull/Documents/AssetBundle/AssetBundle/test2_1.unity3d",
+        "/Users/dpull/Documents/AssetBundle/AssetBundle/diff_1to2"
+    );
+    assert(ret == 0);
+    
     ret = assetbundle_diff(
         "/Users/dpull/Documents/AssetBundle/AssetBundle/test2.unity3d",
         "/Users/dpull/Documents/AssetBundle/AssetBundle/test3.unity3d",
+        "/Users/dpull/Documents/AssetBundle/AssetBundle/diff_2to3"
+    );
+    assert(ret == 0);
+    
+    ret = assetbundle_merge(
+        "/Users/dpull/Documents/AssetBundle/AssetBundle/test2.unity3d",
+        "/Users/dpull/Documents/AssetBundle/AssetBundle/test3_1.unity3d",
         "/Users/dpull/Documents/AssetBundle/AssetBundle/diff_2to3"
     );
     assert(ret == 0);

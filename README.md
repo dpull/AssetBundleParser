@@ -2,8 +2,9 @@
 
 `AssetBundle` 是 Unity3d assetbundle文件的差异比较及合并工具。
 
-`assetbundle_load` 的代码并不健壮，如果拿错误格式的文件传入会造成程序崩溃，因为assetbundle的格式是非公开的，当该程序解析出错时，我希望其能方便调试，另外代码简单，方便对照 `disunity` 的代码来查找问题。
-差异文件中会包含新旧assetbundle文件的md5，只有在文件校验成功时，才会调用 `assetbundle_load` ，所以无需担心在差异合并时会造成客户端闪退的情况，但是在生成差异工具是会存在崩溃的问题，当程序崩溃或 `assetbundle_check` 失败时，说明该工具不支持了。
+`AssetBundle` 的代码并不健壮，如果拿错误格式的文件传入会造成程序崩溃，原因有二：
+1. assetbundle的格式是非公开的，保持代码简单，可以方便和 `disunity` 对照代码查找问题，正确格式解析有问题可以快速暴露。
+1. 文件的正确性可以通过验证md5等方式来保证， 没必要太增加代码复杂度. 合并差异前，会检查文件diff文件，旧assetbundle文件的md5是否一致，合并后也会检查新assetbundle文件的md5是否一致
 
 目前只支持非压缩的 `assetbundle` 的包，因为既然选择了这种更新方式，压缩没有意义，反而会降低保证客户端的读取效率，所以做包时需要增加：`BuildOptions.UncompressedAssetBundle` 或 `BuildAssetBundleOptions.UncompressedAssetBundle`。
 
@@ -12,11 +13,14 @@
 ## 使用流程 ##
 ### 生成差异：###
 
-1. 调用assetbundle_load分析包
-1. 调用assetbundle_check检查支持
-1. 调用assetbundle_diff生成差异文件
+1. 调用 `assetbundle_load` 解析assetbundle包
+1. 调用 `assetbundle_check` 检查支持
+1. 调用 `assetbundle_diff` 生成差异文件
+1. 调用 `assetbundle_diff_save` 保存差异文件
+	差异并没有经过压缩，请在网路传输前进行压缩。
 
-差异并没有经过压缩，请在传输
+### 合并差异：###
+1. 调用 `assetbundle_diff_load` 加载差异文件
 
 ## 接口说明 ##
 assetbundle_load 
@@ -36,13 +40,9 @@ assetbundle_check
 		BuildTarget.iPhone,
 		BuildOptions.UncompressedAssetBundle);
 
-	Object oo1 = AssetDatabase.LoadMainAssetAtPath("Assets/UI/Panels/Action.prefab");
-	Object oo2 = AssetDatabase.LoadMainAssetAtPath("Assets/UI/Panels/Bag.prefab");
-	Object oo3 = AssetDatabase.LoadMainAssetAtPath("Assets/UI/Panels/Fight.prefab");
-	Object oo4 = AssetDatabase.LoadMainAssetAtPath("Assets/UI/Panels/Fight.prefab");
 	BuildPipeline.BuildAssetBundle(
-		oo1, 
-		new Object[]{oo2, oo3, oo4}, 
+		o1, 
+		new Object[]{o2, o3, o4}, 
 		"Assets/test2.unity3d",
 		BuildAssetBundleOptions.CollectDependencies | BuildAssetBundleOptions.CompleteAssets| BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.DisableWriteTypeTree, 
 		BuildTarget.iPhone);	

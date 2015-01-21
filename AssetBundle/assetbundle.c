@@ -254,7 +254,6 @@ void assetbundle_destory(struct assetbundle* bundle)
 	free(bundle);
 }
 
-const int hash_size = 16;
 extern void md5(const char* message, long len, char* output);
 
 void assetbundle_md5(struct assetbundle* bundle, char* output)
@@ -265,6 +264,7 @@ void assetbundle_md5(struct assetbundle* bundle, char* output)
     md5((char*)data, (long)length, output);
 }
 
+const int hash_size = 16;
 struct assetbundle_diff
 {
     char src_hash[hash_size];
@@ -311,6 +311,25 @@ void assetbundle_diff_destory(struct assetbundle_diff* diff)
     free(diff);
 }
 
+struct assetbundle_diff* assetbundle_diff_load(char* filename)
+{
+    struct filemaping* filemaping = filemaping_create_readonly(filename);
+    if (!filemaping)
+        return NULL;
+
+    unsigned char* data = filemaping_getdata(filemaping);
+    size_t length = filemaping_getlength(filemaping);
+    char diff_hash[hash_size];
+
+    md5((char*)(data + hash_size), (long)(length - hash_size), diff_hash);
+
+    if (memcmp(diff_hash, data, sizeof(diff_hash)) != 0)
+    	return NULL;
+
+    struct assetbundle_diff* diff = (struct assetbundle_diff*)malloc(sizeof(*diff));
+    return diff;
+}
+
 bool assetbundle_diff_save(char* filename, struct assetbundle_diff* diff)
 {
     size_t length = filemaping_getlength(diff->bundle->filemaping);
@@ -318,8 +337,8 @@ bool assetbundle_diff_save(char* filename, struct assetbundle_diff* diff)
     if (!filemaping)
         return false;
     
-    unsigned char* data = filemaping_getdata(diff->bundle->filemaping);
-    size_t offset = 0;
+    unsigned char* data = filemaping_getdata(filemaping);
+    size_t offset = hash_size;
     
     offset += write_buffer(data, offset, (unsigned char*)diff->src_hash, sizeof(diff->src_hash));
     offset += write_buffer(data, offset, (unsigned char*)diff->dst_hash, sizeof(diff->dst_hash));
@@ -336,7 +355,10 @@ bool assetbundle_diff_save(char* filename, struct assetbundle_diff* diff)
         assert (diff->file_diffs[i]);
         offset += assetfile_diff_savediff(diff->file_diffs[i], data, offset);
     }
-    
+
+    md5((char*)(data + hash_size), (long)(offset - hash_size), (char*)data);
+    filemaping_destory(filemaping);
+    filemaping_truncate(filename, offset);
     return true;
 }
 

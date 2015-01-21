@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include <stdbool.h>
 #ifdef _MSC_VER
 #else
 #include <unistd.h>
@@ -116,5 +117,10 @@ unsigned char* filemaping_getdata(struct filemaping* filemaping)
 size_t filemaping_getlength(struct filemaping* filemaping)
 {
 	return filemaping->length;
+}
+
+bool filemaping_truncate(const char* file, size_t length)
+{
+	return truncate(file, length);
 }
 #endif

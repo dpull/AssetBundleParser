@@ -9,7 +9,6 @@
 #include "assetfile.h"
 
 const size_t assetheader_reserved_size = 3;
-
 struct assetheader
 {
 	size_t metadata_size;
@@ -57,7 +56,6 @@ size_t assetheader_save(struct assetheader* header, unsigned char* data, size_t 
 
 const int assetfile_meta_align = 4096;
 const int assetfile_align = 16;
-
 struct assetfile
 {
     struct assetheader header;
@@ -168,7 +166,6 @@ bool assetfile_saveobjects(struct assetfile* file, unsigned char* data, size_t f
 }
 
 const size_t guid_size = 16;
-
 struct fileidentifier
 {		
 	char* asset_path;
@@ -217,14 +214,9 @@ size_t externals_struct_save(struct assetfile* file, unsigned char* data, size_t
     return offset - start;
 }
 
-struct assetfile* assetfile_load(unsigned char* data, size_t offset, size_t size)
-{	
+size_t assetmeta_load(struct assetfile* file, unsigned char* data, size_t offset)
+{
 	size_t start = offset;
-	struct assetfile* file = (struct assetfile*)malloc(sizeof(*file));
-	memset(file, 0, sizeof(*file));
-
-	offset += assetheader_load(&file->header, data, offset);
-    assert(offset - start <= size);
 
 	if (file->header.version_info >= 7) {
 		offset += read_string(data, offset, &file->unity_revision);
@@ -239,10 +231,7 @@ struct assetfile* assetfile_load(unsigned char* data, size_t offset, size_t size
 	}
 
 	offset += objectinfo_struct_load(file, data, offset);
-    assert(offset - start <= size);
-
     offset += externals_struct_load(file, data, offset);
-    assert(offset - start <= size);
     
     if (offset < assetfile_meta_align) {
         file->align_data_length = assetfile_meta_align - offset;
@@ -256,19 +245,13 @@ struct assetfile* assetfile_load(unsigned char* data, size_t offset, size_t size
     if (file->align_data_length != 0) {
         offset += read_buffer(data, offset, &file->align_data, file->align_data_length);
     }
-    
-    if (!assetfile_loadobjects(file, data, start)) {
-    	assetfile_destory(file);
-    	return NULL;
-    }
-    
-    return file;
+	
+    return offset - start;
 }
 
-bool assetfile_save(struct assetfile* file, unsigned char* data, size_t offset, size_t size)
+size_t assetmeta_save(struct assetfile* file, unsigned char* data, size_t offset)
 {
 	size_t start = offset;
-	offset += assetheader_save(&file->header, data, offset);
 
 	if (file->header.version_info >= 7) {
 		offset += write_string(data, offset, file->unity_revision);
@@ -282,14 +265,40 @@ bool assetfile_save(struct assetfile* file, unsigned char* data, size_t offset, 
 	}
 
 	offset += objectinfo_struct_save(file, data, offset);
-    assert(offset - start <= size);
-
     offset += externals_struct_save(file, data, offset);
-    assert(offset - start <= size);
     
     if (file->align_data_length != 0) {
         offset += write_buffer(data, offset, file->align_data, file->align_data_length);
     }
+	
+    return offset - start;
+}
+
+struct assetfile* assetfile_load(unsigned char* data, size_t offset, size_t size)
+{	
+	size_t start = offset;
+	struct assetfile* file = (struct assetfile*)malloc(sizeof(*file));
+	memset(file, 0, sizeof(*file));
+
+	offset += assetheader_load(&file->header, data, offset);
+    assert(offset - start <= size);
+
+    offset += assetmeta_load(file, data, offset);
+    assert(offset - start <= size);
+    
+    if (!assetfile_loadobjects(file, data, start)) {
+    	assetfile_destory(file);
+    	return NULL;
+    }
+    
+    return file;
+}
+
+bool assetfile_save(struct assetfile* file, unsigned char* data, size_t offset, size_t size)
+{
+	size_t start = offset;
+	offset += assetheader_save(&file->header, data, offset);
+    offset += assetmeta_save(file, data, offset);
     
 	return assetfile_saveobjects(file, data, start);
 }
@@ -414,4 +423,68 @@ void assetfile_diff_destory(struct assetfile_diff* diff)
     free(diff->objectinfo_modify);
     free(diff->objectinfo_same);
     free(diff);
+}
+
+size_t assetfile_diff_loadfile(struct assetfile* file, unsigned char* data, size_t offset)
+{
+	size_t start = offset;
+	offset += assetheader_load(&file->header, data, offset);
+    offset += assetmeta_load(file, data, offset);
+
+    return offset - start;
+}
+
+size_t assetfile_diff_savefile(struct assetfile* file, unsigned char* data, size_t offset)
+{
+	size_t start = offset;
+	offset += assetheader_save(&file->header, data, offset);
+    offset += assetmeta_save(file, data, offset);
+
+    return offset - start;
+}
+
+size_t assetfile_diff_loaddiff(struct assetfile_diff* diff, unsigned char* data, size_t offset)
+{
+	size_t start = offset;
+
+	offset += read_uint32(data, offset, &diff->objectinfo_modify_count, true);
+	for (size_t i = 0; i < diff->objectinfo_modify_count; ++i) {
+		struct objectinfo_modify* objectinfo_modify = &diff->objectinfo_modify[i];
+
+		offset += read_uint32(data, offset, &objectinfo_modify->length, true);
+		offset += read_buffer(data, offset, &objectinfo_modify->buffer, objectinfo_modify->length);
+	}
+
+	offset += read_uint32(data, offset, &diff->objectinfo_same_count, true);
+	for (size_t i = 0; i < diff->objectinfo_same_count; ++i) {
+		struct objectinfo_same* objectinfo_same = &diff->objectinfo_same[i];
+
+		offset += read_uint32(data, offset, &objectinfo_same->src_files_index, true);
+		offset += read_int32(data, offset, &objectinfo_same->src_path_id, true);
+	}
+
+    return offset - start;
+}
+
+size_t assetfile_diff_savediff(struct assetfile_diff* diff, unsigned char* data, size_t offset)
+{
+	size_t start = offset;
+
+	offset += write_uint32(data, offset, diff->objectinfo_modify_count, true);
+	for (size_t i = 0; i < diff->objectinfo_modify_count; ++i) {
+		struct objectinfo_modify* objectinfo_modify = &diff->objectinfo_modify[i];
+
+		offset += write_uint32(data, offset, objectinfo_modify->length, true);
+		offset += write_buffer(data, offset, objectinfo_modify->buffer, objectinfo_modify->length);
+	}
+
+	offset += write_uint32(data, offset, diff->objectinfo_same_count, true);
+	for (size_t i = 0; i < diff->objectinfo_same_count; ++i) {
+		struct objectinfo_same* objectinfo_same = &diff->objectinfo_same[i];
+
+		offset += write_uint32(data, offset, objectinfo_same->src_files_index, true);
+		offset += write_int32(data, offset, objectinfo_same->src_path_id, true);
+	}
+
+    return offset - start;	
 }

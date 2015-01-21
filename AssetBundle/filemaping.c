@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #endif
+#include "filemaping.h"
 
 #ifdef _MSC_VER
 struct filemaping

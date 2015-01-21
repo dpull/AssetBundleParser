@@ -328,9 +328,13 @@ bool assetbundle_diff_save(char* filename, struct assetbundle_diff* diff)
    	offset += assetbundle_entryinfo_save(diff->bundle, data, offset);
     
     for (size_t i = 0; i < diff->bundle->entryinfo_count; ++i) {
-        
-        if (diff->file_diffs[i])
-            assetfile_diff_destory(diff->file_diffs[i]);
+        assert (diff->bundle->entryinfo[i].assetfile);
+        offset += assetfile_diff_savefile(diff->bundle->entryinfo[i].assetfile, data, offset);
+    }
+    
+    for (size_t i = 0; i < diff->bundle->entryinfo_count; ++i) {
+        assert (diff->file_diffs[i]);
+        offset += assetfile_diff_savediff(diff->file_diffs[i], data, offset);
     }
     
     return true;

@@ -19,6 +19,7 @@ size_t write_uint32(unsigned char* data, size_t offset, size_t value, bool littl
 size_t read_byte(unsigned char* data, size_t offset, unsigned char* value);
 size_t write_byte(unsigned char* data, size_t offset, unsigned char value);
 
+void check_write_overlapping_zero_buffer(unsigned char* data, size_t offset, size_t size);
 #endif
 
 

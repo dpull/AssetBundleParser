@@ -141,3 +141,10 @@ size_t write_byte(unsigned char* data, size_t offset, unsigned char value)
     data[offset] = value;
     return 1;
 }
+
+void check_write_overlapping_zero_buffer(unsigned char* data, size_t offset, size_t size)
+{
+#ifdef CHECK_WRITE_OVERLAPPING
+    memset(data + offset, 0, size);
+#endif
+}

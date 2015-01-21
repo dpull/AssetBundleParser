@@ -214,7 +214,7 @@ bool assetbundle_check(struct assetbundle* bundle)
 	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
 		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
 		size_t file_offset = bundle->header.header_size + entryinfo->offset;
-
+        
         bool ret = assetfile_save(entryinfo->assetfile, dest_data, file_offset, entryinfo->size);
         assert(ret);
 	}    	
@@ -309,6 +309,8 @@ bool assetbundle_diff_merge(const char* filename, struct assetbundle* from, stru
     unsigned char* data = filemaping_getdata(filemaping);
     size_t offset = 0;
 
+    check_write_overlapping_zero_buffer(data, 0, length);
+    
    	offset += assetbundle_header_save(&diff->bundle->header, data, offset);
    	offset += assetbundle_entryinfo_save(diff->bundle, data, offset);
 
@@ -406,6 +408,8 @@ bool assetbundle_diff_save(const char* filename, struct assetbundle_diff* diff)
     
     unsigned char* data = filemaping_getdata(filemaping);
     size_t offset = hash_size;
+    
+    check_write_overlapping_zero_buffer(data, 0, length);
     
     offset += write_buffer(data, offset, (unsigned char*)diff->src_hash, sizeof(diff->src_hash));
     offset += write_buffer(data, offset, (unsigned char*)diff->dst_hash, sizeof(diff->dst_hash));

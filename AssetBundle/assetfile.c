@@ -130,8 +130,10 @@ size_t objectinfo_struct_save(struct assetfile* file, unsigned char* data, size_
     return offset - start;
 }
 
-bool assetfile_loadobjects(struct assetfile* file, unsigned char* data, size_t file_offset)
+bool assetfile_loadobjects(struct assetfile* file, unsigned char* data, size_t file_offset, size_t file_size)
 {
+    size_t max_offset = file_offset + file_size;
+    
     for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
         struct objectinfo* objectinfo = &file->objectinfo_struct[i];
         
@@ -142,6 +144,9 @@ bool assetfile_loadobjects(struct assetfile* file, unsigned char* data, size_t f
         objectinfo->align_data_length = (buffer_offset - file_offset) % objectinfo_buffer_align;
         if (objectinfo->align_data_length != 0) {
             objectinfo->align_data_length = objectinfo_buffer_align - objectinfo->align_data_length;
+            if (objectinfo->align_data_length + buffer_offset > max_offset)
+                objectinfo->align_data_length = max_offset - buffer_offset;
+            
             buffer_offset += read_buffer(data, buffer_offset, &objectinfo->align_data, objectinfo->align_data_length);
         }
     }
@@ -155,6 +160,8 @@ bool assetfile_saveobjects(struct assetfile* file, unsigned char* data, size_t f
         struct objectinfo* objectinfo = &file->objectinfo_struct[i];
         
         size_t buffer_offset = file_offset + file->header.data_offset + objectinfo->offset;
+        printf("assetfile_saveobjects\t%u\t%u\t%u\t%u\n",  file_offset, buffer_offset, buffer_offset + objectinfo->length, objectinfo->align_data_length);
+        
         buffer_offset += write_buffer(data, buffer_offset, objectinfo->buffer, objectinfo->length);
         
         if (objectinfo->align_data_length != 0) {
@@ -286,7 +293,7 @@ struct assetfile* assetfile_load(unsigned char* data, size_t start, size_t size)
     offset += assetmeta_load(file, data, offset, start);
     assert(offset - start <= size);
     
-    if (!assetfile_loadobjects(file, data, start)) {
+    if (!assetfile_loadobjects(file, data, start, size)) {
     	assetfile_destory(file);
     	return NULL;
     }

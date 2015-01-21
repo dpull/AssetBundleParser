@@ -274,27 +274,27 @@ struct assetbundle_diff
     struct assetfile_diff** file_diffs;
 };
 
-struct assetbundle_diff* assetbundle_diff_create(struct assetbundle* src, struct assetbundle* dst)
+struct assetbundle_diff* assetbundle_diff_create(struct assetbundle* from, struct assetbundle* to)
 {
     struct assetbundle_diff* diff = (struct assetbundle_diff*)malloc(sizeof(*diff));
     
-    assetbundle_md5(src, diff->src_hash);
-    assetbundle_md5(dst, diff->dst_hash);
-    diff->bundle = dst;
-    diff->file_diffs = (struct assetfile_diff**)malloc(sizeof(*diff->file_diffs) * dst->entryinfo_count);
-    memset(diff->file_diffs, 0, sizeof(*diff->file_diffs) * dst->entryinfo_count);
+    assetbundle_md5(from, diff->src_hash);
+    assetbundle_md5(to, diff->dst_hash);
+    diff->bundle = to;
+    diff->file_diffs = (struct assetfile_diff**)malloc(sizeof(*diff->file_diffs) * to->entryinfo_count);
+    memset(diff->file_diffs, 0, sizeof(*diff->file_diffs) * to->entryinfo_count);
     
-	size_t src_files_count = src->entryinfo_count;
+	size_t src_files_count = from->entryinfo_count;
 	struct assetfile** src_files = (struct assetfile**)malloc(sizeof(*src_files) * src_files_count);
 	memset(src_files, 0, sizeof(*src_files) * src_files_count);
 
 	for (size_t i = 0; i < src_files_count; ++i) {
-		struct assetbundle_entryinfo* entryinfo = &src->entryinfo[i];
+		struct assetbundle_entryinfo* entryinfo = &from->entryinfo[i];
 		src_files[i] = entryinfo->assetfile;
 	}
     
-	for (size_t i = 0; i < dst->entryinfo_count; ++i) {
-		struct assetbundle_entryinfo* entryinfo = &dst->entryinfo[i];
+	for (size_t i = 0; i < to->entryinfo_count; ++i) {
+		struct assetbundle_entryinfo* entryinfo = &to->entryinfo[i];
 		diff->file_diffs[i] = assetfile_diff(src_files, src_files_count, entryinfo->assetfile);
         assert(diff->file_diffs[i]);
 	}
@@ -352,7 +352,7 @@ struct assetbundle_diff* assetbundle_diff_load(char* filename)
     return diff;
 }
 
-bool assetbundle_diff_save(char* filename, struct assetbundle_diff* diff)
+bool assetbundle_diff_save(const char* filename, struct assetbundle_diff* diff)
 {
     size_t length = filemaping_getlength(diff->bundle->filemaping);
     struct filemaping* filemaping = filemaping_create_readwrite(filename, length);
@@ -384,3 +384,59 @@ bool assetbundle_diff_save(char* filename, struct assetbundle_diff* diff)
     return true;
 }
 
+int assetbundle_diff(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff)
+{
+	int result = ASSETBUNDLE_DIFF_FAILED;
+	bool retcode = false;
+	struct assetbundle* from = NULL;
+	struct assetbundle* to = NULL;
+	struct assetbundle_diff* diff = NULL;
+
+	from = assetbundle_load(assetbundle_from);
+	if (!from) {
+		result = ASSETBUNDLE_FROM_LOAD_FAILED;
+		goto Exit0;
+	}
+
+	retcode = assetbundle_check(from);
+	if (!retcode) {
+		result = ASSETBUNDLE_FROM_CHECK_FAILED;
+		goto Exit0;
+	}
+
+	to = assetbundle_load(assetbundle_to);
+	if (!to) {
+		result = ASSETBUNDLE_TO_LOAD_FAILED;
+		goto Exit0;
+	}
+
+	retcode = assetbundle_check(to);
+	if (!retcode) {
+		result = ASSETBUNDLE_TO_CHECK_FAILED;
+		goto Exit0;
+	}
+
+	diff = assetbundle_diff_create(from, to);
+	if (!diff) {
+		result = ASSETBUNDLE_DIFF_CREATE_FAILED;
+		goto Exit0;
+	}
+	
+	retcode = assetbundle_diff_save(assetbundle_diff, diff);
+	if (!retcode) {
+		result = ASSETBUNDLE_DIFF_SAVE_FAILED;
+		goto Exit0;
+	}
+
+	result = ASSETBUNDLE_DIFF_SUCCEED;
+Exit0:
+	if (diff)
+		assetbundle_diff_destory(diff);
+	
+	if (to)
+		assetbundle_destory(to);
+
+	if (from)
+		assetbundle_destory(from);
+	return result;
+}

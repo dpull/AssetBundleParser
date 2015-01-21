@@ -58,7 +58,7 @@ assetbundle_merge
 		BuildAssetBundleOptions.CollectDependencies | BuildAssetBundleOptions.CompleteAssets| BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.DisableWriteTypeTree, 
 		BuildTarget.iPhone);	
 
-# `AssetBundle` 代码示例 #	
+# 生成差异及合并代码示例 #	
 	
 	// "scenes_v1.unity3d", "scenes_v2.unity3d" 必须存在，生成"v1to2.diff"
 	assetbundle_diff("scenes_v1.unity3d", "scenes_v2.unity3d", "v1to2.diff"); 

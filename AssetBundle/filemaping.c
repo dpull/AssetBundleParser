@@ -9,7 +9,6 @@
 #include <sys/mman.h>
 #endif
 
-
 #ifdef _MSC_VER
 struct filemaping
 {

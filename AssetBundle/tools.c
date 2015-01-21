@@ -3,6 +3,18 @@
 #include <string.h>
 #include "tools.h"
 
+size_t read_buffer(unsigned char* data, size_t offset, unsigned char** value, size_t size)
+{
+    *value = data + offset;
+    return size;
+}
+
+size_t write_buffer(unsigned char* data, size_t offset, unsigned char* value, size_t size)
+{
+    memcpy(data + offset, value, size);
+    return size;
+}
+
 size_t read_string(unsigned char* data, size_t offset, char** value)
 {
     size_t len = strlen((char*)data + offset) + 1;
@@ -96,16 +108,4 @@ size_t write_byte(unsigned char* data, size_t offset, unsigned char value)
 {
     data[offset] = value;
     return 1;
-}
-
-size_t read_buffer(unsigned char* data, size_t offset, unsigned char** value, size_t size)
-{
-    *value = data + offset;
-    return size;
-}
-
-size_t write_buffer(unsigned char* data, size_t offset, unsigned char* value, size_t size)
-{
-    memcpy(data + offset, value, size);
-    return size;
 }

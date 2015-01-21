@@ -5,8 +5,8 @@
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
-#include "assetfile.h"
 #include "tools.h"
+#include "assetfile.h"
 
 const size_t assetheader_reserved_size = 3;
 
@@ -132,37 +132,37 @@ size_t objectinfo_struct_save(struct assetfile* file, unsigned char* data, size_
     return offset - start;
 }
 
-bool objectinfos_load(struct assetfile* file, unsigned char* data, size_t buffer_base_offset)
+bool assetfile_loadobjects(struct assetfile* file, unsigned char* data, size_t file_offset)
 {
-	for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
-		struct objectinfo* objectinfo = &file->objectinfo_struct[i];
-
-		size_t buffer_offset = buffer_base_offset + file->header.data_offset + objectinfo->offset;
-        assert((buffer_offset - buffer_base_offset) % objectinfo_buffer_align == 0);
-
-		buffer_offset += read_buffer(data, buffer_offset, &objectinfo->buffer, objectinfo->length);        
+    for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
+        struct objectinfo* objectinfo = &file->objectinfo_struct[i];
+        
+        size_t buffer_offset = file_offset + file->header.data_offset + objectinfo->offset;
+        assert((buffer_offset - file_offset) % objectinfo_buffer_align == 0);
+        
+        buffer_offset += read_buffer(data, buffer_offset, &objectinfo->buffer, objectinfo->length);
         objectinfo->align_data_length = buffer_offset % objectinfo_buffer_align;
         if (objectinfo->align_data_length != 0) {
             objectinfo->align_data_length = objectinfo_buffer_align - objectinfo->align_data_length;
             buffer_offset += read_buffer(data, buffer_offset, &objectinfo->align_data, objectinfo->align_data_length);
-        }        
-	}
+        }
+    }
     
     return true;
 }
 
-size_t objectinfos_save(struct assetfile* file, unsigned char* data, size_t buffer_base_offset)
+bool assetfile_saveobjects(struct assetfile* file, unsigned char* data, size_t file_offset)
 {
-	for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
-		struct objectinfo* objectinfo = &file->objectinfo_struct[i];
-
-		size_t buffer_offset = buffer_base_offset + file->header.data_offset + objectinfo->offset;
-		buffer_offset += write_buffer(data, buffer_offset, objectinfo->buffer, objectinfo->length);
+    for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
+        struct objectinfo* objectinfo = &file->objectinfo_struct[i];
+        
+        size_t buffer_offset = file_offset + file->header.data_offset + objectinfo->offset;
+        buffer_offset += write_buffer(data, buffer_offset, objectinfo->buffer, objectinfo->length);
         
         if (objectinfo->align_data_length != 0) {
             buffer_offset += write_buffer(data, buffer_offset, objectinfo->align_data, objectinfo->align_data_length);
         }
-	}
+    }
     
     return true;
 }
@@ -256,11 +256,13 @@ struct assetfile* assetfile_load(unsigned char* data, size_t offset, size_t size
     if (file->align_data_length != 0) {
         offset += read_buffer(data, offset, &file->align_data, file->align_data_length);
     }
-
-    bool ret = objectinfos_load(file, data, start);
-    assert(ret);
-
-	return file;
+    
+    if (!assetfile_loadobjects(file, data, start)) {
+    	assetfile_destory(file);
+    	return NULL;
+    }
+    
+    return file;
 }
 
 bool assetfile_save(struct assetfile* file, unsigned char* data, size_t offset, size_t size)
@@ -288,11 +290,8 @@ bool assetfile_save(struct assetfile* file, unsigned char* data, size_t offset, 
     if (file->align_data_length != 0) {
         offset += write_buffer(data, offset, file->align_data, file->align_data_length);
     }
-
-    bool ret = objectinfos_save(file, data, start);
-    assert(ret);
-
-	return true;
+    
+	return assetfile_saveobjects(file, data, start);
 }
 
 void assetfile_destory(struct assetfile* file)
@@ -383,7 +382,6 @@ struct assetfile_diff* assetfile_diff(struct assetfile** src_files, size_t src_f
 				break;
 			}
 		}
-
 		
 		if (src_objectinfo) {
 			struct objectinfo_same* objectinfo_same = &diff->objectinfo_same[diff->objectinfo_same_count];
@@ -399,6 +397,12 @@ struct assetfile_diff* assetfile_diff(struct assetfile** src_files, size_t src_f
 			objectinfo_modify->dst_path_id = dst_objectinfo->path_id;
 			objectinfo_modify->buffer = dst_objectinfo->buffer;
 			objectinfo_modify->length = dst_objectinfo->length + dst_objectinfo->align_data_length;
+            
+            char* name = objectinfo_getname(dst_objectinfo);
+            printf("file:%s\t", name ? name : "unknown");
+            free(name);
+            
+            printf("modify \n");
 		}
 	}
     

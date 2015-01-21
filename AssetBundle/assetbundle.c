@@ -4,10 +4,10 @@
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
-#include "assetbundle.h"
 #include "assetfile.h"
 #include "tools.h"
 #include "filemaping.h"
+#include "assetbundle.h"
 
 #pragma pack(1)
 struct level_info
@@ -196,6 +196,8 @@ struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
     unsigned char* data = filemaping_getdata(filemaping);
     size_t offset = 0;
    	offset += assetbundle_header_load(&bundle->header, data, offset);
+    assert(strcmp(bundle->header.signature, "UnityRaw") == 0); // only support uncompressed assetbundle
+    
    	offset += assetbundle_entryinfo_load(bundle, data, offset);
 
   	bool ret = assetfiles_load(bundle, data);
@@ -204,9 +206,9 @@ struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
     return bundle;
 }
 
-struct assetbundle* assetbundle_load(char* file)
+struct assetbundle* assetbundle_load(char* filename)
 {
-	struct filemaping* filemaping = filemaping_create_readonly(file);
+	struct filemaping* filemaping = filemaping_create_readonly(filename);
 	if (!filemaping)
 		return NULL;
 
@@ -220,8 +222,6 @@ bool assetbundle_check(struct assetbundle* bundle)
     size_t offset = 0;
 
    	offset += assetbundle_header_save(&bundle->header, dest_data, offset);
-   	assert(strcmp(bundle->header.signature, "UnityRaw") == 0); // only support uncompressed assetbundle
-
    	offset += assetbundle_entryinfo_save(bundle, dest_data, offset);
 
   	bool ret = assetfiles_save(bundle, dest_data);
@@ -257,16 +257,33 @@ void assetbundle_destory(struct assetbundle* bundle)
 const int hash_size = 16;
 extern void md5(const char* message, long len, char* output);
 
+void assetbundle_md5(struct assetbundle* bundle, char* output)
+{
+    unsigned char* data = filemaping_getdata(bundle->filemaping);
+    size_t length = filemaping_getlength(bundle->filemaping);
+    
+    md5((char*)data, (long)length, output);
+}
+
 struct assetbundle_diff
 {
     char src_hash[hash_size];
     char dst_hash[hash_size];
 
-	struct assetbundle* dst;
+	struct assetbundle* bundle;
+    struct assetfile_diff** file_diffs;
 };
 
 struct assetbundle_diff* assetbundle_diff(struct assetbundle* src, struct assetbundle* dst)
 {
+    struct assetbundle_diff* diff = (struct assetbundle_diff*)malloc(sizeof(*diff));
+    
+    assetbundle_md5(src, diff->src_hash);
+    assetbundle_md5(dst, diff->dst_hash);
+    diff->bundle = dst;
+    diff->file_diffs = (struct assetfile_diff**)malloc(sizeof(*diff->file_diffs) * dst->entryinfo_count);
+    memset(diff->file_diffs, 0, sizeof(*diff->file_diffs) * dst->entryinfo_count);
+    
 	size_t src_files_count = src->entryinfo_count;
 	struct assetfile** src_files = (struct assetfile**)malloc(sizeof(*src_files) * src_files_count);
 	memset(src_files, 0, sizeof(*src_files) * src_files_count);
@@ -275,11 +292,47 @@ struct assetbundle_diff* assetbundle_diff(struct assetbundle* src, struct assetb
 		struct assetbundle_entryinfo* entryinfo = &src->entryinfo[i];
 		src_files[i] = entryinfo->assetfile;
 	}
-
+    
 	for (size_t i = 0; i < dst->entryinfo_count; ++i) {
 		struct assetbundle_entryinfo* entryinfo = &dst->entryinfo[i];
-		assetfile_diff(src_files, src_files_count, entryinfo->assetfile);
+		diff->file_diffs[i] = assetfile_diff(src_files, src_files_count, entryinfo->assetfile);
+        assert(diff->file_diffs[i]);
 	}
-    return NULL;
+    return diff;
+}
+
+void assetbundle_diff_destory(struct assetbundle_diff* diff)
+{
+    for (size_t i = 0; i < diff->bundle->entryinfo_count; ++i) {
+        if (diff->file_diffs[i])
+            assetfile_diff_destory(diff->file_diffs[i]);
+    }
+    free(diff->file_diffs);
+    free(diff);
+}
+
+bool assetbundle_diff_save(char* filename, struct assetbundle_diff* diff)
+{
+    size_t length = filemaping_getlength(diff->bundle->filemaping);
+    struct filemaping* filemaping = filemaping_create_readwrite(filename, length);
+    if (!filemaping)
+        return false;
+    
+    unsigned char* data = filemaping_getdata(diff->bundle->filemaping);
+    size_t offset = 0;
+    
+    offset += write_buffer(data, offset, (unsigned char*)diff->src_hash, sizeof(diff->src_hash));
+    offset += write_buffer(data, offset, (unsigned char*)diff->dst_hash, sizeof(diff->dst_hash));
+    
+    offset += assetbundle_header_save(&diff->bundle->header, data, offset);
+   	offset += assetbundle_entryinfo_save(diff->bundle, data, offset);
+    
+    for (size_t i = 0; i < diff->bundle->entryinfo_count; ++i) {
+        
+        if (diff->file_diffs[i])
+            assetfile_diff_destory(diff->file_diffs[i]);
+    }
+    
+    return true;
 }
 

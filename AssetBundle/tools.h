@@ -1,3 +1,8 @@
+#ifndef tools_h
+#define tools_h
+
+size_t read_buffer(unsigned char* data, size_t offset, unsigned char** value, size_t size);
+size_t write_buffer(unsigned char* data, size_t offset, unsigned char* value, size_t size);
 
 size_t read_string(unsigned char* data, size_t offset, char** value);
 size_t write_string(unsigned char* data, size_t offset, char* value);
@@ -14,8 +19,7 @@ size_t write_uint32(unsigned char* data, size_t offset, size_t value, bool littl
 size_t read_byte(unsigned char* data, size_t offset, unsigned char* value);
 size_t write_byte(unsigned char* data, size_t offset, unsigned char value);
 
-size_t read_buffer(unsigned char* data, size_t offset, unsigned char** value, size_t size);
-size_t write_buffer(unsigned char* data, size_t offset, unsigned char* value, size_t size);
+#endif
 
 
 

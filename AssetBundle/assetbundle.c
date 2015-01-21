@@ -205,8 +205,9 @@ bool assetbundle_check(struct assetbundle* bundle)
 {
 	size_t length = filemaping_getlength(bundle->filemaping);
 	unsigned char* dest_data = (unsigned char*)malloc(length);
+    memset(dest_data, 0, length);
+    
     size_t offset = 0;
-
    	offset += assetbundle_header_save(&bundle->header, dest_data, offset);
    	offset += assetbundle_entryinfo_save(bundle, dest_data, offset);
 

@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <assert.h>
 #include "tools.h"
+
+#define CHECK_WRITE_OVERLAPPING 1
 
 size_t read_buffer(unsigned char* data, size_t offset, unsigned char** value, size_t size)
 {
@@ -11,6 +14,11 @@ size_t read_buffer(unsigned char* data, size_t offset, unsigned char** value, si
 
 size_t write_buffer(unsigned char* data, size_t offset, unsigned char* value, size_t size)
 {
+#ifdef CHECK_WRITE_OVERLAPPING
+    for (size_t i = 0; i < size; ++i) {
+        assert(data[offset + i] == 0);
+    }
+#endif
     memcpy(data + offset, value, size);
     return size;
 }
@@ -38,6 +46,12 @@ size_t read_int16(unsigned char* data, size_t offset, short* value, bool littleE
 
 size_t write_int16(unsigned char* data, size_t offset, short value, bool littleEndian)
 {
+#ifdef CHECK_WRITE_OVERLAPPING
+    for (size_t i = 0; i < 2; ++i) {
+        assert(data[offset + i] == 0);
+    }
+#endif
+    
     if (!littleEndian) {
         data[offset + 1] = (unsigned char)value;
         data[offset] = (unsigned char)(value >> 8);
@@ -59,6 +73,12 @@ size_t read_int32(unsigned char* data, size_t offset, int* value, bool littleEnd
 
 size_t write_int32(unsigned char* data, size_t offset, int value, bool littleEndian)
 {
+#ifdef CHECK_WRITE_OVERLAPPING
+    for (size_t i = 0; i < 4; ++i) {
+        assert(data[offset + i] == 0);
+    }
+#endif
+    
     if (!littleEndian) {
         data[offset + 3] = (unsigned char)value;
         data[offset + 2] = (unsigned char)(value >> 8);
@@ -84,6 +104,12 @@ size_t read_uint32(unsigned char* data, size_t offset, size_t* value, bool littl
 
 size_t write_uint32(unsigned char* data, size_t offset, size_t value, bool littleEndian)
 {
+#ifdef CHECK_WRITE_OVERLAPPING
+    for (size_t i = 0; i < 4; ++i) {
+        assert(data[offset + i] == 0);
+    }
+#endif
+    
     if (!littleEndian) {
         data[offset + 3] = (unsigned char)value;
         data[offset + 2] = (unsigned char)(value >> 8);
@@ -106,6 +132,12 @@ size_t read_byte(unsigned char* data, size_t offset, unsigned char* value)
 
 size_t write_byte(unsigned char* data, size_t offset, unsigned char value)
 {
+#ifdef CHECK_WRITE_OVERLAPPING
+    for (size_t i = 0; i < 1; ++i) {
+        assert(data[offset + i] == 0);
+    }
+#endif
+    
     data[offset] = value;
     return 1;
 }

@@ -1,14 +1,11 @@
 #ifndef assetbundle_h
 #define assetbundle_h
 
-struct assetbundle* assetbundle_load(char* filename);
+struct assetbundle* assetbundle_load(const char* filename);
 bool assetbundle_check(struct assetbundle* bundle);
 void assetbundle_destory(struct assetbundle* bundle);
 
-struct assetbundle_diff* assetbundle_diff(struct assetbundle* src, struct assetbundle* dst);
-void assetbundle_diff_destory(struct assetbundle_diff* diff);
-struct assetbundle_diff* assetbundle_diff_load(char* filename);
-bool assetbundle_diff_save(char* filename, struct assetbundle_diff* diff);
-
+int assetbundle_diff(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff);
+int assetbundle_merge(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff);
 
 #endif

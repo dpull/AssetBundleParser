@@ -37,7 +37,7 @@ int main(int argc, const char * argv[]) {
 
     ret = assetbundle_check(bundle3);
     assert(ret);    
-
+/*
     printf("cmp test1, test2. change 1(txt file), add 4 files(1 prefab)\n");
 	struct assetbundle_diff* diff1 = assetbundle_diff(bundle1, bundle2);
     assetbundle_diff_save("/Users/dpull/Documents/AssetBundle/AssetBundle/diff_1to2", diff1);
@@ -50,7 +50,7 @@ int main(int argc, const char * argv[]) {
 
     struct assetbundle_diff* diff3 = assetbundle_diff_load("/Users/dpull/Documents/AssetBundle/AssetBundle/diff_1to2");
     struct assetbundle_diff* diff4 = assetbundle_diff_load("/Users/dpull/Documents/AssetBundle/AssetBundle/diff_2to3");
-
+*/
     
     return 0;
 }

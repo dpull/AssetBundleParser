@@ -206,7 +206,7 @@ struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
     return bundle;
 }
 
-struct assetbundle* assetbundle_load(char* filename)
+struct assetbundle* assetbundle_load(const char* filename)
 {
 	struct filemaping* filemaping = filemaping_create_readonly(filename);
 	if (!filemaping)
@@ -274,7 +274,7 @@ struct assetbundle_diff
     struct assetfile_diff** file_diffs;
 };
 
-struct assetbundle_diff* assetbundle_diff(struct assetbundle* src, struct assetbundle* dst)
+struct assetbundle_diff* assetbundle_diff_create(struct assetbundle* src, struct assetbundle* dst)
 {
     struct assetbundle_diff* diff = (struct assetbundle_diff*)malloc(sizeof(*diff));
     
@@ -327,6 +327,28 @@ struct assetbundle_diff* assetbundle_diff_load(char* filename)
     	return NULL;
 
     struct assetbundle_diff* diff = (struct assetbundle_diff*)malloc(sizeof(*diff));
+    size_t offset = hash_size;
+    
+    offset += write_buffer((unsigned char*)diff->src_hash, 0, data + offset, sizeof(diff->src_hash));
+    offset += write_buffer((unsigned char*)diff->dst_hash, 0, data + offset, sizeof(diff->dst_hash));
+    
+    offset += assetbundle_header_load(&diff->bundle->header, data, offset);
+   	offset += assetbundle_entryinfo_load(diff->bundle, data, offset);
+    
+    for (size_t i = 0; i < diff->bundle->entryinfo_count; ++i) {
+        assert (diff->bundle->entryinfo[i].assetfile);
+        offset += assetfile_diff_savefile(diff->bundle->entryinfo[i].assetfile, data, offset);
+    }
+    
+    for (size_t i = 0; i < diff->bundle->entryinfo_count; ++i) {
+        assert (diff->file_diffs[i]);
+        offset += assetfile_diff_savediff(diff->file_diffs[i], data, offset);
+    }
+    
+    md5((char*)(data + hash_size), (long)(offset - hash_size), (char*)data);
+    filemaping_destory(filemaping);
+    filemaping_truncate(filename, offset);
+    
     return diff;
 }
 

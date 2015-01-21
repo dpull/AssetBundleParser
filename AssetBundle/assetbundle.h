@@ -5,13 +5,14 @@ struct assetbundle* assetbundle_load(const char* filename);
 bool assetbundle_check(struct assetbundle* bundle);
 void assetbundle_destory(struct assetbundle* bundle);
 
+/***********************************************************************************************
+									diff and merge
+***********************************************************************************************/
+									
 enum ASSETBUNDLE_RETCODE
 {
-	ASSETBUNDLE_DIFF_FAILED = -1, 
-	ASSETBUNDLE_MERGE_FAIL = -1, 
-
-	ASSETBUNDLE_DIFF_SUCCEED = 0, 
-	ASSETBUNDLE_MERGE_SUCCEED = 0, 
+	ASSETBUNDLE_FAILED = -1, 
+	ASSETBUNDLE_SUCCEED = 0, 
 
 	ASSETBUNDLE_DIFF_CREATE_FAILED, 
 	ASSETBUNDLE_DIFF_SAVE_FAILED, 
@@ -19,10 +20,6 @@ enum ASSETBUNDLE_RETCODE
 	ASSETBUNDLE_FROM_LOAD_FAILED, 
 	ASSETBUNDLE_TO_LOAD_FAILED, 
 	ASSETBUNDLE_DIFF_LOAD_FAILED, 
-
-	ASSETBUNDLE_FROM_MD5_FAILED, 
-	ASSETBUNDLE_TO_MD5_FAILED, 
-	ASSETBUNDLE_DIFF_MD5_FAILED, 
 
 	ASSETBUNDLE_FROM_CHECK_FAILED, 
 	ASSETBUNDLE_TO_CHECK_FAILED, 

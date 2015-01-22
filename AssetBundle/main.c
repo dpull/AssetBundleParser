@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "assetbundle.h"
+#include "assetbundle_diff.h"
 #include <assert.h>
 
 int main(int argc, const char * argv[]) {

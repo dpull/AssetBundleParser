@@ -7,17 +7,7 @@
 #include <string.h>
 #include "tools.h"
 #include "assetfile.h"
-
-const size_t assetheader_reserved_size = 3;
-struct assetheader
-{
-	size_t metadata_size;
-	size_t file_size;
-	int version_info;
-	size_t data_offset;
-	unsigned char endianness;
-	unsigned char* reserved;
-};
+#include "assetfile_imp.h"
 
 size_t assetheader_load(struct assetheader* header, unsigned char* data, size_t offset)
 {
@@ -53,38 +43,6 @@ size_t assetheader_save(struct assetheader* header, unsigned char* data, size_t 
 
 	return offset - start;
 }
-
-const int assetfile_meta_align = 4096;
-const int assetfile_align = 16;
-struct assetfile
-{
-    struct assetheader header;
-    char* unity_revision;
-    int typetree_struct_attribute;
-    size_t typetree_struct_count; // must == 0
-    int typetree_padding;
-    size_t objectinfo_struct_count;
-    struct objectinfo* objectinfo_struct;
-    size_t externals_struct_count;
-    struct fileidentifier* externals_struct;
-    size_t align_data_length;
-    unsigned char* align_data;
-};
-
-const int objectinfo_buffer_align = 8;
-struct objectinfo
-{
-	int path_id;
-	size_t offset;
-	size_t length;
-	int type_id;
-	short class_id;
-	short is_destroyed;
-    
-	unsigned char* buffer;
-    size_t align_data_length;
-    unsigned char* align_data;
-};
 
 size_t objectinfo_struct_load(struct assetfile* file, unsigned char* data, size_t offset)
 {
@@ -160,8 +118,6 @@ bool assetfile_saveobjects(struct assetfile* file, unsigned char* data, size_t f
         struct objectinfo* objectinfo = &file->objectinfo_struct[i];
         
         size_t buffer_offset = file_offset + file->header.data_offset + objectinfo->offset;
-        printf("assetfile_saveobjects\t%u\t%u\t%u\t%u\n",  file_offset, buffer_offset, buffer_offset + objectinfo->length, objectinfo->align_data_length);
-        
         buffer_offset += write_buffer(data, buffer_offset, objectinfo->buffer, objectinfo->length);
         
         if (objectinfo->align_data_length != 0) {
@@ -171,15 +127,6 @@ bool assetfile_saveobjects(struct assetfile* file, unsigned char* data, size_t f
     
     return true;
 }
-
-const size_t guid_size = 16;
-struct fileidentifier
-{		
-	char* asset_path;
-	unsigned char* guid;
-	char* file_path;
-	int type;
-};
 
 size_t externals_struct_load(struct assetfile* file, unsigned char* data, size_t offset)
 {
@@ -320,238 +267,4 @@ void assetfile_destory(struct assetfile* file)
     	free(file->objectinfo_struct);
 
 	free(file);
-}
-
-/***********************************************************************************************
-									diff and merge
-***********************************************************************************************/
-struct objectinfo_modify
-{
-	int topath_id;
-	unsigned char* buffer;
-	size_t length;
-};
-
-struct objectinfo_same
-{
-	int topath_id;
-	size_t fromfiles_index;
-	size_t fromobject_index;
-};
-
-struct assetfile_diff
-{
-	size_t objectinfo_modify_count;
-	struct objectinfo_modify* objectinfo_modify;
-
-	size_t objectinfo_same_count;
-	struct objectinfo_same* objectinfo_same;
-};
-
-char* objectinfo_getname(struct objectinfo* objectinfo)
-{
-	int name_len;
-    size_t name_offset = 0;
-
-    name_offset += read_int32(objectinfo->buffer, name_offset, &name_len, true);
-    assert(name_len >= 0);
-    assert(name_len <= objectinfo->length);
-    
-    char* name = NULL;
-    if (name_len > 0) {
-        name = malloc(name_len + 1);
-        memcpy(name, objectinfo->buffer + name_offset, name_len);
-        name[name_len] = '\0';
-    }
-
-    return name;
-}
-
-int objectinfo_findsame(struct assetfile* file, struct objectinfo* objectinfo) 
-{
-	for (int i = 0; i < file->objectinfo_struct_count; ++i) {
-		struct objectinfo* cur_objectinfo = &file->objectinfo_struct[i];
-		if (cur_objectinfo->length == objectinfo->length && memcmp(cur_objectinfo->buffer, objectinfo->buffer, cur_objectinfo->length) == 0)
-			return i;
-	}
-	return -1;
-}
-
-struct assetfile_diff* assetfile_diff(struct assetfile** fromfiles, size_t fromfiles_count, struct assetfile* tofile)
-{
-	struct assetfile_diff* diff = (struct assetfile_diff*)malloc(sizeof(*diff));
-
-	diff->objectinfo_modify_count = 0;
-	diff->objectinfo_modify = (struct objectinfo_modify*)malloc(sizeof(*diff->objectinfo_modify) * tofile->objectinfo_struct_count);
-	diff->objectinfo_same_count = 0;
-	diff->objectinfo_same = (struct objectinfo_same*)malloc(sizeof(*diff->objectinfo_same) * tofile->objectinfo_struct_count);
-
-	for (size_t i = 0; i < tofile->objectinfo_struct_count; ++i) {
-		struct objectinfo* to_objectinfo = &tofile->objectinfo_struct[i];
-		size_t fromfiles_index = 0;
-		int fromobject_index = -1;
-
-		for (size_t j = 0; j < fromfiles_count; ++j) {
-			struct assetfile* fromfile = fromfiles[j];
-            
-			fromobject_index = objectinfo_findsame(fromfile, to_objectinfo);
-			if (fromobject_index >= 0) {                
-				struct objectinfo* from_objectinfo = &fromfile->objectinfo_struct[fromobject_index];
-                assert(memcmp(to_objectinfo->buffer, from_objectinfo->buffer, to_objectinfo->length + to_objectinfo->align_data_length) == 0);
-
-                fromfiles_index = j;
-				break;
-			}
-		}
-		
-		if (fromobject_index > 0) {
-			struct objectinfo_same* objectinfo_same = &diff->objectinfo_same[diff->objectinfo_same_count];
-			diff->objectinfo_same_count++;
-
-			objectinfo_same->topath_id = to_objectinfo->path_id;
-			objectinfo_same->fromfiles_index = fromfiles_index;
-			objectinfo_same->fromobject_index = fromobject_index;
-		} else {
-			struct objectinfo_modify* objectinfo_modify = &diff->objectinfo_modify[diff->objectinfo_modify_count];
-			diff->objectinfo_modify_count++;
-
-			objectinfo_modify->topath_id = to_objectinfo->path_id;
-			objectinfo_modify->buffer = to_objectinfo->buffer;
-			objectinfo_modify->length = to_objectinfo->length + to_objectinfo->align_data_length;
-            
-            char* name = objectinfo_getname(to_objectinfo);
-            printf("file:%s\t", name ? name : "unknown");
-            free(name);
-            
-            printf("modify \n");
-		}
-	}
-    
-    return diff;
-}
-
-bool assetfile_diff_merge(struct assetfile** fromfiles, size_t fromfiles_count, struct assetfile* tofile, struct assetfile_diff* diff, unsigned char* data, size_t start, size_t size)
-{
-	struct objectinfo_same* objectinfo_same = diff->objectinfo_same;
-	struct objectinfo_modify* objectinfo_modify = diff->objectinfo_modify;
-
-	for (size_t i = 0; i < tofile->objectinfo_struct_count; ++i) {
-        struct objectinfo* objectinfo = &tofile->objectinfo_struct[i];
-        size_t buffer_offset = start + tofile->header.data_offset + objectinfo->offset;
-    	assert(buffer_offset - start <= size);
-
-        if (objectinfo_same->topath_id == objectinfo->path_id) {
-        	assert(objectinfo_same - diff->objectinfo_same < diff->objectinfo_same_count);
-        	assert(objectinfo_same->fromfiles_index < fromfiles_count);
-
-			struct assetfile* fromfile = fromfiles[objectinfo_same->fromfiles_index];
-			assert(objectinfo_same->fromobject_index < fromfile->objectinfo_struct_count);
-
-			struct objectinfo* from_objectinfo = &fromfile->objectinfo_struct[objectinfo_same->fromobject_index];
-            assert(from_objectinfo->length == objectinfo->length);
-            assert(from_objectinfo->align_data_length == objectinfo->align_data_length);
-            
-      		buffer_offset += write_buffer(data, buffer_offset, from_objectinfo->buffer, from_objectinfo->length + from_objectinfo->align_data_length);
-    		assert(buffer_offset - start <= size + objectinfo->align_data_length);
-
-        	objectinfo_same++;
-        } else if (objectinfo_modify->topath_id == objectinfo->path_id) {
-        	assert(objectinfo_modify - diff->objectinfo_modify < diff->objectinfo_modify_count);
-
-        	buffer_offset += write_buffer(data, buffer_offset, objectinfo_modify->buffer, objectinfo_modify->length);
-    		assert(buffer_offset - start <= size + objectinfo->align_data_length);
-
-        	objectinfo_modify++;
-        } else {
-        	assert(false);
-        	return false;
-        }
-    }
-    
-    return true;
-}
-
-void assetfile_diff_destory(struct assetfile_diff* diff)
-{
-    free(diff->objectinfo_modify);
-    free(diff->objectinfo_same);
-    free(diff);
-}
-
-size_t assetfile_diff_loadfile(struct assetfile** retfile, unsigned char* data, size_t offset)
-{
-    struct assetfile* file = (struct assetfile*)malloc(sizeof(*file));
-    memset(file, 0, sizeof(*file));
-    
-	size_t start = offset;
-	offset += assetheader_load(&file->header, data, offset);
-    offset += assetmeta_load(file, data, offset, start);
-    
-    *retfile = file;
-    return offset - start;
-}
-
-size_t assetfile_diff_savefile(struct assetfile* file, unsigned char* data, size_t offset)
-{
-	size_t start = offset;
-	offset += assetheader_save(&file->header, data, offset);
-    offset += assetmeta_save(file, data, offset);
-
-    return offset - start;
-}
-
-size_t assetfile_diff_loaddiff(struct assetfile_diff** retdiff, unsigned char* data, size_t offset)
-{
-    size_t start = offset;
-    struct assetfile_diff* diff = (struct assetfile_diff*)malloc(sizeof(*diff));
-    
-	offset += read_uint32(data, offset, &diff->objectinfo_modify_count, true);
-	diff->objectinfo_modify = (struct objectinfo_modify*)malloc(sizeof(*diff->objectinfo_modify) * diff->objectinfo_modify_count);
-
-	for (size_t i = 0; i < diff->objectinfo_modify_count; ++i) {
-		struct objectinfo_modify* objectinfo_modify = &diff->objectinfo_modify[i];
-
-        offset += read_int32(data, offset, &objectinfo_modify->topath_id, true);
-		offset += read_uint32(data, offset, &objectinfo_modify->length, true);
-		offset += read_buffer(data, offset, &objectinfo_modify->buffer, objectinfo_modify->length);
-	}
-
-	offset += read_uint32(data, offset, &diff->objectinfo_same_count, true);
-	diff->objectinfo_same = (struct objectinfo_same*)malloc(sizeof(*diff->objectinfo_same) * diff->objectinfo_same_count);
-
-	for (size_t i = 0; i < diff->objectinfo_same_count; ++i) {
-		struct objectinfo_same* objectinfo_same = &diff->objectinfo_same[i];
-
-        offset += read_int32(data, offset, &objectinfo_same->topath_id, true);
-		offset += read_uint32(data, offset, &objectinfo_same->fromfiles_index, true);
-		offset += read_uint32(data, offset, &objectinfo_same->fromobject_index, true);
-	}
-    
-    *retdiff = diff;
-    return offset - start;
-}
-
-size_t assetfile_diff_savediff(struct assetfile_diff* diff, unsigned char* data, size_t offset)
-{
-	size_t start = offset;
-
-	offset += write_uint32(data, offset, diff->objectinfo_modify_count, true);
-	for (size_t i = 0; i < diff->objectinfo_modify_count; ++i) {
-		struct objectinfo_modify* objectinfo_modify = &diff->objectinfo_modify[i];
-
-        offset += write_int32(data, offset, objectinfo_modify->topath_id, true);
-		offset += write_uint32(data, offset, objectinfo_modify->length, true);
-		offset += write_buffer(data, offset, objectinfo_modify->buffer, objectinfo_modify->length);
-	}
-
-	offset += write_uint32(data, offset, diff->objectinfo_same_count, true);
-	for (size_t i = 0; i < diff->objectinfo_same_count; ++i) {
-		struct objectinfo_same* objectinfo_same = &diff->objectinfo_same[i];
-        
-        offset += write_int32(data, offset, objectinfo_same->topath_id, true);
-		offset += write_uint32(data, offset, objectinfo_same->fromfiles_index, true);
-        offset += write_uint32(data, offset, objectinfo_same->fromobject_index, true);
-	}
-
-    return offset - start;	
 }

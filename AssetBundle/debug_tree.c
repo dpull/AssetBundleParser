@@ -3,8 +3,6 @@
 #include <string.h>
 #include <stdarg.h>
 
-#define snprintf    _snprintf
-
 #define BUFFER_SIZE 2048
 #define PREFIX_BUFFER_SIZE 512
 
@@ -13,10 +11,10 @@ struct debug_tree
 	struct debug_tree* parent;
 	struct debug_tree* child;
 	struct debug_tree* sibling;
-	void* data;
+	char* data;
 };
 
-struct debug_tree* debug_tree_insert(struct debug_tree* parent, void* data)
+struct debug_tree* debug_tree_insert(struct debug_tree* parent, char* data)
 {
 	struct debug_tree* tree = (struct debug_tree*)malloc(sizeof(*tree));
 	memset(tree, 0, sizeof(*tree));
@@ -86,29 +84,33 @@ void debug_tree_destory(struct debug_tree* tree)
 	free(tree->data);
 	free(tree);
 }
-void debug_tree_print(struct debug_tree* tree, const char* prefix)
+void print(struct debug_tree* tree, const char* prefix)
 {
-	char child_prefix[PREFIX_BUFFER_SIZE];
-	char last_child_prefix[PREFIX_BUFFER_SIZE];
+   	char child_prefix[PREFIX_BUFFER_SIZE];
+    char last_child_prefix[PREFIX_BUFFER_SIZE];
+    
+    snprintf(child_prefix, sizeof(child_prefix), "%sâ”‚  ", prefix);
+    snprintf(last_child_prefix, sizeof(last_child_prefix), "%s    ", prefix);
+    
+    char* child_prefix_ref;
+    
+    if (tree->sibling) {
+        printf("%sâ”œâ”€%s\n", prefix, tree->data);
+        child_prefix_ref = child_prefix;
+    }
+    else {
+        printf("%sâ””â”€%s\n", prefix, tree->data);
+        child_prefix_ref = last_child_prefix;
+    }
+    
+    if (tree->child)
+        print(tree->child, child_prefix_ref);
+    
+    if (tree->sibling)
+        print(tree->sibling, prefix);
+}
 
-	snprintf(child_prefix, sizeof(child_prefix), "%s©¦  ", prefix);
-	snprintf(child_prefix, sizeof(child_prefix), "%s    ", prefix);
-
-	struct debug_tree* sibling = tree->child;
-	while (sibling) {
-		char* child_prefix_ref = NULL;
-		if (sibling->sibling) {
-			printf("%s©À©¤%s\n", prefix, sibling->data);
-			child_prefix_ref = child_prefix;
-		}
-		else {
-			printf("%s©¸©¤%s\n", prefix, sibling->data);
-			child_prefix_ref = last_child_prefix;
-		}
-
-		if (sibling->child)
-			debug_tree_print(sibling->child, child_prefix_ref);
-
-		sibling = sibling->sibling;
-	}
+void debug_tree_print(struct debug_tree* tree)
+{
+    print(tree, "");
 }

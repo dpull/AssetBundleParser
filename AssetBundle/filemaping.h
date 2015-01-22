@@ -1,5 +1,5 @@
-#ifndef filemaping_h
-#define filemaping_h
+#ifndef FILEMAPING_H
+#define FILEMAPING_H
 
 struct filemaping* filemaping_create_readonly(const char* file);
 struct filemaping* filemaping_create_readwrite(const char* file, size_t length);

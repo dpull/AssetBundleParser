@@ -1,5 +1,5 @@
-#ifndef tools_h
-#define tools_h
+#ifndef TOOLS_H
+#define TOOLS_H
 
 size_t read_buffer(unsigned char* data, size_t offset, unsigned char** value, size_t size);
 size_t write_buffer(unsigned char* data, size_t offset, unsigned char* value, size_t size);

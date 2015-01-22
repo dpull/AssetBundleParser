@@ -1,5 +1,5 @@
-#ifndef assetfile_diff_h
-#define assetfile_diff_h
+#ifndef ASSETFILE_DIFF_H
+#define ASSETFILE_DIFF_H
 
 struct assetfile_diff* assetfile_diff(struct assetfile** fromfiles, size_t fromfiles_count, struct assetfile* tofile);
 void assetfile_diff_destory(struct assetfile_diff* diff);

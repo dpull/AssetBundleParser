@@ -1,5 +1,5 @@
-#ifndef assetbundle_diff_h
-#define assetbundle_diff_h
+#ifndef ASSETBUNDLE_DIFF_H
+#define ASSETBUNDLE_DIFF_H
 
 enum ASSETBUNDLE_RETCODE
 {

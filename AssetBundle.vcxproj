@@ -15,6 +15,7 @@
     <ClCompile Include="AssetBundle\assetbundle_diff.c" />
     <ClCompile Include="AssetBundle\assetfile.c" />
     <ClCompile Include="AssetBundle\assetfile_diff.c" />
+    <ClCompile Include="AssetBundle\debug_tree.c" />
     <ClCompile Include="AssetBundle\filemaping.c" />
     <ClCompile Include="AssetBundle\main.c" />
     <ClCompile Include="AssetBundle\tools.c" />
@@ -27,6 +28,7 @@
     <ClInclude Include="AssetBundle\assetfile.h" />
     <ClInclude Include="AssetBundle\assetfile_diff.h" />
     <ClInclude Include="AssetBundle\assetfile_imp.h" />
+    <ClInclude Include="AssetBundle\debug_tree.h" />
     <ClInclude Include="AssetBundle\filemaping.h" />
     <ClInclude Include="AssetBundle\tools.h" />
   </ItemGroup>
@@ -71,7 +73,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -87,7 +89,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>

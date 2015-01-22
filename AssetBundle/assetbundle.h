@@ -1,5 +1,5 @@
-#ifndef assetbundle_h
-#define assetbundle_h
+#ifndef ASSETBUNDLE_H
+#define ASSETBUNDLE_H
 
 struct assetbundle* assetbundle_load(const char* filename);
 bool assetbundle_check(struct assetbundle* bundle);

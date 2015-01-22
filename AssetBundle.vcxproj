@@ -17,8 +17,8 @@
     <ClCompile Include="AssetBundle\assetfile_diff.c" />
     <ClCompile Include="AssetBundle\filemaping.c" />
     <ClCompile Include="AssetBundle\main.c" />
-    <ClCompile Include="AssetBundle\md5.c" />
     <ClCompile Include="AssetBundle\tools.c" />
+    <ClCompile Include="AssetBundle\utils\md5.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetBundle\assetbundle.h" />

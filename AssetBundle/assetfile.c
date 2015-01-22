@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <string.h>
 #include "tools.h"
+#include "debug_tree.h"
 #include "assetfile.h"
 #include "assetfile_imp.h"
 
@@ -267,4 +268,24 @@ void assetfile_destory(struct assetfile* file)
     	free(file->objectinfo_struct);
 
 	free(file);
+}
+
+void assetfile_print(struct assetfile* file, struct debug_tree* root)
+{
+	struct debug_tree* header = debug_tree_create(root, "header");
+	
+	debug_tree_create(header, "metadata_size:%u", file->header.metadata_size);
+	debug_tree_create(header, "file_size:%u", file->header.file_size);
+	debug_tree_create(header, "data_offset:%u", file->header.data_offset);
+
+ 	struct debug_tree* objectinfo_struct = debug_tree_create(root, "objectinfo_struct:%u", file->objectinfo_struct_count);
+
+    for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
+        struct objectinfo* objectinfo = &file->objectinfo_struct[i];
+ 		struct debug_tree* debug_tree = debug_tree_create(objectinfo_struct, "objectinfo path_id:%d, type_id:%d", objectinfo->path_id, objectinfo->type_id);
+
+		debug_tree_create(debug_tree, "offset:%u", objectinfo->offset);
+		debug_tree_create(debug_tree, "length:%u", objectinfo->length);
+		debug_tree_create(debug_tree, "align_data_length:%u", objectinfo->align_data_length);
+    }	
 }

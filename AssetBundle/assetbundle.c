@@ -6,6 +6,7 @@
 #include <string.h>
 #include "assetfile.h"
 #include "tools.h"
+#include "debug_tree.h"
 #include "filemaping.h"
 #include "assetbundle.h"
 #include "assetbundle_imp.h"
@@ -200,4 +201,22 @@ void assetbundle_destory(struct assetbundle* bundle)
 	assetbundle_entryinfo_destory(bundle);
 	filemaping_destory(bundle->filemaping);
 	free(bundle);
+}
+
+void assetbundle_print(struct assetbundle* bundle, struct debug_tree* root)
+{
+	struct debug_tree* header = debug_tree_create(root, "header");
+	
+	debug_tree_create(header, "header_size:%d", bundle->header.header_size);
+	debug_tree_create(header, "level_byte_end_count:%u", bundle->header.level_byte_end_count);
+	debug_tree_create(header, "complete_file_size:%u", bundle->header.complete_file_size);
+	debug_tree_create(header, "data_header_size:%u", bundle->header.data_header_size);
+
+
+	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
+		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
+		struct debug_tree* debug_tree = debug_tree_create(root, "entryinfo:%s, offset:%u, size:%u", entryinfo->name, entryinfo->offset, entryinfo->size);
+        if (entryinfo->assetfile)
+            assetfile_print(entryinfo->assetfile, debug_tree);
+	}	
 }

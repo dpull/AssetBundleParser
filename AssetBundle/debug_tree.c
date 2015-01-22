@@ -39,11 +39,11 @@ struct debug_tree* debug_tree_insert(struct debug_tree* parent, char* data)
 	return tree;
 }
 
-struct debug_tree* debug_tree_create(struct debug_tree* parent, const char format[], ...)
+struct debug_tree* debug_tree_create(struct debug_tree* parent, const char* format, ...)
 {
+    va_list marker;
 	char buff[BUFFER_SIZE];
-
-	va_list marker;
+	
 	va_start(marker, format);
 	int length = vsnprintf(buff, sizeof(buff), format, marker);
 	va_end(marker);

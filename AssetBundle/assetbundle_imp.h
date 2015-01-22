@@ -1,6 +1,8 @@
 #ifndef assetbundle_imp_h
 #define assetbundle_imp_h
 
+// for assetbundle.c and assetbundle_diff.c
+
 #pragma pack(1)
 struct level_info
 {
@@ -39,7 +41,7 @@ struct assetbundle_entryinfo
 size_t assetbundle_entryinfo_load(struct assetbundle* bundle, unsigned char* data, size_t offset);
 size_t assetbundle_entryinfo_save(struct assetbundle* bundle, unsigned char* data, size_t offset);
 
-#define assetbundle_entryinfo_align 4
+#define ASSETBUNDLE_ENTRYINFO_ALIGN		(4)
 struct assetbundle
 {
 	struct assetbundle_header header;
@@ -50,5 +52,8 @@ struct assetbundle
 
 	struct filemaping* filemaping;
 };
+
+struct assetbundle* assetbundle_create();
+struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping);
 
 #endif

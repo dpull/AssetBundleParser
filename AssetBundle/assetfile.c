@@ -21,7 +21,7 @@ size_t assetheader_load(struct assetheader* header, unsigned char* data, size_t 
 	header->endianness = 0;
 	if (header->version_info >= 9){
 		offset += read_byte(data, offset, &header->endianness);
-		offset += read_buffer(data, offset, &header->reserved, assetheader_reserved_size);
+		offset += read_buffer(data, offset, &header->reserved, ASSETHEADER_RESERVED_SIZE);
 	}
 
 	return offset - start;
@@ -38,7 +38,7 @@ size_t assetheader_save(struct assetheader* header, unsigned char* data, size_t 
 
 	if (header->version_info >= 9){
 		offset += write_byte(data, offset, header->endianness);
-		offset += write_buffer(data, offset, header->reserved, assetheader_reserved_size);
+		offset += write_buffer(data, offset, header->reserved, ASSETHEADER_RESERVED_SIZE);
 	}
 
 	return offset - start;
@@ -96,12 +96,12 @@ bool assetfile_loadobjects(struct assetfile* file, unsigned char* data, size_t f
         struct objectinfo* objectinfo = &file->objectinfo_struct[i];
         
         size_t buffer_offset = file_offset + file->header.data_offset + objectinfo->offset;
-        assert((buffer_offset - file_offset) % objectinfo_buffer_align == 0);
+        assert((buffer_offset - file_offset) % OBJECTINFO_BUFFER_ALIGN == 0);
         
         buffer_offset += read_buffer(data, buffer_offset, &objectinfo->buffer, objectinfo->length);
-        objectinfo->align_data_length = (buffer_offset - file_offset) % objectinfo_buffer_align;
+        objectinfo->align_data_length = (buffer_offset - file_offset) % OBJECTINFO_BUFFER_ALIGN;
         if (objectinfo->align_data_length != 0) {
-            objectinfo->align_data_length = objectinfo_buffer_align - objectinfo->align_data_length;
+            objectinfo->align_data_length = OBJECTINFO_BUFFER_ALIGN - objectinfo->align_data_length;
             if (objectinfo->align_data_length + buffer_offset > max_offset)
                 objectinfo->align_data_length = max_offset - buffer_offset;
             
@@ -142,7 +142,7 @@ size_t externals_struct_load(struct assetfile* file, unsigned char* data, size_t
         if (file->header.version_info > 5) {
             offset += read_string(data, offset, &fileidentifier->asset_path);
         }
-		offset += read_buffer(data, offset, &fileidentifier->guid, guid_size);
+		offset += read_buffer(data, offset, &fileidentifier->guid, GUID_SIZE);
 		offset += read_int32(data, offset, &fileidentifier->type, true);
 		offset += read_string(data, offset, &fileidentifier->file_path);
 	}
@@ -161,7 +161,7 @@ size_t externals_struct_save(struct assetfile* file, unsigned char* data, size_t
         if (file->header.version_info > 5) {
             offset += write_string(data, offset, fileidentifier->asset_path);
         } 
-		offset += write_buffer(data, offset, fileidentifier->guid, guid_size);
+		offset += write_buffer(data, offset, fileidentifier->guid, GUID_SIZE);
 		offset += write_int32(data, offset, fileidentifier->type, true);
 		offset += write_string(data, offset, fileidentifier->file_path);
 	}
@@ -187,12 +187,12 @@ size_t assetmeta_load(struct assetfile* file, unsigned char* data, size_t offset
 	offset += objectinfo_struct_load(file, data, offset);
     offset += externals_struct_load(file, data, offset);
     
-    if (offset - file_offset < assetfile_meta_align) {
-        file->align_data_length = assetfile_meta_align - (offset - file_offset);
+    if (offset - file_offset < ASSETFILE_META_ALIGN) {
+        file->align_data_length = ASSETFILE_META_ALIGN - (offset - file_offset);
     } else {
-        file->align_data_length = (offset - file_offset) % assetfile_align;
+        file->align_data_length = (offset - file_offset) % ASSETFILE_ALIGN;
         if (file->align_data_length != 0) {
-            file->align_data_length = assetfile_align - file->align_data_length;
+            file->align_data_length = ASSETFILE_ALIGN - file->align_data_length;
         }
     }
     

@@ -39,7 +39,7 @@ char* objectinfo_getname(struct objectinfo* objectinfo)
 
     name_offset += read_int32(objectinfo->buffer, name_offset, &name_len, true);
     assert(name_len >= 0);
-    assert(name_len <= objectinfo->length);
+    assert(name_len <= (int)objectinfo->length);
     
     char* name = NULL;
     if (name_len > 0) {
@@ -53,7 +53,7 @@ char* objectinfo_getname(struct objectinfo* objectinfo)
 
 int objectinfo_findsame(struct assetfile* file, struct objectinfo* objectinfo) 
 {
-	for (int i = 0; i < file->objectinfo_struct_count; ++i) {
+	for (int i = 0; i < (int)file->objectinfo_struct_count; ++i) {
 		struct objectinfo* cur_objectinfo = &file->objectinfo_struct[i];
 		if (cur_objectinfo->length == objectinfo->length && memcmp(cur_objectinfo->buffer, objectinfo->buffer, cur_objectinfo->length) == 0)
 			return i;
@@ -125,7 +125,7 @@ bool assetfile_diff_merge(struct assetfile** fromfiles, size_t fromfiles_count, 
     	assert(buffer_offset - start <= size);
 
         if (objectinfo_same->topath_id == objectinfo->path_id) {
-        	assert(objectinfo_same - diff->objectinfo_same < diff->objectinfo_same_count);
+        	assert(objectinfo_same - diff->objectinfo_same < (int)diff->objectinfo_same_count);
         	assert(objectinfo_same->fromfiles_index < fromfiles_count);
 
 			struct assetfile* fromfile = fromfiles[objectinfo_same->fromfiles_index];
@@ -140,7 +140,7 @@ bool assetfile_diff_merge(struct assetfile** fromfiles, size_t fromfiles_count, 
 
         	objectinfo_same++;
         } else if (objectinfo_modify->topath_id == objectinfo->path_id) {
-        	assert(objectinfo_modify - diff->objectinfo_modify < diff->objectinfo_modify_count);
+        	assert(objectinfo_modify - diff->objectinfo_modify < (int)diff->objectinfo_modify_count);
 
         	buffer_offset += write_buffer(data, buffer_offset, objectinfo_modify->buffer, objectinfo_modify->length);
     		assert(buffer_offset - start <= size + objectinfo->align_data_length);

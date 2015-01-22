@@ -12,14 +12,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssetBundle\assetbundle.c" />
+    <ClCompile Include="AssetBundle\assetbundle_diff.c" />
     <ClCompile Include="AssetBundle\assetfile.c" />
+    <ClCompile Include="AssetBundle\assetfile_diff.c" />
     <ClCompile Include="AssetBundle\filemaping.c" />
     <ClCompile Include="AssetBundle\main.c" />
+    <ClCompile Include="AssetBundle\md5.c" />
     <ClCompile Include="AssetBundle\tools.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetBundle\assetbundle.h" />
+    <ClInclude Include="AssetBundle\assetbundle_diff.h" />
+    <ClInclude Include="AssetBundle\assetbundle_imp.h" />
     <ClInclude Include="AssetBundle\assetfile.h" />
+    <ClInclude Include="AssetBundle\assetfile_diff.h" />
+    <ClInclude Include="AssetBundle\assetfile_imp.h" />
     <ClInclude Include="AssetBundle\filemaping.h" />
     <ClInclude Include="AssetBundle\tools.h" />
   </ItemGroup>

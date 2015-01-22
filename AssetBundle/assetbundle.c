@@ -81,9 +81,9 @@ size_t assetbundle_entryinfo_load(struct assetbundle* bundle, unsigned char* dat
 		offset += read_uint32(data, offset, &entryinfo->size, false);
 	}
     
-    bundle->align_data_length = offset % assetbundle_entryinfo_align;
+    bundle->align_data_length = offset % ASSETBUNDLE_ENTRYINFO_ALIGN;
     if (bundle->align_data_length != 0) {
-        bundle->align_data_length = assetbundle_entryinfo_align - bundle->align_data_length;
+        bundle->align_data_length = ASSETBUNDLE_ENTRYINFO_ALIGN - bundle->align_data_length;
         offset += read_buffer(data, offset, &bundle->align_data, bundle->align_data_length);
     }
     return offset - start;

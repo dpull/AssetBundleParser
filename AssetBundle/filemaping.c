@@ -41,6 +41,11 @@ size_t filemaping_getlength(struct filemaping* filemaping)
 {
 	return 0;
 }
+
+bool filemaping_truncate(const char* file, size_t length)
+{
+	return false;
+}
 #else
 struct filemaping
 {

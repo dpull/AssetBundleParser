@@ -31,8 +31,8 @@ void assetbundle_diff_print(struct assetbundle_diff* diff)
 {
     struct debug_tree* root = debug_tree_create(NULL, "*");
 
-    debug_tree_create(root, "src_hash:%s", diff->src_hash);
-    debug_tree_create(root, "dst_hash:%s", diff->dst_hash);
+    debug_tree_create(root, "src_hash:%.*s", HASH_SIZE, diff->src_hash);
+    debug_tree_create(root, "dst_hash:%.*s", HASH_SIZE, diff->dst_hash);
 
     assetbundle_print(diff->bundle, root);
 
@@ -85,7 +85,7 @@ struct assetbundle_diff* assetbundle_diff_create(struct assetbundle* from, struc
 
 bool assetbundle_diff_merge(const char* filename, struct assetbundle* from, struct assetbundle_diff* diff)
 {
-    size_t length = filemaping_getlength(diff->bundle->filemaping);
+    size_t length = diff->bundle->header.complete_file_size;
 	struct filemaping* filemaping = filemaping_create_readwrite(filename, length);
     if (!filemaping)
         return false;
@@ -260,7 +260,7 @@ int assetbundle_diff(const char* assetbundle_from, const char* assetbundle_to, c
 		goto Exit0;
 	}
     
-    printf("diff");
+    printf("diff\n");
     assetbundle_diff_print(diff);
 	
 	retcode = assetbundle_diff_save(assetbundle_diff, diff);
@@ -316,7 +316,7 @@ int assetbundle_merge(const char* assetbundle_from, const char* assetbundle_to, 
 		goto Exit0;
 	}
     
-    printf("merge");
+    printf("merge\n");
     assetbundle_diff_print(diff);
 
 	from = assetbundle_safeload(assetbundle_from, diff->src_hash);

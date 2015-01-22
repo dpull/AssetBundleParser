@@ -199,7 +199,8 @@ bool assetbundle_check(struct assetbundle* bundle)
 void assetbundle_destory(struct assetbundle* bundle)
 {
 	assetbundle_entryinfo_destory(bundle);
-	filemaping_destory(bundle->filemaping);
+    if (bundle->filemaping)
+        filemaping_destory(bundle->filemaping);
 	free(bundle);
 }
 

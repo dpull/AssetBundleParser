@@ -22,11 +22,6 @@ int main(int argc, const char * argv[]) {
     ret = (int)assetbundle_check(bundle);
     assert(ret);
 
-    struct debug_tree* root = debug_tree_create(NULL, "*");
-    assetbundle_print(bundle, root);
-    debug_tree_print(root);
-    debug_tree_destory(root);
-
     ret = assetbundle_diff(
         "/Users/dpull/Documents/AssetBundle/AssetBundle/test1.unity3d",
         "/Users/dpull/Documents/AssetBundle/AssetBundle/test2.unity3d",

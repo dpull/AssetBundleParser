@@ -84,10 +84,14 @@ void debug_tree_destory(struct debug_tree* tree)
 	free(tree->data);
 	free(tree);
 }
-void print(struct debug_tree* tree, const char* prefix)
+
+void debug_tree_print(struct debug_tree* tree, FILE* stream, const char* prefix)
 {
    	char child_prefix[PREFIX_BUFFER_SIZE];
     char last_child_prefix[PREFIX_BUFFER_SIZE];
+ 
+    if (!prefix)
+        prefix = "";
     
     snprintf(child_prefix, sizeof(child_prefix), "%s│  ", prefix);
     snprintf(last_child_prefix, sizeof(last_child_prefix), "%s    ", prefix);
@@ -95,22 +99,17 @@ void print(struct debug_tree* tree, const char* prefix)
     char* child_prefix_ref;
     
     if (tree->sibling) {
-        printf("%s├─%s\n", prefix, tree->data);
+        fprintf(stream, "%s├─%s\n", prefix, tree->data);
         child_prefix_ref = child_prefix;
     }
     else {
-        printf("%s└─%s\n", prefix, tree->data);
+        fprintf(stream, "%s└─%s\n", prefix, tree->data);
         child_prefix_ref = last_child_prefix;
     }
     
     if (tree->child)
-        print(tree->child, child_prefix_ref);
+        debug_tree_print(tree->child, stream, child_prefix_ref);
     
     if (tree->sibling)
-        print(tree->sibling, prefix);
-}
-
-void debug_tree_print(struct debug_tree* tree)
-{
-    print(tree, "");
+        debug_tree_print(tree->sibling, stream, prefix);
 }

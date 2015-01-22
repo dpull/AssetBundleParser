@@ -4,10 +4,10 @@
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
-#include "assetfile.h"
 #include "tools.h"
 #include "debug_tree.h"
 #include "filemaping.h"
+#include "assetfile.h"
 #include "assetbundle.h"
 #include "assetbundle_imp.h"
 

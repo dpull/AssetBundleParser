@@ -4,9 +4,10 @@
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
-#include "assetfile.h"
 #include "tools.h"
+#include "debug_tree.h"
 #include "filemaping.h"
+#include "assetfile.h"
 #include "assetbundle.h"
 #include "assetbundle_imp.h"
 #include "assetfile_diff.h"
@@ -22,7 +23,27 @@ struct assetbundle_diff
 
 	struct assetbundle* bundle;
 	struct assetfile_diff** file_diffs;
+
+	struct filemaping* filemaping;
 };
+
+void assetbundle_diff_print(struct assetbundle_diff* diff)
+{
+    struct debug_tree* root = debug_tree_create(NULL, "*");
+
+    debug_tree_create(root, "src_hash:%s", diff->src_hash);
+    debug_tree_create(root, "dst_hash:%s", diff->dst_hash);
+
+    assetbundle_print(diff->bundle, root);
+
+    struct debug_tree* file_diffs = debug_tree_create(root, "file_diffs");
+ 	for (size_t i = 0; i < diff->bundle->entryinfo_count; ++i) {
+        assetfile_diff_print(diff->file_diffs[i], file_diffs);
+	}
+
+    debug_tree_print(root, stdout, NULL);
+    debug_tree_destory(root);	
+}
 
 void assetbundle_md5(struct assetbundle* bundle, char* output)
 {
@@ -32,11 +53,10 @@ void assetbundle_md5(struct assetbundle* bundle, char* output)
     md5((char*)data, (long)length, output);
 }
 
-
-
 struct assetbundle_diff* assetbundle_diff_create(struct assetbundle* from, struct assetbundle* to)
 {
     struct assetbundle_diff* diff = (struct assetbundle_diff*)malloc(sizeof(*diff));
+    memset(diff, 0, sizeof(*diff));
     
     assetbundle_md5(from, diff->src_hash);
     assetbundle_md5(to, diff->dst_hash);
@@ -119,6 +139,10 @@ void assetbundle_diff_destory(struct assetbundle_diff* diff)
             assetfile_diff_destory(diff->file_diffs[i]);
     }
     free(diff->file_diffs);
+    
+    if (diff->filemaping)
+    	filemaping_destory(diff->filemaping);
+
     free(diff);
 }
 
@@ -139,8 +163,8 @@ struct assetbundle_diff* assetbundle_diff_load(const char* filename, struct asse
 
     struct assetbundle_diff* diff = (struct assetbundle_diff*)malloc(sizeof(*diff));
     memset(diff, 0, sizeof(*diff));
+    diff->filemaping = filemaping;
     diff->bundle = to;
-    diff->bundle->filemaping = filemaping;
 
     size_t offset = HASH_SIZE;
 
@@ -235,6 +259,9 @@ int assetbundle_diff(const char* assetbundle_from, const char* assetbundle_to, c
 		result = ASSETBUNDLE_DIFF_CREATE_FAILED;
 		goto Exit0;
 	}
+    
+    printf("diff");
+    assetbundle_diff_print(diff);
 	
 	retcode = assetbundle_diff_save(assetbundle_diff, diff);
 	if (!retcode) {
@@ -287,7 +314,10 @@ int assetbundle_merge(const char* assetbundle_from, const char* assetbundle_to, 
 	if (!diff) {
 		result = ASSETBUNDLE_DIFF_LOAD_FAILED;
 		goto Exit0;
-	}	
+	}
+    
+    printf("merge");
+    assetbundle_diff_print(diff);
 
 	from = assetbundle_safeload(assetbundle_from, diff->src_hash);
 	if (!from) {

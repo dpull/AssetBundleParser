@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <string.h>
 #include "tools.h"
+#include "debug_tree.h"
 #include "assetfile.h"
 #include "assetfile_imp.h"
 
@@ -238,4 +239,25 @@ size_t assetfile_diff_savediff(struct assetfile_diff* diff, unsigned char* data,
 	}
 
     return offset - start;	
+}
+
+void assetfile_diff_print(struct assetfile_diff* diff, struct debug_tree* root)
+{
+    struct debug_tree* assetfile_diff = debug_tree_create(root, "assetfile_diff");
+	struct debug_tree* objectinfo_modify_count = debug_tree_create(root, "objectinfo_modify_count:%d", diff->objectinfo_modify_count);	
+	for (size_t i = 0; i < diff->objectinfo_modify_count; ++i) {
+		struct objectinfo_modify* objectinfo_modify = &diff->objectinfo_modify[i];
+
+		struct debug_tree* debug_tree = debug_tree_create(root, "topath_id:%d", objectinfo_modify->topath_id);
+		debug_tree_create(debug_tree, "length:&u", objectinfo_modify->length);
+	}
+
+	struct debug_tree* objectinfo_same_count = debug_tree_create(root, "objectinfo_same_count:%d", diff->objectinfo_same_count);	
+	for (size_t i = 0; i < diff->objectinfo_same_count; ++i) {
+		struct objectinfo_same* objectinfo_same = &diff->objectinfo_same[i];
+        
+       	struct debug_tree* debug_tree = debug_tree_create(root, "topath_id:%d", objectinfo_same->topath_id);
+		debug_tree_create(debug_tree, "fromfiles_index:&u", objectinfo_same->fromfiles_index);
+		debug_tree_create(debug_tree, "fromobject_index:&u", objectinfo_same->fromobject_index);
+	}
 }

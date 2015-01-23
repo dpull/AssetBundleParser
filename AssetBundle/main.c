@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
-#include "debug_tree.h"
+#include "utils/debug_tree.h"
 #include "assetbundle.h"
 #include "assetbundle_diff.h"
 

@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <string.h>
 #include "tools.h"
-#include "debug_tree.h"
+#include "utils/debug_tree.h"
 #include "assetfile.h"
 #include "assetfile_imp.h"
 

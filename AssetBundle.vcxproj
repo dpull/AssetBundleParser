@@ -15,10 +15,10 @@
     <ClCompile Include="AssetBundle\assetbundle_diff.c" />
     <ClCompile Include="AssetBundle\assetfile.c" />
     <ClCompile Include="AssetBundle\assetfile_diff.c" />
-    <ClCompile Include="AssetBundle\debug_tree.c" />
     <ClCompile Include="AssetBundle\filemaping.c" />
     <ClCompile Include="AssetBundle\main.c" />
     <ClCompile Include="AssetBundle\tools.c" />
+    <ClCompile Include="AssetBundle\utils\debug_tree.c" />
     <ClCompile Include="AssetBundle\utils\md5.c" />
   </ItemGroup>
   <ItemGroup>
@@ -28,9 +28,9 @@
     <ClInclude Include="AssetBundle\assetfile.h" />
     <ClInclude Include="AssetBundle\assetfile_diff.h" />
     <ClInclude Include="AssetBundle\assetfile_imp.h" />
-    <ClInclude Include="AssetBundle\debug_tree.h" />
     <ClInclude Include="AssetBundle\filemaping.h" />
     <ClInclude Include="AssetBundle\tools.h" />
+    <ClInclude Include="AssetBundle\utils\debug_tree.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D3992509-F4DA-4C5F-9138-DB0E626CA250}</ProjectGuid>

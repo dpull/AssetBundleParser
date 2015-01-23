@@ -1,6 +1,0 @@
-[submodule "c_utils"]
-	path = c_utils
-	url = https://github.com/dpull/c_utils.git
-[submodule "AssetBundle/utils"]
-	path = AssetBundle/utils
-	url = https://github.com/dpull/c_utils.git

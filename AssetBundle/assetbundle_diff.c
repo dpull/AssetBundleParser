@@ -13,13 +13,27 @@
 #include "assetfile_diff.h"
 #include "assetbundle_diff.h"
 
-#define HASH_SIZE	(16)
-extern void md5(const char* message, long len, char* output);
+#define HASH_SIZE           (16)
+#define HASH_STRING_SIZE	(64)
+extern void md5(const char* message, long len, unsigned char* output);
+
+void md5_tostring(unsigned char* md5, char* output)
+{
+    snprintf(
+        output,
+        HASH_STRING_SIZE,
+        "%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
+        md5[ 0], md5[ 1], md5[ 2], md5[ 3],
+        md5[ 4], md5[ 5], md5[ 6], md5[ 7],
+        md5[ 8], md5[ 9], md5[10], md5[11],
+        md5[12], md5[13], md5[14], md5[15]
+    );
+}
 
 struct assetbundle_diff
 {
-	char src_hash[HASH_SIZE];
-	char dst_hash[HASH_SIZE];
+	unsigned char src_hash[HASH_SIZE];
+	unsigned char dst_hash[HASH_SIZE];
 
 	struct assetbundle* bundle;
 	struct assetfile_diff** file_diffs;
@@ -30,9 +44,13 @@ struct assetbundle_diff
 void assetbundle_diff_print(struct assetbundle_diff* diff)
 {
     struct debug_tree* root = debug_tree_create(NULL, "*");
-
-    debug_tree_create(root, "src_hash:%.*s", HASH_SIZE, diff->src_hash);
-    debug_tree_create(root, "dst_hash:%.*s", HASH_SIZE, diff->dst_hash);
+    char hash_string[HASH_STRING_SIZE];
+    
+    md5_tostring(diff->src_hash, hash_string);
+    debug_tree_create(root, "src_hash:%s", hash_string);
+    
+    md5_tostring(diff->dst_hash, hash_string);
+    debug_tree_create(root, "dst_hash:%s", hash_string);
 
     assetbundle_print(diff->bundle, root);
 
@@ -45,7 +63,7 @@ void assetbundle_diff_print(struct assetbundle_diff* diff)
     debug_tree_destory(root);	
 }
 
-void assetbundle_md5(struct assetbundle* bundle, char* output)
+void assetbundle_md5(struct assetbundle* bundle, unsigned char* output)
 {
     unsigned char* data = filemaping_getdata(bundle->filemaping);
     size_t length = filemaping_getlength(bundle->filemaping);
@@ -120,7 +138,7 @@ bool assetbundle_diff_merge(const char* filename, struct assetbundle* from, stru
             goto Exit0;
 	}
     
-    char diff_hash[HASH_SIZE];
+    unsigned char diff_hash[HASH_SIZE];
     md5((char*)data, (long)length, diff_hash);
     if (memcmp(diff_hash, diff->dst_hash, sizeof(diff_hash)) != 0)
         goto Exit0;
@@ -154,7 +172,7 @@ struct assetbundle_diff* assetbundle_diff_load(const char* filename, struct asse
 
     unsigned char* data = filemaping_getdata(filemaping);
     size_t length = filemaping_getlength(filemaping);
-    char diff_hash[HASH_SIZE];
+    unsigned char diff_hash[HASH_SIZE];
 
     md5((char*)(data + HASH_SIZE), (long)(length - HASH_SIZE), diff_hash);
 
@@ -216,7 +234,7 @@ bool assetbundle_diff_save(const char* filename, struct assetbundle_diff* diff)
         offset += assetfile_diff_savediff(diff->file_diffs[i], data, offset);
     }
 
-    md5((char*)(data + HASH_SIZE), (long)(offset - HASH_SIZE), (char*)data);
+    md5((char*)(data + HASH_SIZE), (long)(offset - HASH_SIZE), data);
     filemaping_destory(filemaping);
     filemaping_truncate(filename, offset);
     return true;
@@ -282,7 +300,7 @@ Exit0:
 	return result;
 }
 
-struct assetbundle* assetbundle_safeload(const char* filename, const char* hashcheck)
+struct assetbundle* assetbundle_safeload(const char* filename, const unsigned char* hashcheck)
 {
 	struct filemaping* filemaping = filemaping_create_readonly(filename);
 	if (!filemaping)
@@ -290,7 +308,7 @@ struct assetbundle* assetbundle_safeload(const char* filename, const char* hashc
 
 	unsigned char* data = filemaping_getdata(filemaping);
     size_t length = filemaping_getlength(filemaping);
-    char hash[HASH_SIZE];
+    unsigned char hash[HASH_SIZE];
     
     md5((char*)data, (long)length, hash);
 

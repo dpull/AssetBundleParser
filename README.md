@@ -6,11 +6,11 @@
 
 不允许出售基于此代码的Unity AssetStore插件，因为我准备写个插件卖 ：）
 
-# AssetBundle #
+# AssetBundleParser #
 
-`AssetBundle` 是 Unity assetbundle文件的差异比较及合并工具。
+`AssetBundleParser` 是 Unity assetbundle文件的差异比较及合并工具。
 
-`AssetBundle` 的代码并不健壮，如果拿错误格式的文件传入会造成程序崩溃，原因有二：
+`AssetBundleParser` 的代码并不健壮，如果拿错误格式的文件传入会造成程序崩溃，原因有二：
 
 1. assetbundle的格式是非公开的，保持代码简单，可以方便和 `disunity` 对照代码查找问题，正确格式解析有问题可以快速暴露。
 1. 文件的正确性可以通过验证md5等方式来保证， 没必要太增加代码复杂度. 合并差异前，会检查文件diff文件，旧assetbundle文件的md5是否一致，合并后也会检查新assetbundle文件的md5是否一致

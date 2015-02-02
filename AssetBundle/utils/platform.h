@@ -28,4 +28,10 @@
 #define ftell64     _ftelli64
 #endif
 
+#if defined(_MSC_VER)
+#define EXTERN_API __declspec(dllexport)
+#else
+#define EXTERN_API 
+#endif
+
 #endif

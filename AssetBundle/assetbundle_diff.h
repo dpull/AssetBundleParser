@@ -17,7 +17,7 @@ enum ASSETBUNDLE_RETCODE
 	ASSETBUNDLE_TO_CHECK_FAILED, 
 };
 
-int assetbundle_diff(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff);
-int assetbundle_merge(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff);
+EXTERN_API int assetbundle_diff(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff);
+EXTERN_API int assetbundle_merge(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff);
 
 #endif

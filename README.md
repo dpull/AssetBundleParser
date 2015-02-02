@@ -1,3 +1,69 @@
+# License:  #
+Released under MIT license.
+
+It's forbidden to sell Unity AssetStore plugins based on this source. Because I'll write a plugin to sell. :)
+
+# AssetBundleParser #
+`AssetBundleParser` is a tool to compare and merge Unity assetbundle.
+
+`AssetBundleParser` isn't robust. If it's used to load a file of wrong format, it'll crash. There are two reasons:
+
+1. The format of assetbundle is private. The code is kept simple, so that if it fails to parse a file of right format and crashes, it'll be ease to compare the source code with `disunity` to find locate the bug.
+1. It's easy to verify if a file is of right format by using md5, it's unnecessary to add too much error-check and recovery code which only complicates the source.
+
+At current only uncompressed `assetbundle` is supported. This is because  Lzma compression speed is very slow. So when create a bundle, options like `BuildOptions.UncompressedAssetBundle` or `BuildAssetBundleOptions.UncompressedAssetBundle` shall be used.
+
+It only supports mobile platforms. TypeTree related data isn't available on mobile, so it's not parsed. The support for TypeTree maybe added later for non-mobile platforms.
+
+## Usage ##
+1. Call `assetbundle_diff` to generate a diff file.
+1. Call `assetbundle_merge` to merge diff file.
+
+*The diff file isn't compressed. Compress it before sending to network if needed.*
+
+## Interface ##
+assetbundle_load
+Description: Parse assetbundle file
+Param: assetbundle: File path
+Return: A pointer to assetbundle
+
+assetbundle_check
+Description: Check if an assetbundle is supported. It's used only when comparing difference. It may use much memory.
+Return: true: The assetbundle is in good status.
+
+assetbundle_diff
+Description: Generate diff file
+Return: 0: Success; None-zero: error code.
+
+assetbundle_merge
+Description: Merge diff files.
+Return: 0: Success; None-zero: error code
+
+# Sample to show how to create bundle. #
+
+	BuildPipeline.BuildStreamedSceneAssetBundle(
+		new string[]{"Assets/Client.unity", "Assets/Art/Maps/map001/map001.unity"}, 
+		"Assets/scenes.unity3d", 
+		BuildTarget.iPhone,
+		BuildOptions.UncompressedAssetBundle);
+
+	BuildPipeline.BuildAssetBundle(
+		o1, 
+		new Object[]{o2, o3, o4}, 
+		"Assets/res.unity3d",
+		BuildAssetBundleOptions.CollectDependencies | BuildAssetBundleOptions.CompleteAssets| BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.DisableWriteTypeTree, 
+		BuildTarget.iPhone);	
+
+# Sample to show how to create and merge diff files. #	
+	
+	// "scenes_v1.unity3d", "scenes_v2.unity3d" must exist. Create "v1to2.diff"
+	assetbundle_diff("scenes_v1.unity3d", "scenes_v2.unity3d", "v1to2.diff"); 
+
+	// "scenes_v1.unity3d", "v1to2.diff" must exist，create "scenes_v2.unity3d"
+	// The order of arguments is a little weird. Any suggestions?
+	assetbundle_merge("scenes_v1.unity3d", "scenes_v2.unity3d", "v1to2.diff");
+
+
 # 开源协议 #
 采用MIT开源许可证。
 不想每个文件都写上，所以放在这儿了。

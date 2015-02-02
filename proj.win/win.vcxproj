@@ -18,10 +18,21 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\AssetBundle\assetbundle.c" />
+    <ClCompile Include="..\AssetBundle\assetbundle_diff.c" />
+    <ClCompile Include="..\AssetBundle\assetfile.c" />
+    <ClCompile Include="..\AssetBundle\assetfile_diff.c" />
+    <ClCompile Include="..\AssetBundle\filemaping.c" />
+    <ClCompile Include="..\AssetBundle\tools.c" />
+    <ClCompile Include="..\AssetBundle\utils\debug_tree.c" />
+    <ClCompile Include="..\AssetBundle\utils\md5.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D482BE91-4BA2-43CE-B760-C071FB788FA1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>lua</RootNamespace>
+    <ProjectName>AssetBundleParser</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -138,65 +149,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\lapi.c" />
-    <ClCompile Include="..\src\lauxlib.c" />
-    <ClCompile Include="..\src\lbaselib.c" />
-    <ClCompile Include="..\src\lcode.c" />
-    <ClCompile Include="..\src\ldblib.c" />
-    <ClCompile Include="..\src\ldebug.c" />
-    <ClCompile Include="..\src\ldo.c" />
-    <ClCompile Include="..\src\ldump.c" />
-    <ClCompile Include="..\src\lfunc.c" />
-    <ClCompile Include="..\src\lgc.c" />
-    <ClCompile Include="..\src\linit.c" />
-    <ClCompile Include="..\src\liolib.c" />
-    <ClCompile Include="..\src\llex.c" />
-    <ClCompile Include="..\src\lmathlib.c" />
-    <ClCompile Include="..\src\lmem.c" />
-    <ClCompile Include="..\src\lnet.c" />
-    <ClCompile Include="..\src\loadlib.c" />
-    <ClCompile Include="..\src\lobject.c" />
-    <ClCompile Include="..\src\lopcodes.c" />
-    <ClCompile Include="..\src\loslib.c" />
-    <ClCompile Include="..\src\lparser.c" />
-    <ClCompile Include="..\src\lstate.c" />
-    <ClCompile Include="..\src\lstring.c" />
-    <ClCompile Include="..\src\lstrlib.c" />
-    <ClCompile Include="..\src\ltable.c" />
-    <ClCompile Include="..\src\ltablib.c" />
-    <ClCompile Include="..\src\ltm.c" />
-    <ClCompile Include="..\src\lundump.c" />
-    <ClCompile Include="..\src\lvm.c" />
-    <ClCompile Include="..\src\lzio.c" />
-    <ClCompile Include="..\src\print.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\lapi.h" />
-    <ClInclude Include="..\src\lauxlib.h" />
-    <ClInclude Include="..\src\lcode.h" />
-    <ClInclude Include="..\src\ldebug.h" />
-    <ClInclude Include="..\src\ldo.h" />
-    <ClInclude Include="..\src\lfunc.h" />
-    <ClInclude Include="..\src\lgc.h" />
-    <ClInclude Include="..\src\llex.h" />
-    <ClInclude Include="..\src\llimits.h" />
-    <ClInclude Include="..\src\lmem.h" />
-    <ClInclude Include="..\src\lnet.h" />
-    <ClInclude Include="..\src\lobject.h" />
-    <ClInclude Include="..\src\lopcodes.h" />
-    <ClInclude Include="..\src\lparser.h" />
-    <ClInclude Include="..\src\lstate.h" />
-    <ClInclude Include="..\src\lstring.h" />
-    <ClInclude Include="..\src\ltable.h" />
-    <ClInclude Include="..\src\ltm.h" />
-    <ClInclude Include="..\src\lua.h" />
-    <ClInclude Include="..\src\luaconf.h" />
-    <ClInclude Include="..\src\lualib.h" />
-    <ClInclude Include="..\src\lundump.h" />
-    <ClInclude Include="..\src\lvm.h" />
-    <ClInclude Include="..\src\lzio.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

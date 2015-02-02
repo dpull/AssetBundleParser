@@ -4,8 +4,9 @@
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
-#include "tools.h"
+#include "utils/platform.h"
 #include "utils/debug_tree.h"
+#include "tools.h"
 #include "filemaping.h"
 #include "assetfile.h"
 #include "assetbundle.h"
@@ -149,7 +150,7 @@ struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
     return bundle;
 }
 
-struct assetbundle* assetbundle_load(const char* filename)
+EXTERN_API struct assetbundle* assetbundle_load(const char* filename)
 {
 	struct filemaping* filemaping = filemaping_create_readonly(filename);
 	if (!filemaping)
@@ -158,7 +159,7 @@ struct assetbundle* assetbundle_load(const char* filename)
     return assetbundle_load_filemaping(filemaping);
 }
 
-bool assetbundle_check(struct assetbundle* bundle)
+EXTERN_API bool assetbundle_check(struct assetbundle* bundle)
 {
 	size_t length = filemaping_getlength(bundle->filemaping);
 	unsigned char* dest_data = (unsigned char*)malloc(length);
@@ -196,7 +197,7 @@ bool assetbundle_check(struct assetbundle* bundle)
     return error_bytes == 0;
 }
 
-void assetbundle_destory(struct assetbundle* bundle)
+EXTERN_API void assetbundle_destory(struct assetbundle* bundle)
 {
 	assetbundle_entryinfo_destory(bundle);
     if (bundle->filemaping)
@@ -204,7 +205,7 @@ void assetbundle_destory(struct assetbundle* bundle)
 	free(bundle);
 }
 
-void assetbundle_print(struct assetbundle* bundle, struct debug_tree* root)
+EXTERN_API void assetbundle_print(struct assetbundle* bundle, struct debug_tree* root)
 {
 	struct debug_tree* header = debug_tree_create(root, "header");
 	

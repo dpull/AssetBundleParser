@@ -1,4 +1,4 @@
-LibName=ios
+LibName=AssetBundleParser
 
 xcodebuild -sdk iphoneos
 xcodebuild -sdk iphonesimulator

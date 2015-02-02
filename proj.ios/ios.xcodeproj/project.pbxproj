@@ -1,0 +1,285 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		44FBC5621986346100965453 /* libc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 44FBC5611986346100965453 /* libc.dylib */; };
+		8776E3091A7F5ECB005FA7B7 /* debug_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 8776E3071A7F5ECB005FA7B7 /* debug_tree.c */; };
+		8776E30A1A7F5ECB005FA7B7 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 8776E3081A7F5ECB005FA7B7 /* md5.c */; };
+		879648CD1A7F5CD900767448 /* assetbundle_diff.c in Sources */ = {isa = PBXBuildFile; fileRef = 879648C71A7F5CD900767448 /* assetbundle_diff.c */; };
+		879648CE1A7F5CD900767448 /* assetbundle.c in Sources */ = {isa = PBXBuildFile; fileRef = 879648C81A7F5CD900767448 /* assetbundle.c */; };
+		879648CF1A7F5CD900767448 /* assetfile_diff.c in Sources */ = {isa = PBXBuildFile; fileRef = 879648C91A7F5CD900767448 /* assetfile_diff.c */; };
+		879648D01A7F5CD900767448 /* assetfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 879648CA1A7F5CD900767448 /* assetfile.c */; };
+		879648D11A7F5CD900767448 /* filemaping.c in Sources */ = {isa = PBXBuildFile; fileRef = 879648CB1A7F5CD900767448 /* filemaping.c */; };
+		879648D21A7F5CD900767448 /* tools.c in Sources */ = {isa = PBXBuildFile; fileRef = 879648CC1A7F5CD900767448 /* tools.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		44B6889619862F7C005FAD4C /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		44B6889819862F7C005FAD4C /* libAssetBundleParser.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAssetBundleParser.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		44FBC5611986346100965453 /* libc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libc.dylib; path = usr/lib/libc.dylib; sourceTree = SDKROOT; };
+		8776E3071A7F5ECB005FA7B7 /* debug_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = debug_tree.c; path = ../AssetBundle/utils/debug_tree.c; sourceTree = "<group>"; };
+		8776E3081A7F5ECB005FA7B7 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = md5.c; path = ../AssetBundle/utils/md5.c; sourceTree = "<group>"; };
+		879648C71A7F5CD900767448 /* assetbundle_diff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = assetbundle_diff.c; path = ../AssetBundle/assetbundle_diff.c; sourceTree = "<group>"; };
+		879648C81A7F5CD900767448 /* assetbundle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = assetbundle.c; path = ../AssetBundle/assetbundle.c; sourceTree = "<group>"; };
+		879648C91A7F5CD900767448 /* assetfile_diff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = assetfile_diff.c; path = ../AssetBundle/assetfile_diff.c; sourceTree = "<group>"; };
+		879648CA1A7F5CD900767448 /* assetfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = assetfile.c; path = ../AssetBundle/assetfile.c; sourceTree = "<group>"; };
+		879648CB1A7F5CD900767448 /* filemaping.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = filemaping.c; path = ../AssetBundle/filemaping.c; sourceTree = "<group>"; };
+		879648CC1A7F5CD900767448 /* tools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tools.c; path = ../AssetBundle/tools.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		44B6889519862F7C005FAD4C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				44FBC5621986346100965453 /* libc.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		44B6888F19862F7C005FAD4C = {
+			isa = PBXGroup;
+			children = (
+				44FBC50A198633C900965453 /* src */,
+				44B6889A19862F7C005FAD4C /* Frameworks */,
+				44B6889919862F7C005FAD4C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		44B6889919862F7C005FAD4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				44B6889819862F7C005FAD4C /* libAssetBundleParser.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		44B6889A19862F7C005FAD4C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				44FBC5611986346100965453 /* libc.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		44FBC50A198633C900965453 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				8776E3071A7F5ECB005FA7B7 /* debug_tree.c */,
+				8776E3081A7F5ECB005FA7B7 /* md5.c */,
+				879648C71A7F5CD900767448 /* assetbundle_diff.c */,
+				879648C81A7F5CD900767448 /* assetbundle.c */,
+				879648C91A7F5CD900767448 /* assetfile_diff.c */,
+				879648CA1A7F5CD900767448 /* assetfile.c */,
+				879648CB1A7F5CD900767448 /* filemaping.c */,
+				879648CC1A7F5CD900767448 /* tools.c */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		44B6889719862F7C005FAD4C /* AssetBundleParser */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 44B688BB19862F7C005FAD4C /* Build configuration list for PBXNativeTarget "AssetBundleParser" */;
+			buildPhases = (
+				44B6889419862F7C005FAD4C /* Sources */,
+				44B6889519862F7C005FAD4C /* Frameworks */,
+				44B6889619862F7C005FAD4C /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AssetBundleParser;
+			productName = lua;
+			productReference = 44B6889819862F7C005FAD4C /* libAssetBundleParser.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		44B6889019862F7C005FAD4C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = dpull;
+			};
+			buildConfigurationList = 44B6889319862F7C005FAD4C /* Build configuration list for PBXProject "ios" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 44B6888F19862F7C005FAD4C;
+			productRefGroup = 44B6889919862F7C005FAD4C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				44B6889719862F7C005FAD4C /* AssetBundleParser */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		44B6889419862F7C005FAD4C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				879648D01A7F5CD900767448 /* assetfile.c in Sources */,
+				8776E3091A7F5ECB005FA7B7 /* debug_tree.c in Sources */,
+				879648CF1A7F5CD900767448 /* assetfile_diff.c in Sources */,
+				879648D11A7F5CD900767448 /* filemaping.c in Sources */,
+				8776E30A1A7F5ECB005FA7B7 /* md5.c in Sources */,
+				879648D21A7F5CD900767448 /* tools.c in Sources */,
+				879648CE1A7F5CD900767448 /* assetbundle.c in Sources */,
+				879648CD1A7F5CD900767448 /* assetbundle_diff.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		44B688B919862F7C005FAD4C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		44B688BA19862F7C005FAD4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		44B688BC19862F7C005FAD4C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/AssetBundleParser.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		44B688BD19862F7C005FAD4C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/AssetBundleParser.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		44B6889319862F7C005FAD4C /* Build configuration list for PBXProject "ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44B688B919862F7C005FAD4C /* Debug */,
+				44B688BA19862F7C005FAD4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		44B688BB19862F7C005FAD4C /* Build configuration list for PBXNativeTarget "AssetBundleParser" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				44B688BC19862F7C005FAD4C /* Debug */,
+				44B688BD19862F7C005FAD4C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 44B6889019862F7C005FAD4C /* Project object */;
+}

@@ -54,7 +54,7 @@ Return: 0: Success; None-zero: error code
 		BuildAssetBundleOptions.CollectDependencies | BuildAssetBundleOptions.CompleteAssets| BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.DisableWriteTypeTree, 
 		BuildTarget.iPhone);	
 
-# Sample to show how to create and merge diff files. #	
+# Sample to show how to create and merge diff files. #
 	
 	// "scenes_v1.unity3d", "scenes_v2.unity3d" must exist. Create "v1to2.diff"
 	assetbundle_diff("scenes_v1.unity3d", "scenes_v2.unity3d", "v1to2.diff"); 

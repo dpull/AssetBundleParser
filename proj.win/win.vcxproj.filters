@@ -30,5 +30,40 @@
     <ClCompile Include="..\AssetBundle\utils\md5.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\AssetBundle\main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\AssetBundle\assetbundle.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\assetbundle_diff.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\assetbundle_imp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\assetfile.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\assetfile_diff.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\assetfile_imp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\filemaping.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\tools.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\utils\debug_tree.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\utils\platform.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -17,12 +17,6 @@
 int main(int argc, const char * argv[]) {   
 	int ret;
 
-    struct assetbundle* bundle = assetbundle_load("D:\\OneDrive\\Code\\assetbundleparser\\Untitled1.asset");
-    assert(bundle);
-
-    ret = (int)assetbundle_check(bundle);
-    assert(ret);
-
     ret = assetbundle_diff(
         "D:\\OneDrive\\Code\\assetbundleparser\\Untitled1.asset",
         "D:\\OneDrive\\Code\\assetbundleparser\\Untitled2.asset",

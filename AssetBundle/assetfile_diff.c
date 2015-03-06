@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
+#include "utils/platform.h"
 #include "tools.h"
 #include "utils/debug_tree.h"
 #include "assetfile.h"

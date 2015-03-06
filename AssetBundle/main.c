@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
+#include "utils/platform.h"
 #include "utils/debug_tree.h"
 #include "assetbundle.h"
 #include "assetbundle_diff.h"
@@ -16,38 +17,26 @@
 int main(int argc, const char * argv[]) {   
 	int ret;
 
-    struct assetbundle* bundle = assetbundle_load("/Users/dpull/Documents/AssetBundle/AssetBundle/test.unity3d");
+    struct assetbundle* bundle = assetbundle_load("D:\\OneDrive\\Code\\assetbundleparser\\Untitled1.asset");
     assert(bundle);
 
     ret = (int)assetbundle_check(bundle);
     assert(ret);
 
     ret = assetbundle_diff(
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/test1.unity3d",
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/test2.unity3d",
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/diff_1to2"
+        "D:\\OneDrive\\Code\\assetbundleparser\\Untitled1.asset",
+        "D:\\OneDrive\\Code\\assetbundleparser\\Untitled2.asset",
+        "D:\\OneDrive\\Code\\assetbundleparser\\diff.asset"
     );
     assert(ret == 0);
     
     ret = assetbundle_merge(
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/test1.unity3d",
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/test2_1.unity3d",
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/diff_1to2"
+		"D:\\OneDrive\\Code\\assetbundleparser\\Untitled1.asset",
+		"D:\\OneDrive\\Code\\assetbundleparser\\Untitled3.asset",
+		"D:\\OneDrive\\Code\\assetbundleparser\\diff.asset"
     );
     assert(ret == 0);
     
-    ret = assetbundle_diff(
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/test2.unity3d",
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/test3.unity3d",
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/diff_2to3"
-    );
-    assert(ret == 0);
     
-    ret = assetbundle_merge(
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/test2.unity3d",
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/test3_1.unity3d",
-        "/Users/dpull/Documents/AssetBundle/AssetBundle/diff_2to3"
-    );
-    assert(ret == 0);
     return 0;
 }

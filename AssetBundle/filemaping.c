@@ -5,46 +5,114 @@
 #include <string.h>
 #include <stdbool.h>
 #ifdef _MSC_VER
+#include <Windows.h>
 #else
 #include <unistd.h>
 #include <sys/mman.h>
 #endif
+#include "utils/platform.h"
 #include "filemaping.h"
 
 #ifdef _MSC_VER
 struct filemaping
 {
-	int a;
+	unsigned char* data;
+	size_t length;
 };
 
 struct filemaping* filemaping_create_readonly(const char* file)
-{
-	return NULL;
+{	
+	HANDLE handle;
+	DWORD length;
+	HANDLE mapping;
+	PVOID data;
+
+	handle = CreateFileA(file, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (handle == INVALID_HANDLE_VALUE)
+		return NULL;
+
+	length = GetFileSize(handle, NULL);
+
+	mapping = CreateFileMappingA(handle, NULL, PAGE_READWRITE, 0, 0, NULL);
+	CloseHandle(handle);
+
+	if (!mapping)
+		return NULL;
+
+	data = MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0);
+	CloseHandle(mapping);
+
+	if (!data)
+		return NULL;
+
+	struct filemaping* filemaping = (struct filemaping*)malloc(sizeof(*filemaping));
+	memset(filemaping, 0, sizeof(*filemaping));
+
+	filemaping->data = (unsigned char*)data;
+	filemaping->length = (size_t)length;
+
+	return filemaping;
 }
 
 struct filemaping* filemaping_create_readwrite(const char* file, size_t length)
 {
-	return NULL;
+	HANDLE handle;
+	HANDLE mapping;
+	PVOID data;
+
+	handle = CreateFileA(file, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (handle == INVALID_HANDLE_VALUE)
+		return NULL;
+
+	mapping = CreateFileMappingA(handle, NULL, PAGE_READWRITE, 0, length, NULL);
+	CloseHandle(handle);
+
+	if (!mapping)
+		return NULL;
+
+	data = MapViewOfFile(mapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+	CloseHandle(mapping);
+
+	if (!data)
+		return NULL;
+
+	struct filemaping* filemaping = (struct filemaping*)malloc(sizeof(*filemaping));
+	memset(filemaping, 0, sizeof(*filemaping));
+
+	filemaping->data = (unsigned char*)data;
+	filemaping->length = length;
+
+	return filemaping;		
 }
 
 void filemaping_destory(struct filemaping* filemaping)
 {
-
+	UnmapViewOfFile(filemaping->data);
+	free(filemaping);
 }
 
 unsigned char* filemaping_getdata(struct filemaping* filemaping)
 {
-	return NULL;
+	return filemaping->data;
 }
 
 size_t filemaping_getlength(struct filemaping* filemaping)
 {
-	return 0;
+	return filemaping->length;
 }
 
 bool filemaping_truncate(const char* file, size_t length)
-{
-	return false;
+{	
+	BOOL ret = false;
+	HANDLE handle = CreateFileA(file, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (handle == INVALID_HANDLE_VALUE)
+		return false;
+
+	if (SetFilePointer(handle, length, NULL, FILE_BEGIN))
+		ret = SetEndOfFile(handle);
+
+	CloseHandle(handle);
+	return ret;
 }
 #else
 struct filemaping

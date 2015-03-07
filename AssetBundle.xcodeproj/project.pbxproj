@@ -14,6 +14,7 @@
 		8774AFEA1A70B64B0040BB8B /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 8774AFE91A70B64B0040BB8B /* md5.c */; };
 		8774AFF11A722F240040BB8B /* debug_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 8774AFEE1A722F240040BB8B /* debug_tree.c */; };
 		87B29DF21A68E2670099584F /* tools.c in Sources */ = {isa = PBXBuildFile; fileRef = 87B29DF01A68E2670099584F /* tools.c */; };
+		87DC4BCB1AAAFCFF00317403 /* traversedir.c in Sources */ = {isa = PBXBuildFile; fileRef = 87DC4BC91AAAFCFF00317403 /* traversedir.c */; };
 		87FCD5E91A70978700E67100 /* assetbundle_diff.c in Sources */ = {isa = PBXBuildFile; fileRef = 87FCD5E31A70978700E67100 /* assetbundle_diff.c */; };
 		87FCD5EA1A70978700E67100 /* assetfile_diff.c in Sources */ = {isa = PBXBuildFile; fileRef = 87FCD5E61A70978700E67100 /* assetfile_diff.c */; };
 /* End PBXBuildFile section */
@@ -45,6 +46,8 @@
 		8774AFF01A722F240040BB8B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 		87B29DF01A68E2670099584F /* tools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tools.c; sourceTree = "<group>"; };
 		87B29DF11A68E2670099584F /* tools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tools.h; sourceTree = "<group>"; };
+		87DC4BC91AAAFCFF00317403 /* traversedir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = traversedir.c; sourceTree = "<group>"; };
+		87DC4BCC1AAAFFD100317403 /* traversedir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = traversedir.h; sourceTree = "<group>"; };
 		87FCD5E31A70978700E67100 /* assetbundle_diff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = assetbundle_diff.c; sourceTree = "<group>"; };
 		87FCD5E41A70978700E67100 /* assetbundle_diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetbundle_diff.h; sourceTree = "<group>"; };
 		87FCD5E51A70978700E67100 /* assetbundle_imp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetbundle_imp.h; sourceTree = "<group>"; };
@@ -108,8 +111,10 @@
 			children = (
 				8774AFEE1A722F240040BB8B /* debug_tree.c */,
 				8774AFEF1A722F240040BB8B /* debug_tree.h */,
-				8774AFF01A722F240040BB8B /* platform.h */,
 				8774AFE91A70B64B0040BB8B /* md5.c */,
+				8774AFF01A722F240040BB8B /* platform.h */,
+				87DC4BC91AAAFCFF00317403 /* traversedir.c */,
+				87DC4BCC1AAAFFD100317403 /* traversedir.h */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -175,6 +180,7 @@
 				874C1E9B1A69026600EB9999 /* assetfile.c in Sources */,
 				87B29DF21A68E2670099584F /* tools.c in Sources */,
 				8774AFF11A722F240040BB8B /* debug_tree.c in Sources */,
+				87DC4BCB1AAAFCFF00317403 /* traversedir.c in Sources */,
 				8774AFEA1A70B64B0040BB8B /* md5.c in Sources */,
 				87096FDA1A6A4C4600409D52 /* filemaping.c in Sources */,
 				8769BB131A67E491000BFF71 /* assetbundle.c in Sources */,

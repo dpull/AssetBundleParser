@@ -241,7 +241,7 @@ bool assetbundle_diff_save(const char* filename, struct assetbundle_diff* diff)
     return true;
 }
 
-EXTERN_API int assetbundle_diff(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff)
+EXTERN_API errno_t assetbundle_diff(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff)
 {
 	int result = ASSETBUNDLE_FAILED;
 	bool retcode = false;
@@ -320,7 +320,7 @@ struct assetbundle* assetbundle_safeload(const char* filename, const unsigned ch
     return assetbundle_load_filemaping(filemaping);
 }
 
-EXTERN_API int assetbundle_merge(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff)
+EXTERN_API errno_t assetbundle_merge(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff)
 {
 	int result = ASSETBUNDLE_FAILED;
 	struct assetbundle* from = NULL;

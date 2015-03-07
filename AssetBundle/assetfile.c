@@ -8,6 +8,7 @@
 #include "utils/platform.h"
 #include "tools.h"
 #include "utils/debug_tree.h"
+#include "filemaping.h"
 #include "assetfile.h"
 #include "assetfile_imp.h"
 
@@ -230,7 +231,7 @@ size_t assetmeta_save(struct assetfile* file, unsigned char* data, size_t offset
     return offset - start;
 }
 
-struct assetfile* assetfile_load(unsigned char* data, size_t start, size_t size)
+struct assetfile* assetfile_loaddata(unsigned char* data, size_t start, size_t size)
 {	
 	size_t offset = start;
 	struct assetfile* file = (struct assetfile*)malloc(sizeof(*file));
@@ -249,6 +250,17 @@ struct assetfile* assetfile_load(unsigned char* data, size_t start, size_t size)
     
     return file;
 }
+
+ struct assetfile* assetfile_loadfile(const char* filename)
+ {
+    struct filemaping* filemaping = filemaping_create_readonly(filename);
+    if (!filemaping)
+        return NULL;
+     
+    unsigned char* data = filemaping_getdata(filemaping);
+    size_t length = filemaping_getlength(filemaping);
+    return assetfile_loaddata(data, 0, length);
+ }
 
 bool assetfile_save(struct assetfile* file, unsigned char* data, size_t start, size_t size)
 {

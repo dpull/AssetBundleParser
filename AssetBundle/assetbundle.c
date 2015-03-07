@@ -143,7 +143,7 @@ struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
 		size_t file_offset = bundle->header.header_size + entryinfo->offset;
 		assert(file_offset + entryinfo->size <= filemaping_getlength(bundle->filemaping));
 
-		entryinfo->assetfile = assetfile_load(data, file_offset, entryinfo->size);
+		entryinfo->assetfile = assetfile_loaddata(data, file_offset, entryinfo->size);
     	assert(entryinfo->assetfile);
 	} 
 

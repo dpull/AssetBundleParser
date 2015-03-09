@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include "platform.h"
 
 #define BUFFER_SIZE 2048
@@ -86,11 +87,11 @@ void debug_tree_destory(struct debug_tree* tree)
 	free(tree);
 }
 
-void debug_tree_print(struct debug_tree* tree, FILE* stream, const char* prefix)
+void debug_tree_recursive_print(struct debug_tree* tree, FILE* stream, const char* prefix, bool is_print_sibling)
 {
    	char child_prefix[PREFIX_BUFFER_SIZE];
     char last_child_prefix[PREFIX_BUFFER_SIZE];
- 
+    
     if (!prefix)
         prefix = "";
     
@@ -109,8 +110,19 @@ void debug_tree_print(struct debug_tree* tree, FILE* stream, const char* prefix)
     }
     
     if (tree->child)
-        debug_tree_print(tree->child, stream, child_prefix_ref);
+        debug_tree_recursive_print(tree->child, stream, child_prefix_ref, true);
     
-    if (tree->sibling)
-        debug_tree_print(tree->sibling, stream, prefix);
+    if (is_print_sibling)
+    {
+        struct debug_tree* sibling = tree->sibling;
+        while (sibling) {
+            debug_tree_recursive_print(sibling, stream, prefix, false);
+            sibling = sibling->sibling;
+        }
+    }
+}
+
+void debug_tree_print(struct debug_tree* tree, FILE* stream)
+{
+   	debug_tree_recursive_print(tree, stream, "", tree);
 }

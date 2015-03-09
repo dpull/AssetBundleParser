@@ -20,4 +20,7 @@ enum ASSETBUNDLE_RETCODE
 EXTERN_API errno_t assetbundle_diff(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff);
 EXTERN_API errno_t assetbundle_merge(const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff);
 
+
+EXTERN_API errno_t assetbundle_diff_1(struct assetfile** src_files, size_t src_files_count, struct assetbundle* to, const char* diff);
+
 #endif

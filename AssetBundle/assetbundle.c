@@ -128,10 +128,13 @@ struct assetbundle* assetbundle_create()
 
 struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
 {
+    unsigned char* data = filemaping_getdata(filemaping);
+    if (strncmp((char*)data, "Unity", sizeof("Unity") - 1) != 0)
+        return NULL;
+    
     struct assetbundle* bundle = assetbundle_create();
     bundle->filemaping = filemaping;
     
-    unsigned char* data = filemaping_getdata(filemaping);
     size_t offset = 0;
    	offset += assetbundle_header_load(&bundle->header, data, offset);
     assert(strcmp(bundle->header.signature, "UnityRaw") == 0); // only support uncompressed assetbundle
@@ -143,7 +146,7 @@ struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
 		size_t file_offset = bundle->header.header_size + entryinfo->offset;
 		assert(file_offset + entryinfo->size <= filemaping_getlength(bundle->filemaping));
 
-		entryinfo->assetfile = assetfile_loaddata(data, file_offset, entryinfo->size);
+		entryinfo->assetfile = assetfile_load(data, file_offset, entryinfo->size);
     	assert(entryinfo->assetfile);
 	} 
 

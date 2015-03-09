@@ -1,3 +1,6 @@
+// 2010 @kingsoft.com by zhaochunfeng
+// 2015 @dpull.com by acai
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -146,6 +149,7 @@ Exit0:
     return bResult;
 }
 #endif
+
 void traversedir(const char dir[], traversedir_callback* callback, void* userdata, bool ignore_hidefile)
 {
     char* dup = strdup(dir);

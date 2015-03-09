@@ -60,7 +60,7 @@ void assetbundle_diff_print(struct assetbundle_diff* diff)
         assetfile_diff_print(diff->file_diffs[i], file_diffs);
 	}
 
-    debug_tree_print(root, stdout, NULL);
+    debug_tree_print(root, stdout);
     debug_tree_destory(root);	
 }
 
@@ -360,4 +360,25 @@ Exit0:
 	if (from)
 		assetbundle_destory(from);
 	return result;
+}
+
+EXTERN_API errno_t assetbundle_diff_1(struct assetfile** src_files, size_t src_files_count, struct assetbundle* to, const char* diff_file)
+{
+    size_t length = filemaping_getlength(to->filemaping);
+    struct filemaping* filemaping = filemaping_create_readwrite(diff_file, length);
+    if (!filemaping)
+        return 0;
+    
+    unsigned char* data = filemaping_getdata(filemaping);
+    size_t offset = 0;
+    struct assetfile_diff* diff;
+
+    for (size_t i = 0; i < to->entryinfo_count; ++i) {
+        struct assetbundle_entryinfo* entryinfo = &to->entryinfo[i];
+        diff = assetfile_diff(src_files, src_files_count, entryinfo->assetfile);
+        offset += assetfile_diff_savediff(diff, data, offset);
+    }
+    filemaping_destory(filemaping);
+    filemaping_truncate(diff_file, offset);
+    return 0;    
 }

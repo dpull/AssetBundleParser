@@ -231,8 +231,11 @@ size_t assetmeta_save(struct assetfile* file, unsigned char* data, size_t offset
     return offset - start;
 }
 
-struct assetfile* assetfile_loaddata(unsigned char* data, size_t start, size_t size)
-{	
+struct assetfile* assetfile_load(unsigned char* data, size_t start, size_t size)
+{
+    if (size < 23 || ((strncmp((char*)data + start + 20, "4.", sizeof("4.") - 1) != 0) && (strncmp((char*)data + start + 20, "5.", sizeof("5.") - 1) != 0)))
+        return NULL;
+    
 	size_t offset = start;
 	struct assetfile* file = (struct assetfile*)malloc(sizeof(*file));
 	memset(file, 0, sizeof(*file));
@@ -250,17 +253,6 @@ struct assetfile* assetfile_loaddata(unsigned char* data, size_t start, size_t s
     
     return file;
 }
-
- struct assetfile* assetfile_loadfile(const char* filename)
- {
-    struct filemaping* filemaping = filemaping_create_readonly(filename);
-    if (!filemaping)
-        return NULL;
-     
-    unsigned char* data = filemaping_getdata(filemaping);
-    size_t length = filemaping_getlength(filemaping);
-    return assetfile_loaddata(data, 0, length);
- }
 
 bool assetfile_save(struct assetfile* file, unsigned char* data, size_t start, size_t size)
 {

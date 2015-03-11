@@ -19,7 +19,7 @@ char* objectinfo_getname(unsigned char* data, size_t start, size_t size)
 
 struct object_class_audioclip
 {
-	size_t name_len;
+	int name_len;
 	unsigned char* name;
 	int format;
 	int type;
@@ -35,9 +35,12 @@ struct object_class_audioclip* object_class_audioclip_load(unsigned char* data, 
 	size_t offset = start;
 	struct object_class_audioclip* object_class = (struct object_class_audioclip*)calloc(1, sizeof(*object_class));
 
-	offset += read_uint32(data, offset, &object_class->name_len, true);
-	offset += read_buffer(data, offset, &object_class->name, object_class->name_len);
-    
+	offset += read_int32(data, offset, &object_class->name_len, true);
+    if (object_class->name_len < 0 || object_class->name_len > (int)size) {
+        free(object_class);
+        return NULL;
+    }
+    offset += read_buffer(data, offset, &object_class->name, object_class->name_len);
     offset = (offset + 3) / 4 * 4;
     
 	offset += read_int32(data, offset, &object_class->format, true);
@@ -56,5 +59,6 @@ struct object_class_audioclip* object_class_audioclip_load(unsigned char* data, 
 
 void object_class_audioclip_destory(struct object_class_audioclip* object_class)
 {
-	free(object_class);
+    if (object_class)
+        free(object_class);
 }

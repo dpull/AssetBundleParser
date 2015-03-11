@@ -11,6 +11,7 @@
 #include "filemaping.h"
 #include "assetfile.h"
 #include "assetfile_imp.h"
+#include "object_class.h"
 
 size_t assetheader_load(struct assetheader* header, unsigned char* data, size_t offset)
 {
@@ -289,7 +290,7 @@ void assetfile_print(struct assetfile* file, struct debug_tree* root)
         struct objectinfo* objectinfo = &file->objectinfo_struct[i];
  		struct debug_tree* debug_tree = debug_tree_create(objectinfo_struct, "objectinfo path_id:%d, type_id:%d", objectinfo->path_id, objectinfo->type_id);
         
-        char* objectinfo_name = objectinfo_getname(objectinfo);
+        char* objectinfo_name = objectinfo_getname(objectinfo->buffer, 0, objectinfo->length);
         if (objectinfo_name[0])
             debug_tree_create(debug_tree, "name:%s", objectinfo_name);
         free(objectinfo_name);

@@ -6,6 +6,7 @@
 //  Copyright (c) 2015年 dpull. All rights reserved.
 //
 #include <stdlib.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -38,9 +39,39 @@ bool load_assetfile(const char* fullpath, const char* filename, void* userdata)
         file_asset->files = (struct filemaping**)realloc(file_asset->files, file_asset->max_count * sizeof(file_asset->files[0]));
     }
     
-    struct filemaping* filemaping = filemaping_create_readonly(fullpath);
-    if (!filemaping)
-        return true;
+    struct filemaping* filemaping = NULL;
+    const char* split0 = strstr(fullpath, ".split0");
+    if (split0 == NULL) {
+        filemaping = filemaping_create_readonly(fullpath);
+        if (!filemaping)
+            return true;
+    } else {
+        char asset_path[512];
+        memset(asset_path, 0, 512);
+        strncpy(asset_path, fullpath, split0 - fullpath);
+        
+        char temp_file[512];
+        strcpy(temp_file, "/tmp/temp.XXXXXX");
+        mktemp(temp_file);
+        filemaping = filemaping_create_readwrite(temp_file, 1024 * 1024 * 100);
+        unsigned char* data = filemaping_getdata(filemaping);
+        size_t offset = 0;
+        
+        for (int i = 0; i < 100; ++i) {
+            char split_asset_path[512];
+            sprintf(split_asset_path, "%s.split%d", asset_path, i);
+            struct filemaping* split_filemaping = filemaping_create_readonly(split_asset_path);
+            if (!split_filemaping)
+                break;
+            
+            unsigned char* split_data = filemaping_getdata(split_filemaping);
+            size_t split_length = filemaping_getlength(split_filemaping);
+            memcpy(data + offset, split_data, split_length);
+            offset += split_length;
+            
+            filemaping_destory(split_filemaping);
+        }
+    }
     
     unsigned char* data = filemaping_getdata(filemaping);
     size_t length = filemaping_getlength(filemaping);

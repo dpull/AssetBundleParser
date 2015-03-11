@@ -364,12 +364,14 @@ Exit0:
 
 EXTERN_API errno_t assetbundle_diff_1(struct assetfile** src_files, size_t src_files_count, struct assetbundle* to, const char* diff_file)
 {
-    size_t length = filemaping_getlength(to->filemaping);
-    struct filemaping* filemaping = filemaping_create_readwrite(diff_file, length * 2);
+    size_t length = filemaping_getlength(to->filemaping) * 2;
+    struct filemaping* filemaping = filemaping_create_readwrite(diff_file, length);
     if (!filemaping)
         return 0;
     
     unsigned char* data = filemaping_getdata(filemaping);
+    memset(data, 0, length);
+    
     size_t offset = 0;
     struct assetfile_diff* diff;
 

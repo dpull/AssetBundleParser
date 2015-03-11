@@ -35,6 +35,9 @@ struct field_type_db
     size_t count;
     struct field_type_list* field_type_list;
  	struct filemaping* filemaping;   
+    size_t versions_count;
+    char** versions;
+
 };
 
 size_t field_type_load(unsigned char* data, size_t start, size_t length, struct field_type* field_type)
@@ -102,6 +105,11 @@ struct field_type_db* field_type_db_load(const char* file)
         offset += field_type_list_load(data, offset, length, field_type_db->field_type_list + i);
     }
     
+    offset += read_uint32(data, offset, &field_type_db->versions_count, false);
+    field_type_db->versions = (char**)calloc(field_type_db->versions_count, sizeof(*field_type_db->versions));
+    for (size_t i = 0; i < field_type_db->count; ++i) {
+        offset += read_string(data, offset, field_type_db->versions + i);
+    }
     return field_type_db;
 }
 
@@ -122,9 +130,17 @@ void field_type_db_destory(struct field_type_db* field_type_db)
 
 void field_type_list_print(struct field_type_list* field_type_list, struct debug_tree* root)
 {
-    struct debug_tree* debug_tree = debug_tree_create(root, "%s\t%s", field_type_list->field_type.type, field_type_list->field_type.name);
+    struct debug_tree* type_list = debug_tree_create(
+        root, 
+        "%s\t%s\t[%d]%s\t%s",
+        field_type_list->field_type.type, 
+        field_type_list->field_type.name,
+        field_type_list->field_type.version,
+        field_type_list->field_type.is_array ? "[array]" : "",
+        (field_type_list->field_type.meta_flag & 0x4000) ? "[align]" : ""
+    );
     for (size_t i = 0; i < field_type_list->children_count; ++i) {
-        field_type_list_print(field_type_list->children_field_type_list + i, debug_tree);
+        field_type_list_print(field_type_list->children_field_type_list + i, type_list);
     }
 }
 
@@ -132,5 +148,10 @@ void field_type_db_print(struct field_type_db* field_type_db, struct debug_tree*
 {
     for (size_t i = 0; i < field_type_db->count; ++i) {
         field_type_list_print(field_type_db->field_type_list + i, root);
+    }
+    
+    struct debug_tree* versions = debug_tree_create(root, "versions");
+    for (size_t i = 0; i < field_type_db->versions_count; ++i) {
+        debug_tree_create(versions, "[%d]\t%s", i, field_type_db->versions[i]);
     }
 }

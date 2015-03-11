@@ -10,6 +10,7 @@
 #include "utils/debug_tree.h"
 #include "assetfile.h"
 #include "assetfile_imp.h"
+#include "object_class.h"
 
 struct objectinfo_modify
 {
@@ -37,41 +38,35 @@ struct assetfile_diff
 	struct objectinfo_same* objectinfo_same;
 };
 
-extern char* objectinfo_getname(struct objectinfo* objectinfo);
-
 int objectinfo_findsame(struct assetfile* file, struct objectinfo* objectinfo) 
 {
-    char* search_name = objectinfo_getname(objectinfo);
+    char* search_name = objectinfo_getname(objectinfo->buffer, 0, objectinfo->length);
 	for (int i = 0; i < (int)file->objectinfo_struct_count; ++i) {
 		struct objectinfo* cur_objectinfo = &file->objectinfo_struct[i];
 		if (cur_objectinfo->type_id == objectinfo->type_id && cur_objectinfo->length == objectinfo->length && memcmp(cur_objectinfo->buffer, objectinfo->buffer, cur_objectinfo->length) == 0)
             return i;
         
-        char* cur_name = objectinfo_getname(cur_objectinfo);
+        char* cur_name = objectinfo_getname(cur_objectinfo->buffer, 0, cur_objectinfo->length);
         if (cur_objectinfo->type_id == objectinfo->type_id && search_name[0] && cur_objectinfo->type_id == 83)
         {
-            if (strstr(search_name, "name_xing") == NULL)
-                continue;
-            
             if (strcmp(search_name, cur_name) != 0)
                 continue;
             
-            
             if (cur_objectinfo->length == objectinfo->length)
             {
+				struct object_class_audioclip* object_class1 = object_class_audioclip_load(objectinfo->buffer, 0, objectinfo->length);
+				struct object_class_audioclip* object_class2 = object_class_audioclip_load(cur_objectinfo->buffer, 0, cur_objectinfo->length);
+
+				object_class_audioclip_destory(object_class2);
+				object_class_audioclip_destory(object_class1);
+
                 size_t len = strlen(cur_name);
                 len = (len + 3) / 4 * 4;
                 
                 printf("type_id \t %d \t %s \t %u\n", cur_objectinfo->type_id, cur_name, cur_objectinfo->length);
-                size_t print_count = 0;
                 for (int i = 0; i < cur_objectinfo->length; ++i) {
                     if (objectinfo->buffer[i] != cur_objectinfo->buffer[i]) {
-                        print_count ++;
-                        if (print_count > 20) {
-                            printf("....\n");
-                            break;
-                        }
-                        printf("%d \t %hhd \t %hhd\n", (int)i, objectinfo->buffer[i], cur_objectinfo->buffer[i]);
+                        printf("%u \t %hhd \t %hhd\n", i, objectinfo->buffer[i], cur_objectinfo->buffer[i]);
                     }
                 }
             }
@@ -122,7 +117,7 @@ struct assetfile_diff* assetfile_diff(struct assetfile** fromfiles, size_t fromf
 			objectinfo_same->fromfiles_index = fromfiles_index;
 			objectinfo_same->fromobject_index = fromobject_index;
             
-            char* name = objectinfo_getname(to_objectinfo);
+            char* name = objectinfo_getname(to_objectinfo->buffer, 0, to_objectinfo->length);
            // printf("same \t type_id \t %d \t %s \t %u\n", to_objectinfo->type_id, name, to_objectinfo->length);
             free(name);
             
@@ -134,7 +129,7 @@ struct assetfile_diff* assetfile_diff(struct assetfile** fromfiles, size_t fromf
 			objectinfo_modify->buffer = to_objectinfo->buffer;
 			objectinfo_modify->length = to_objectinfo->length + to_objectinfo->align_data_length;
             
-            char* name = objectinfo_getname(to_objectinfo);
+            char* name = objectinfo_getname(to_objectinfo->buffer, 0, to_objectinfo->length);
            // printf("diff \t type_id \t %d \t %s \t %u\n", to_objectinfo->type_id, name, to_objectinfo->length);
             free(name);
 		}

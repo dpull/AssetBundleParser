@@ -5,7 +5,7 @@
 //  Created by dpull on 15/1/15.
 //  Copyright (c) 2015年 dpull. All rights reserved.
 //
-
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -17,6 +17,7 @@
 #include "assetfile.h"
 #include "filemaping.h"
 #include "field_type.h"
+#include "traversedir.h"
 
 struct file_asset
 {

@@ -37,32 +37,52 @@ struct assetfile_diff
 	struct objectinfo_same* objectinfo_same;
 };
 
-char* objectinfo_getname(struct objectinfo* objectinfo)
-{
-	int name_len;
-    size_t name_offset = 0;
-
-    name_offset += read_int32(objectinfo->buffer, name_offset, &name_len, true);
-    assert(name_len >= 0);
-    assert(name_len <= (int)objectinfo->length);
-    
-    char* name = NULL;
-    if (name_len > 0) {
-        name = malloc(name_len + 1);
-        memcpy(name, objectinfo->buffer + name_offset, name_len);
-        name[name_len] = '\0';
-    }
-
-    return name;
-}
+extern char* objectinfo_getname(struct objectinfo* objectinfo);
 
 int objectinfo_findsame(struct assetfile* file, struct objectinfo* objectinfo) 
 {
+    char* search_name = objectinfo_getname(objectinfo);
 	for (int i = 0; i < (int)file->objectinfo_struct_count; ++i) {
 		struct objectinfo* cur_objectinfo = &file->objectinfo_struct[i];
-		if (cur_objectinfo->length == objectinfo->length && memcmp(cur_objectinfo->buffer, objectinfo->buffer, cur_objectinfo->length) == 0)
-			return i;
+		if (cur_objectinfo->type_id == objectinfo->type_id && cur_objectinfo->length == objectinfo->length && memcmp(cur_objectinfo->buffer, objectinfo->buffer, cur_objectinfo->length) == 0)
+            return i;
+        
+        char* cur_name = objectinfo_getname(cur_objectinfo);
+        if (cur_objectinfo->type_id == objectinfo->type_id && search_name[0] && cur_objectinfo->type_id == 83)
+        {
+            if (strstr(search_name, "name_xing") == NULL)
+                continue;
+            
+            if (strcmp(search_name, cur_name) != 0)
+                continue;
+            
+            
+            if (cur_objectinfo->length == objectinfo->length)
+            {
+                size_t len = strlen(cur_name);
+                len = (len + 3) / 4 * 4;
+                
+                printf("type_id \t %d \t %s \t %u\n", cur_objectinfo->type_id, cur_name, cur_objectinfo->length);
+                size_t print_count = 0;
+                for (int i = 0; i < cur_objectinfo->length; ++i) {
+                    if (objectinfo->buffer[i] != cur_objectinfo->buffer[i]) {
+                        print_count ++;
+                        if (print_count > 20) {
+                            printf("....\n");
+                            break;
+                        }
+                        printf("%d \t %hhd \t %hhd\n", (int)i, objectinfo->buffer[i], cur_objectinfo->buffer[i]);
+                    }
+                }
+            }
+            else
+            {
+                printf("diff size type_id \t %d \t %s \t %u \t %u\n", cur_objectinfo->type_id, cur_name, cur_objectinfo->length, objectinfo->length);
+            }
+        }
+        free(cur_name);
 	}
+    free(search_name);         
 	return -1;
 }
 
@@ -92,7 +112,7 @@ struct assetfile_diff* assetfile_diff(struct assetfile** fromfiles, size_t fromf
 			}
 		}
 		
-		if (fromobject_index > 0) {
+		if (fromobject_index >= 0) {
 			struct objectinfo_same* objectinfo_same = &diff->objectinfo_same[diff->objectinfo_same_count];
 			diff->objectinfo_same_count++;
 
@@ -101,6 +121,11 @@ struct assetfile_diff* assetfile_diff(struct assetfile** fromfiles, size_t fromf
             objectinfo_same->align_data = to_objectinfo->align_data;
 			objectinfo_same->fromfiles_index = fromfiles_index;
 			objectinfo_same->fromobject_index = fromobject_index;
+            
+            char* name = objectinfo_getname(to_objectinfo);
+           // printf("same \t type_id \t %d \t %s \t %u\n", to_objectinfo->type_id, name, to_objectinfo->length);
+            free(name);
+            
 		} else {
 			struct objectinfo_modify* objectinfo_modify = &diff->objectinfo_modify[diff->objectinfo_modify_count];
 			diff->objectinfo_modify_count++;
@@ -110,10 +135,8 @@ struct assetfile_diff* assetfile_diff(struct assetfile** fromfiles, size_t fromf
 			objectinfo_modify->length = to_objectinfo->length + to_objectinfo->align_data_length;
             
             char* name = objectinfo_getname(to_objectinfo);
-            printf("file:%s\t", name ? name : "unknown");
+           // printf("diff \t type_id \t %d \t %s \t %u\n", to_objectinfo->type_id, name, to_objectinfo->length);
             free(name);
-            
-            printf("modify \n");
 		}
 	}
     

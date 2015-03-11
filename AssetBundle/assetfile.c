@@ -275,6 +275,16 @@ void assetfile_destory(struct assetfile* file)
 	free(file);
 }
 
+char* objectinfo_getname(struct objectinfo* objectinfo)
+{
+    int name_len;
+    size_t offset = 0;
+    offset += read_int32(objectinfo->buffer, offset, &name_len, true);
+    if (name_len >= 0 && name_len <= (int)objectinfo->length)
+        return strndup((char*)objectinfo->buffer + offset, name_len);
+    return strdup("");
+}
+
 void assetfile_print(struct assetfile* file, struct debug_tree* root)
 {
 	struct debug_tree* header = debug_tree_create(root, "header");
@@ -288,7 +298,12 @@ void assetfile_print(struct assetfile* file, struct debug_tree* root)
     for (size_t i = 0; i < file->objectinfo_struct_count; ++i) {
         struct objectinfo* objectinfo = &file->objectinfo_struct[i];
  		struct debug_tree* debug_tree = debug_tree_create(objectinfo_struct, "objectinfo path_id:%d, type_id:%d", objectinfo->path_id, objectinfo->type_id);
-
+        
+        char* objectinfo_name = objectinfo_getname(objectinfo);
+        if (objectinfo_name[0])
+            debug_tree_create(debug_tree, "name:%s", objectinfo_name);
+        free(objectinfo_name);
+        
 		debug_tree_create(debug_tree, "offset:%u", objectinfo->offset);
 		debug_tree_create(debug_tree, "length:%u", objectinfo->length);
 		debug_tree_create(debug_tree, "align_data_length:%u", objectinfo->align_data_length);

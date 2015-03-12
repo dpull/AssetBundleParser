@@ -10,6 +10,8 @@
 #include "filemaping.h"
 #include "field_type.h"
 
+// http://docs.unity3d.com/Manual/ClassIDReference.html
+// https://github.com/ata4/disunity/blob/master/disunity-core/src/main/resources/types.dat
 
 struct field_type
 {

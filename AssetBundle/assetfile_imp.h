@@ -1,8 +1,6 @@
 #ifndef assetfile_imp_h
 #define assetfile_imp_h
 
-// for assetfile.c and assetfile_diff.c
-
 #define ASSETHEADER_RESERVED_SIZE	(3)
 struct assetheader
 {
@@ -13,9 +11,6 @@ struct assetheader
 	unsigned char endianness;
 	unsigned char* reserved;
 };
-
-size_t assetheader_load(struct assetheader* header, unsigned char* data, size_t offset);
-size_t assetheader_save(struct assetheader* header, unsigned char* data, size_t offset);
 
 #define ASSETFILE_META_ALIGN	(4096)
 #define ASSETFILE_ALIGN			(16)
@@ -57,10 +52,6 @@ struct fileidentifier
 	char* file_path;
 	int type;
 };
-
-size_t assetmeta_load(struct assetfile* file, unsigned char* data, size_t offset, size_t file_offset);
-size_t assetmeta_save(struct assetfile* file, unsigned char* data, size_t offset);
-
 
 size_t assetfile_objectinfo_count(struct assetfile* assetfile);
 struct objectinfo* assetfile_get_objectinfo(struct assetfile* assetfile, size_t index);

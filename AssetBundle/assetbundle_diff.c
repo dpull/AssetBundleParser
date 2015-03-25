@@ -13,8 +13,8 @@
 #include "object_class.h"
 #include "assetfile_imp.h"
 #include "assetfile.h"
-#include "assetbundle_imp.h"
 #include "assetbundle.h"
+#include "assetbundle_imp.h"
 #include "assetbundle_diff.h"
 
 #define MAX_PATH 				(512)

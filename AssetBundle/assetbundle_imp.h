@@ -1,8 +1,6 @@
 #ifndef assetbundle_imp_h
 #define assetbundle_imp_h
 
-// for assetbundle.c and assetbundle_diff.c
-
 #pragma pack(1)
 struct level_info
 {
@@ -27,9 +25,6 @@ struct assetbundle_header
 	unsigned char compressed; 
 };
 
-size_t assetbundle_header_load(struct assetbundle_header* header, unsigned char* data, size_t offset);
-size_t assetbundle_header_save(struct assetbundle_header* header, unsigned char* data, size_t offset);
-
 struct assetbundle_entryinfo
 {
 	char* name;
@@ -49,11 +44,5 @@ struct assetbundle
 
 	struct filemaping* filemaping;
 };
-
-struct assetbundle* assetbundle_load_data(unsigned char* data, size_t length);
-
-// will delete!!!
-struct assetbundle* assetbundle_create();
-struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping);
 
 #endif

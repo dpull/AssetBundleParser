@@ -119,16 +119,10 @@ void assetbundle_entryinfo_destory(struct assetbundle* bundle)
 	free(bundle->entryinfo);	
 }
 
-struct assetbundle* assetbundle_create()
-{
+EXTERN_API struct assetbundle* assetbundle_load_data(unsigned char* data, size_t length)
+{   
     struct assetbundle* bundle = (struct assetbundle*)malloc(sizeof(*bundle));
     memset(bundle, 0, sizeof(*bundle));
-    return bundle;
-}
-
-struct assetbundle* assetbundle_load_data(unsigned char* data, size_t length)
-{   
-	struct assetbundle* bundle = assetbundle_create();
     size_t offset = 0;
 
    	offset += assetbundle_header_load(&bundle->header, data, offset);
@@ -145,17 +139,6 @@ struct assetbundle* assetbundle_load_data(unsigned char* data, size_t length)
     	assert(entryinfo->assetfile);
 	} 
 
-    return bundle;
-}
-
-/* will delete */
-struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
-{   
-    unsigned char* data = filemaping_getdata(filemaping);
-	size_t length = filemaping_getlength(filemaping);
-
-    struct assetbundle* bundle = assetbundle_load_data(data, length);
-    bundle->filemaping = filemaping; 
     return bundle;
 }
 

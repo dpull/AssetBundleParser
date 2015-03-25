@@ -38,9 +38,6 @@ struct assetbundle_entryinfo
 	struct assetfile* assetfile;
 };
 
-size_t assetbundle_entryinfo_load(struct assetbundle* bundle, unsigned char* data, size_t offset);
-size_t assetbundle_entryinfo_save(struct assetbundle* bundle, unsigned char* data, size_t offset);
-
 #define ASSETBUNDLE_ENTRYINFO_ALIGN		(4)
 struct assetbundle
 {
@@ -53,6 +50,9 @@ struct assetbundle
 	struct filemaping* filemaping;
 };
 
+struct assetbundle* assetbundle_load_data(unsigned char* data, size_t length);
+
+// will delete!!!
 struct assetbundle* assetbundle_create();
 struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping);
 

@@ -233,10 +233,7 @@ size_t assetmeta_save(struct assetfile* file, unsigned char* data, size_t offset
 }
 
 struct assetfile* assetfile_load(unsigned char* data, size_t start, size_t size)
-{
-    if (size < 23 || ((strncmp((char*)data + start + 20, "4.", sizeof("4.") - 1) != 0) && (strncmp((char*)data + start + 20, "5.", sizeof("5.") - 1) != 0)))
-        return NULL;
-    
+{    
 	size_t offset = start;
 	struct assetfile* file = (struct assetfile*)malloc(sizeof(*file));
 	memset(file, 0, sizeof(*file));
@@ -299,4 +296,14 @@ void assetfile_print(struct assetfile* file, struct debug_tree* root)
 		debug_tree_create(debug_tree, "length:%u", objectinfo->length);
 		debug_tree_create(debug_tree, "align_data_length:%u", objectinfo->align_data_length);
     }	
+}
+
+size_t assetfile_objectinfo_count(struct assetfile* assetfile)
+{
+	return assetfile->objectinfo_struct_count;
+}
+
+struct objectinfo* assetfile_get_objectinfo(struct assetfile* assetfile, size_t index)
+{
+	return &assetfile->objectinfo_struct[index];
 }

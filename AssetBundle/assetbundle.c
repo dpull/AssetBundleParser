@@ -126,16 +126,11 @@ struct assetbundle* assetbundle_create()
     return bundle;
 }
 
-struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
-{
-    unsigned char* data = filemaping_getdata(filemaping);
-    if (strncmp((char*)data, "Unity", sizeof("Unity") - 1) != 0)
-        return NULL;
-    
-    struct assetbundle* bundle = assetbundle_create();
-    bundle->filemaping = filemaping;
-    
+struct assetbundle* assetbundle_load_data(unsigned char* data, size_t length)
+{   
+	struct assetbundle* bundle = assetbundle_create();
     size_t offset = 0;
+
    	offset += assetbundle_header_load(&bundle->header, data, offset);
     assert(strcmp(bundle->header.signature, "UnityRaw") == 0); // only support uncompressed assetbundle
     
@@ -153,13 +148,29 @@ struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
     return bundle;
 }
 
+/* will delete */
+struct assetbundle* assetbundle_load_filemaping(struct filemaping* filemaping)
+{   
+    unsigned char* data = filemaping_getdata(filemaping);
+	size_t length = filemaping_getlength(filemaping);
+
+    struct assetbundle* bundle = assetbundle_load_data(data, length);
+    bundle->filemaping = filemaping; 
+    return bundle;
+}
+
 EXTERN_API struct assetbundle* assetbundle_load(const char* filename)
 {
 	struct filemaping* filemaping = filemaping_create_readonly(filename);
 	if (!filemaping)
 		return NULL;
 
-    return assetbundle_load_filemaping(filemaping);
+    unsigned char* data = filemaping_getdata(filemaping);
+	size_t length = filemaping_getlength(filemaping);
+
+    struct assetbundle* bundle = assetbundle_load_data(data, length);
+    bundle->filemaping = filemaping; 
+    return bundle;
 }
 
 EXTERN_API bool assetbundle_check(struct assetbundle* bundle)
@@ -224,4 +235,14 @@ EXTERN_API void assetbundle_print(struct assetbundle* bundle, struct debug_tree*
         if (entryinfo->assetfile)
             assetfile_print(entryinfo->assetfile, debug_tree);
 	}	
+}
+
+EXTERN_API size_t assetbundle_assetfile_count(struct assetbundle* bundle)
+{
+	return bundle->entryinfo_count;
+}
+
+EXTERN_API struct assetfile*  assetbundle_get_assetfile(struct assetbundle* bundle, size_t index)
+{
+	return bundle->entryinfo[index].assetfile;
 }

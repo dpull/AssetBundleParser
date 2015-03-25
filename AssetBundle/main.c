@@ -108,8 +108,7 @@ int main(int argc, const char * argv[])
     struct assetbundle* p1 = assetbundle_load("/Users/dpull/Documents/AssetBundle/Untitled.asset");
     assert(p1);
 
-    assetbundle_diff_1(file_asset->assets, file_asset->count, p1, "/Users/dpull/Documents/AssetBundle/diff.asset ");
-    
+        
    
     root = debug_tree_create(NULL, "*");
     assetbundle_print(p1, root);

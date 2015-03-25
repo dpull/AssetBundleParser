@@ -62,3 +62,22 @@ void object_class_audioclip_destory(struct object_class_audioclip* object_class)
     if (object_class)
         free(object_class);
 }
+
+bool is_assetfile(unsigned char* data, size_t start, size_t size)
+{
+	if (size < 23)
+		return false;
+
+	if (strncmp((char*)data + start + 20, "4.", sizeof("4.") - 1) == 0)
+		return true;
+
+	if (strncmp((char*)data + start + 20, "5.", sizeof("5.") - 1) == 0)
+		return true;
+	
+	return false;
+}
+
+bool is_assetbundle(unsigned char* data)
+{
+	return (strncmp((char*)data, "Unity", sizeof("Unity") - 1) == 0);
+}

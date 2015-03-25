@@ -18,7 +18,6 @@
 		87B29DF21A68E2670099584F /* tools.c in Sources */ = {isa = PBXBuildFile; fileRef = 87B29DF01A68E2670099584F /* tools.c */; };
 		87DC4BCB1AAAFCFF00317403 /* traversedir.c in Sources */ = {isa = PBXBuildFile; fileRef = 87DC4BC91AAAFCFF00317403 /* traversedir.c */; };
 		87FCD5E91A70978700E67100 /* assetbundle_diff.c in Sources */ = {isa = PBXBuildFile; fileRef = 87FCD5E31A70978700E67100 /* assetbundle_diff.c */; };
-		87FCD5EA1A70978700E67100 /* assetfile_diff.c in Sources */ = {isa = PBXBuildFile; fileRef = 87FCD5E61A70978700E67100 /* assetfile_diff.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -57,8 +56,6 @@
 		87FCD5E31A70978700E67100 /* assetbundle_diff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = assetbundle_diff.c; sourceTree = "<group>"; };
 		87FCD5E41A70978700E67100 /* assetbundle_diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetbundle_diff.h; sourceTree = "<group>"; };
 		87FCD5E51A70978700E67100 /* assetbundle_imp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetbundle_imp.h; sourceTree = "<group>"; };
-		87FCD5E61A70978700E67100 /* assetfile_diff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = assetfile_diff.c; sourceTree = "<group>"; };
-		87FCD5E71A70978700E67100 /* assetfile_diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetfile_diff.h; sourceTree = "<group>"; };
 		87FCD5E81A70978700E67100 /* assetfile_imp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetfile_imp.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -97,8 +94,6 @@
 				87FCD5E51A70978700E67100 /* assetbundle_imp.h */,
 				8769BB111A67E491000BFF71 /* assetbundle.c */,
 				8769BB121A67E491000BFF71 /* assetbundle.h */,
-				87FCD5E61A70978700E67100 /* assetfile_diff.c */,
-				87FCD5E71A70978700E67100 /* assetfile_diff.h */,
 				87FCD5E81A70978700E67100 /* assetfile_imp.h */,
 				874C1E991A69026600EB9999 /* assetfile.c */,
 				874C1E9A1A69026600EB9999 /* assetfile.h */,
@@ -186,7 +181,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				87FCD5E91A70978700E67100 /* assetbundle_diff.c in Sources */,
-				87FCD5EA1A70978700E67100 /* assetfile_diff.c in Sources */,
 				874C1E9B1A69026600EB9999 /* assetfile.c in Sources */,
 				87B29DF21A68E2670099584F /* tools.c in Sources */,
 				8774AFF11A722F240040BB8B /* debug_tree.c in Sources */,

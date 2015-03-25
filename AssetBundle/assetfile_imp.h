@@ -61,4 +61,8 @@ struct fileidentifier
 size_t assetmeta_load(struct assetfile* file, unsigned char* data, size_t offset, size_t file_offset);
 size_t assetmeta_save(struct assetfile* file, unsigned char* data, size_t offset);
 
+
+size_t assetfile_objectinfo_count(struct assetfile* assetfile);
+struct objectinfo* assetfile_get_objectinfo(struct assetfile* assetfile, size_t index);
+
 #endif

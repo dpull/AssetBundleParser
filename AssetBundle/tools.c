@@ -62,6 +62,33 @@ size_t write_int16(unsigned char* data, size_t offset, short value, bool littleE
     return 2;
 }
 
+size_t read_uint16(unsigned char* data, size_t offset, unsigned short* value, bool littleEndian)
+{
+    if (!littleEndian)
+        *value = (short)((data[offset] << 8) | data[offset + 1]);
+    else
+        *value = (short)((data[offset + 1] << 8) | data[offset]);
+    return 2;
+}
+
+size_t write_uint16(unsigned char* data, size_t offset, unsigned short value, bool littleEndian)
+{
+#ifdef CHECK_WRITE_OVERLAPPING
+    for (size_t i = 0; i < 2; ++i) {
+        assert(data[offset + i] == 0);
+    }
+#endif
+    
+    if (!littleEndian) {
+        data[offset + 1] = (unsigned char)value;
+        data[offset] = (unsigned char)(value >> 8);
+    } else {
+        data[offset] = (unsigned char)value;
+        data[offset + 1] = (unsigned char)(value >> 8);
+    }
+    return 2;
+}
+
 size_t read_int32(unsigned char* data, size_t offset, int* value, bool littleEndian)
 {
     if (!littleEndian)

@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
+#include <stdint.h>
 #include "utils/platform.h"
 #include "utils/debug_tree.h"
 #include "utils/traversedir.h"
@@ -16,22 +17,7 @@
 #include "assetbundle.h"
 #include "assetbundle_imp.h"
 #include "assetbundle_diff.h"
-
-#define MAX_PATH 				(512)
-#define MAX_COMBINE_FILE_SIZE	(1024 * 1024 * 100)
-#define MAX_SPLIT_FILE_COUNT	(100)
-#define MAX_DIFF_RESERVED_SIZE  (1024 * 1024)
-#define MAX_DIFF_INFO_SIZE      (1024)
-#define DIFF_INFO_VERIFY        ("dpull@v1")
-
-struct split_filemaping
-{
-    struct filemaping* filemaping;
-    char* name;
-    bool format;
-    size_t offsets_count;
-    size_t* offsets;
-};
+#include "assetbundle_diff_imp.h"
 
 void split_filemaping_destory(struct split_filemaping* split_filemaping)
 {
@@ -106,20 +92,6 @@ struct split_filemaping* split_filemaping_create(const char* fullpath, const cha
     }
 }
 
-struct assetfiles
-{
-    size_t max_count;
-    size_t count;
-
-    struct assetfile** assetfiles;
-
-    struct assetbundle* assetbundle;
-    size_t assetbundle_assetfile_count;
-  
-    struct split_filemaping** split_filemapings;
-    unsigned char** filemaping_base;
-};
-
 struct assetfiles* assetfiles_create()
 {
 	struct assetfiles* assetfiles = (struct assetfiles*)calloc(1, sizeof(*assetfiles));
@@ -129,7 +101,7 @@ struct assetfiles* assetfiles_create()
 void assetfiles_destory(struct assetfiles* assetfiles)
 {
 	if (assetfiles->assetfiles) {
-		for (size_t i = 0; i < assetfiles->count; ++i) {
+		for (size_t i = assetfiles->assetbundle_assetfile_count; i < assetfiles->count; ++i) {
 			struct assetfile* assetfile = assetfiles->assetfiles[i];
 			if (assetfile)
 				assetfile_destory(assetfile);
@@ -183,7 +155,7 @@ bool assetfiles_loadfrom_assetbundle(struct assetfiles* assetfiles, const char* 
 	}
 
 	size_t count = assetbundle_assetfile_count(assetbundle);
-    unsigned char* data = filemaping_getdata(assetbundle->filemaping);
+    unsigned char* data = filemaping_getdata(assetbundle->filemaping); // bad code,
 
 	for (size_t i = 0; i < count; ++i)	{
 		struct assetfile* assetfile = assetbundle_get_assetfile(assetbundle, i);
@@ -219,19 +191,6 @@ bool load_assetfile_dir(const char* fullpath, const char* filename, void* userda
     return true;
 }
 
-struct assetbundle_diff
-{
-    struct filemaping* filemaping;
-    size_t assetbundle_size;
-    struct assetbundle* assetbundle;
-    size_t assetfile_index_count; 
-    char** assetfile_index; 
-
-    unsigned char* buffer_begin; 
-    unsigned char* buffer_end; 
-    unsigned char* buffer_pos; 
-};
-
 void assetbundle_diff_destory(struct assetbundle_diff* assetbundle_diff)
 {
     if (assetbundle_diff->assetfile_index) 
@@ -250,17 +209,17 @@ struct assetbundle_diff* assetbundle_diff_loaddata(unsigned char* data, size_t l
 {
     struct assetbundle_diff* assetbundle_diff = (struct assetbundle_diff*)calloc(1, sizeof(*assetbundle_diff));
     size_t offset = 0;
+    
     offset += read_uint32(data, offset, &assetbundle_diff->assetbundle_size, false);
     
     assetbundle_diff->assetbundle = assetbundle_load_data(data + offset, length - offset);    
-    if (!assetbundle_diff->assetbundle || !assetbundle_check(assetbundle_diff->assetbundle)) {
+    if (!assetbundle_diff->assetbundle) {
         assetbundle_diff_destory(assetbundle_diff);
         return NULL;
     }
     offset += assetbundle_diff->assetbundle_size;
 
     offset += read_uint32(data, offset, &assetbundle_diff->assetfile_index_count, false);
-
     assetbundle_diff->assetfile_index = (char**)malloc(assetbundle_diff->assetfile_index_count * sizeof(*assetbundle_diff->assetfile_index));
     for (int i = 0; i < assetbundle_diff->assetfile_index_count; ++i) {
         offset += read_string(data, offset, assetbundle_diff->assetfile_index + i);
@@ -272,8 +231,40 @@ struct assetbundle_diff* assetbundle_diff_loaddata(unsigned char* data, size_t l
     return assetbundle_diff;
 }
 
+struct assetbundle_diff* assetbundle_diff_load(const char* filename)
+{
+    struct filemaping* filemaping = filemaping_create_readonly(filename);
+    if (!filemaping)
+        return NULL;
+    
+    unsigned char* data = filemaping_getdata(filemaping);
+    size_t length = filemaping_getlength(filemaping);
+    
+    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_loaddata(data, length);
+    if (!assetbundle_diff) {
+        filemaping_destory(filemaping);
+        return NULL;
+    }
+    assetbundle_diff->filemaping = filemaping;
+    return assetbundle_diff;
+}
+
+bool assertbundle_checkfile(const char* filename)
+{
+    struct assetbundle* assetbundle = assetbundle_load(filename);
+    if (!assetbundle)
+        return false;
+    
+    bool ret = assetbundle_check(assetbundle);
+    assetbundle_destory(assetbundle);
+    return ret;
+}
+
 struct assetbundle_diff* assetbundle_diff_create(const char* src, const char* dst)
 {
+    if (!assertbundle_checkfile(src))
+        return NULL;
+    
     struct filemaping* src_filemaping = filemaping_create_readonly(src);
     if (!src_filemaping)
         return NULL;
@@ -286,15 +277,16 @@ struct assetbundle_diff* assetbundle_diff_create(const char* src, const char* ds
         filemaping_destory(src_filemaping);
         return NULL;    
     }
-
+    
     unsigned char* dst_data = filemaping_getdata(dst_filemaping);
     size_t dst_length = filemaping_getlength(dst_filemaping);
+    memset(dst_data, 0, dst_length);
 
     size_t offset = 0;
     offset += write_uint32(dst_data, offset, src_length, false);
     offset += write_buffer(dst_data, offset, src_data, src_length);
     offset += write_uint32(dst_data, offset, 0, false);
-
+    
     struct assetbundle_diff* assetbundle_diff = assetbundle_diff_loaddata(dst_data, dst_length);
     if (!assetbundle_diff) {
         filemaping_destory(src_filemaping);
@@ -340,20 +332,13 @@ size_t assetbundle_diff_insert(struct assetbundle_diff* assetbundle_diff, char* 
     return assetbundle_diff->assetfile_index_count;
 }
 
-struct objectinfo_diff_info
-{
-    char* verify;
-    size_t index;
-    size_t offset;
-};
-
 void objectinfo_diff(struct objectinfo* objectinfo, struct assetbundle_diff* assetbundle_diff, struct assetfiles* assetfiles) 
 {
     struct objectinfo* objectinfo_same = NULL;
     size_t assetfile_index = 0;
 
     for (size_t i = 0; i < assetfiles->count; ++i) {
-        struct objectinfo* objectinfo_same = objectinfo_find(objectinfo, assetfiles->assetfiles[i]);
+        objectinfo_same = objectinfo_find(objectinfo, assetfiles->assetfiles[i]);
         if (objectinfo_same) {
             assetfile_index = i;
             break;
@@ -363,50 +348,38 @@ void objectinfo_diff(struct objectinfo* objectinfo, struct assetbundle_diff* ass
     if (!objectinfo_same)
         return;
 
-    struct objectinfo_diff_info* objectinfo_diff_info = (struct objectinfo_diff_info*)calloc(1, sizeof(objectinfo_diff_info));
-    objectinfo_diff_info->verify = DIFF_INFO_VERIFY;
+    if (objectinfo->length <= sizeof(struct objectinfo_diff_info))
+        return;
+
+    struct objectinfo_diff_info objectinfo_diff_info;
+    memcpy(objectinfo_diff_info.verify, DIFF_INFO_VERIFY, sizeof(DIFF_INFO_VERIFY));
 
     struct split_filemaping* split_filemaping = assetfiles->split_filemapings[assetfile_index];
     unsigned char* filemaping_base = assetfiles->filemaping_base[assetfile_index];
-    size_t offset = objectinfo_same->buffer - filemaping_base;
 
-    if (split_filemaping) {
-        if (split_filemaping->format) {
-            int split_index = 0;
-            for (int i = (int)split_filemaping->offsets_count - 1; i >= 0; --i) {
-                if (offset > split_filemaping->offsets[i]) {
-                    split_index = i;
-                    offset -= split_filemaping->offsets[i];
-                }
+    objectinfo_diff_info.index = 0;
+    objectinfo_diff_info.offset = (uint32_t)(objectinfo_same->buffer - filemaping_base);
+
+    if (split_filemaping && split_filemaping->format) {
+        int split_index = 0;
+        for (int i = (int)split_filemaping->offsets_count - 1; i >= 0; --i) {
+            if (objectinfo_diff_info.offset > split_filemaping->offsets[i]) {
+                split_index = i;
+                objectinfo_diff_info.offset -= split_filemaping->offsets[i];
+                break;
             }
-
-            char split_asset_path[MAX_PATH];
-            sprintf(split_asset_path, "%s.split%d", split_filemaping->name, split_index);
-
-            objectinfo_diff_info->index = assetbundle_diff_insert(assetbundle_diff, split_asset_path);;
-            objectinfo_diff_info->offset = offset;
-        } else {
-            objectinfo_diff_info->index = assetbundle_diff_insert(assetbundle_diff, split_filemaping->name);
-            objectinfo_diff_info->offset = offset;
         }
-    } else {
-        objectinfo_diff_info->index = 0;
-        objectinfo_diff_info->offset = offset;
-    }
 
-    unsigned char buffer[MAX_DIFF_INFO_SIZE];
-    size_t buffer_offset = 0;
+        char split_asset_path[MAX_PATH];
+        sprintf(split_asset_path, "%s.split%d", split_filemaping->name, split_index);
 
-    buffer_offset += write_string(buffer, buffer_offset, objectinfo_diff_info->verify);
-    buffer_offset += write_uint32(buffer, buffer_offset, objectinfo_diff_info->index, false);
-    buffer_offset += write_uint32(buffer, buffer_offset, objectinfo_diff_info->offset, false);
+        objectinfo_diff_info.index = assetbundle_diff_insert(assetbundle_diff, split_asset_path);;
+    } else if (split_filemaping) {
+        objectinfo_diff_info.index = assetbundle_diff_insert(assetbundle_diff, split_filemaping->name);
+    } 
 
-    if (offset < objectinfo->length) {
-        memset(objectinfo->buffer, 0, objectinfo->length);
-        memcpy(objectinfo->buffer, buffer, offset);
-    }
-
-    free(objectinfo_diff_info);
+    memset(objectinfo->buffer, 0, objectinfo->length);
+    memcpy(objectinfo->buffer, &objectinfo_diff_info, sizeof(objectinfo_diff_info));
 }
 
 void assetbundle_diff_process(struct assetbundle_diff* assetbundle_diff, struct assetfiles* assetfiles)
@@ -415,43 +388,89 @@ void assetbundle_diff_process(struct assetbundle_diff* assetbundle_diff, struct 
     for (size_t i = 0; i < file_count; ++i)  {
         struct assetfile* assetfile = assetbundle_get_assetfile(assetbundle_diff->assetbundle, i);
         size_t obj_count = assetfile_objectinfo_count(assetfile);        
-        for (size_t j = 0; i < obj_count; ++j) {
+        for (size_t j = 0; j < obj_count; ++j) {
             struct objectinfo* objectinfo = assetfile_get_objectinfo(assetfile, j);
             objectinfo_diff(objectinfo, assetbundle_diff, assetfiles);
         }
     }
 }
 
-EXTERN_API errno_t assetbundle_diff(const char* assetfile_dir, const char* assetbundle_from, const char* assetbundle_to, const char* assetbundle_diff_name)
+EXTERN_API errno_t assetbundle_diff(const char* dir, const char* from, const char* to, const char* diff)
 {
-    int result = ASSETBUNDLE_FAILED;
     struct assetfiles* assetfiles = assetfiles_create();
 
-	if (assetbundle_from) {
-        if (!assetfiles_loadfrom_assetbundle(assetfiles, assetbundle_from)) {
-            result = ASSETBUNDLE_FROM_LOAD_FAILED;
-            goto Exit0;
-        }
+	if (from && !assetfiles_loadfrom_assetbundle(assetfiles, from)) {
+        assetfiles_destory(assetfiles);
+        return ASSETBUNDLE_FROM_LOAD_FAILED;
 	}
 
-    if (assetfile_dir) {
-        traversedir(assetfile_dir, load_assetfile_dir, assetfiles, true);
+    if (dir) {
+        traversedir(dir, load_assetfile_dir, assetfiles, true);
     }
 
-    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_create(assetbundle_to, assetbundle_diff_name);
+    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_create(to, diff);
     if (!assetbundle_diff) {
-        result = ASSETBUNDLE_DIFF_CREATE_FAILED;
-        goto Exit0;
+        assetfiles_destory(assetfiles);
+        return ASSETBUNDLE_DIFF_CREATE_FAILED;
     }
 
     assetbundle_diff_process(assetbundle_diff, assetfiles);
 
-    size_t length = assetbundle_diff->buffer_end - assetbundle_diff->buffer_begin;
+    size_t assetbundle_diff_length = assetbundle_diff->buffer_pos - assetbundle_diff->buffer_begin;
     assetbundle_diff_destory(assetbundle_diff);
+    assetfiles_destory(assetfiles);
 
-    filemaping_truncate(assetbundle_diff_name, length);
+    filemaping_truncate(diff, assetbundle_diff_length);
 
-    result = ASSETBUNDLE_SUCCEED;
-Exit0:
-    return result;    
+    return ASSETBUNDLE_SUCCEED;    
+}
+
+struct objectinfo_diff_info* get_objectinfo_diff_info(unsigned char* buffer)
+{
+    struct objectinfo_diff_info* ret = (struct objectinfo_diff_info*)buffer;
+    if (strcmp(ret->verify, DIFF_INFO_VERIFY) == 0)
+        return ret;
+    return NULL;
+}
+
+EXTERN_API void assetbundle_diff_print(const char* filename)
+{
+    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_load(filename);
+    if (!assetbundle_diff)
+        return;
+        
+    struct debug_tree* root = debug_tree_create(NULL, "*");
+    
+    struct debug_tree* fileindex = debug_tree_create(root, "fileindex count:%hu", assetbundle_diff->assetfile_index_count);
+    for (size_t i = 0; i < assetbundle_diff->assetfile_index_count; ++i) {
+        debug_tree_create(fileindex, "index:%u\t%s", i + 1, assetbundle_diff->assetfile_index[i]);
+    }
+    
+    struct debug_tree* unchangelist = debug_tree_create(root, "unchange list");
+    struct debug_tree* changelist = debug_tree_create(root, "changed list");
+
+    size_t file_count = assetbundle_assetfile_count(assetbundle_diff->assetbundle);
+    for (size_t i = 0; i < file_count; ++i)  {
+        struct assetfile* assetfile = assetbundle_get_assetfile(assetbundle_diff->assetbundle, i);
+        size_t obj_count = assetfile_objectinfo_count(assetfile);        
+
+        for (size_t j = 0; j < obj_count; ++j) {
+            struct objectinfo* objectinfo = assetfile_get_objectinfo(assetfile, j);
+            struct objectinfo_diff_info* objectinfo_diff_info = get_objectinfo_diff_info(objectinfo->buffer);
+            if (objectinfo_diff_info) {
+                debug_tree_create(unchangelist, "path_id:%d\tindex:%hu\toffset:%u", objectinfo->path_id, objectinfo_diff_info->index, objectinfo_diff_info->offset);
+            } else {
+                char* objectinfo_name = objectinfo_getname(objectinfo->buffer, 0, objectinfo->length);
+                debug_tree_create(changelist, "path_id:%d\name:%s", objectinfo->path_id, objectinfo_name);
+                free(objectinfo_name);
+            }
+        }
+    }   
+
+    struct debug_tree* assetbundle = debug_tree_create(root, "assetbundle size:%u", assetbundle_diff->assetbundle_size);
+    assetbundle_print(assetbundle_diff->assetbundle, assetbundle);
+    
+    debug_tree_print(root, stdout);
+    debug_tree_destory(root);
+    assetbundle_diff_destory(assetbundle_diff);
 }

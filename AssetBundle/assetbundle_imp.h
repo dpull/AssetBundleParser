@@ -4,8 +4,8 @@
 #pragma pack(1)
 struct level_info
 {
-    int pack_size;
-	int uncompressed_size;
+    int32_t pack_size;
+	int32_t uncompressed_size;
 };
 #pragma pack()
 

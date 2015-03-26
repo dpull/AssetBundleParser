@@ -31,7 +31,7 @@
 #if defined(_MSC_VER)
 #define EXTERN_API __declspec(dllexport)
 #else
-#define EXTERN_API 
+#define EXTERN_API  
 #endif
 
 #endif

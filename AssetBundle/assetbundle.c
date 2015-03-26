@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <assert.h>
 #include <string.h>
+#include <stdint.h>
 #include "utils/platform.h"
 #include "utils/debug_tree.h"
 #include "tools.h"
@@ -133,7 +134,7 @@ EXTERN_API struct assetbundle* assetbundle_load_data(unsigned char* data, size_t
 	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
 		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
 		size_t file_offset = bundle->header.header_size + entryinfo->offset;
-		assert(file_offset + entryinfo->size <= filemaping_getlength(bundle->filemaping));
+		assert(file_offset + entryinfo->size <= length);
 
 		entryinfo->assetfile = assetfile_load(data, file_offset, entryinfo->size);
     	assert(entryinfo->assetfile);
@@ -188,8 +189,6 @@ EXTERN_API bool assetbundle_check(struct assetbundle* bundle)
 
    	if (error_bytes > 0) 
 		printf("check failed, error bytes count:%d\n", error_bytes);
-	else
-		printf("check succeed\n");
 
     return error_bytes == 0;
 }

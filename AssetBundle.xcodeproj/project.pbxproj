@@ -35,6 +35,7 @@
 /* Begin PBXFileReference section */
 		87096FD81A6A4C4600409D52 /* filemaping.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = filemaping.c; sourceTree = "<group>"; };
 		87096FD91A6A4C4600409D52 /* filemaping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filemaping.h; sourceTree = "<group>"; };
+		871022E51AC3B08E003451E2 /* assetbundle_diff_imp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetbundle_diff_imp.h; sourceTree = "<group>"; };
 		8731B8981AAEC92D00045628 /* field_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = field_type.h; sourceTree = "<group>"; };
 		8731B8991AAEC92E00045628 /* field_type.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = field_type.c; sourceTree = "<group>"; };
 		874C1E991A69026600EB9999 /* assetfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = assetfile.c; sourceTree = "<group>"; };
@@ -89,6 +90,7 @@
 		8769BB091A67C7F4000BFF71 /* AssetBundle */ = {
 			isa = PBXGroup;
 			children = (
+				871022E51AC3B08E003451E2 /* assetbundle_diff_imp.h */,
 				87FCD5E31A70978700E67100 /* assetbundle_diff.c */,
 				87FCD5E41A70978700E67100 /* assetbundle_diff.h */,
 				87FCD5E51A70978700E67100 /* assetbundle_imp.h */,

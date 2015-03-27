@@ -49,7 +49,7 @@ static void PathCombine(char szOutPath[], size_t uLength, const char szPath1[], 
 bool TraverseDirFiles(const char szDir[], traversedir_callback* pFunc, void* pvUsrData, bool bIgnoreHideFile)
 {
     bool                bResult     = false;
-    bool			    bRetCode    = false;
+    bool                bRetCode    = false;
     HANDLE              hFind       = INVALID_HANDLE_VALUE;
     WIN32_FIND_DATAA    FindFileData;
     char                szPath[512];
@@ -104,7 +104,7 @@ Exit0:
 bool TraverseDirFiles(const char szDir[], traversedir_callback* pFunc, void* pvUsrData, bool bIgnoreHideFile)
 {
     bool            bResult     = false;
-    bool			bRetCode    = false;
+    bool            bRetCode    = false;
     DIR*            pDir        = NULL;
     struct dirent*  pDirNode    = NULL;
     char            szPath[512];

@@ -10,7 +10,7 @@
 #include "utils/debug_tree.h"
 #include "utils/traversedir.h"
 #include "tools.h"
-#include "filemaping.h"
+#include "filemapping.h"
 #include "object_class.h"
 #include "assetfile_imp.h"
 #include "assetfile.h"
@@ -19,175 +19,175 @@
 #include "assetbundle_diff.h"
 #include "assetbundle_diff_imp.h"
 
-void split_filemaping_destory(struct split_filemaping* split_filemaping)
+void split_filemapping_destory(struct split_filemapping* split_filemapping)
 {
-	if (split_filemaping->filemaping)
-		filemaping_destory(split_filemaping->filemaping);
+    if (split_filemapping->filemapping)
+        filemapping_destory(split_filemapping->filemapping);
 
-	if (split_filemaping->name)
-		free(split_filemaping->name);
+    if (split_filemapping->name)
+        free(split_filemapping->name);
 
-	if (split_filemaping->offsets)
-		free(split_filemaping->offsets);
+    if (split_filemapping->offsets)
+        free(split_filemapping->offsets);
 
-	free(split_filemaping);
+    free(split_filemapping);
 }
 
-struct split_filemaping* split_filemaping_create(const char* fullpath, const char* filename)
+struct split_filemapping* split_filemapping_create(const char* fullpath, const char* filename)
 {
-	struct split_filemaping* split_filemaping = (struct split_filemaping*)calloc(1, sizeof(*split_filemaping));
+    struct split_filemapping* split_filemapping = (struct split_filemapping*)calloc(1, sizeof(*split_filemapping));
     const char* split0 = strstr(filename, ".split0");
 
     if (split0 == NULL) {
-    	split_filemaping->filemaping = filemaping_create_readonly(fullpath);
-    	if (!split_filemaping->filemaping) {
-    		split_filemaping_destory(split_filemaping);
-    		return NULL;
-    	}
-    	split_filemaping->name = strdup(filename);
-    	split_filemaping->format = false;
-    	split_filemaping->offsets_count = 0;
+        split_filemapping->filemapping = filemapping_create_readonly(fullpath);
+        if (!split_filemapping->filemapping) {
+            split_filemapping_destory(split_filemapping);
+            return NULL;
+        }
+        split_filemapping->name = strdup(filename);
+        split_filemapping->format = false;
+        split_filemapping->offsets_count = 0;
 
-    	return split_filemaping;
+        return split_filemapping;
     } else {
-		char temp_file[MAX_PATH];
-        strcpy(temp_file, "/tmp/split_filemaping.XXXXXX");
+        char temp_file[MAX_PATH];
+        strcpy(temp_file, "/tmp/split_filemapping.XXXXXX");
         mktemp(temp_file);
 
-        split_filemaping->filemaping = filemaping_create_readwrite(temp_file, MAX_COMBINE_FILE_SIZE);
-		if (!split_filemaping->filemaping) {
-    		split_filemaping_destory(split_filemaping);
-    		return NULL;
-    	}
+        split_filemapping->filemapping = filemapping_create_readwrite(temp_file, MAX_COMBINE_FILE_SIZE);
+        if (!split_filemapping->filemapping) {
+            split_filemapping_destory(split_filemapping);
+            return NULL;
+        }
 
-    	split_filemaping->name = strndup(filename, split0 - filename);
-    	split_filemaping->format = true;
-    	split_filemaping->offsets = (size_t*)calloc(MAX_SPLIT_FILE_COUNT, sizeof(*split_filemaping->offsets));
+        split_filemapping->name = strndup(filename, split0 - filename);
+        split_filemapping->format = true;
+        split_filemapping->offsets = (size_t*)calloc(MAX_SPLIT_FILE_COUNT, sizeof(*split_filemapping->offsets));
 
-        unsigned char* data = filemaping_getdata(split_filemaping->filemaping);
+        unsigned char* data = filemapping_getdata(split_filemapping->filemapping);
         size_t offset = 0;
 
         for (int i = 0; i < MAX_SPLIT_FILE_COUNT; ++i) {
             char split_asset_path[MAX_PATH];
             size_t dir_length = strlen(fullpath) - strlen(filename);
             strncpy(split_asset_path, fullpath, dir_length);
-            sprintf(split_asset_path + dir_length, "%s.split%d", split_filemaping->name, i);
+            sprintf(split_asset_path + dir_length, "%s.split%d", split_filemapping->name, i);
 
-            struct filemaping* filemaping = filemaping_create_readonly(split_asset_path);
-            if (!filemaping)
+            struct filemapping* filemapping = filemapping_create_readonly(split_asset_path);
+            if (!filemapping)
                 break;
             
-            split_filemaping->offsets[i] = offset;
-            split_filemaping->offsets_count++;
+            split_filemapping->offsets[i] = offset;
+            split_filemapping->offsets_count++;
 
-            unsigned char* split_data = filemaping_getdata(filemaping);
-            size_t split_length = filemaping_getlength(filemaping);
+            unsigned char* split_data = filemapping_getdata(filemapping);
+            size_t split_length = filemapping_getlength(filemapping);
             memcpy(data + offset, split_data, split_length);
             
             offset += split_length;
-            filemaping_destory(filemaping);
+            filemapping_destory(filemapping);
         }
 
-        return split_filemaping;
+        return split_filemapping;
     }
 }
 
 struct assetfiles* assetfiles_create()
 {
-	struct assetfiles* assetfiles = (struct assetfiles*)calloc(1, sizeof(*assetfiles));
-	return assetfiles;
+    struct assetfiles* assetfiles = (struct assetfiles*)calloc(1, sizeof(*assetfiles));
+    return assetfiles;
 }
 
 void assetfiles_destory(struct assetfiles* assetfiles)
 {
-	if (assetfiles->assetfiles) {
-		for (size_t i = assetfiles->assetbundle_assetfile_count; i < assetfiles->count; ++i) {
-			struct assetfile* assetfile = assetfiles->assetfiles[i];
-			if (assetfile)
-				assetfile_destory(assetfile);
-		}
-		free(assetfiles->assetfiles);
-	}
+    if (assetfiles->assetfiles) {
+        for (size_t i = assetfiles->assetbundle_assetfile_count; i < assetfiles->count; ++i) {
+            struct assetfile* assetfile = assetfiles->assetfiles[i];
+            if (assetfile)
+                assetfile_destory(assetfile);
+        }
+        free(assetfiles->assetfiles);
+    }
 
     if (assetfiles->assetbundle) {
         assetbundle_destory(assetfiles->assetbundle);
     }
 
-	if (assetfiles->split_filemapings) {
-		for (size_t i = 0; i < assetfiles->count; ++i) {
-			struct split_filemaping* split_filemaping = assetfiles->split_filemapings[i];
-			if (split_filemaping)
-				split_filemaping_destory(split_filemaping);
-		}
-		free(assetfiles->split_filemapings);
-	}
-
-    if (assetfiles->filemaping_base) {
-        free(assetfiles->filemaping_base);
+    if (assetfiles->split_filemappings) {
+        for (size_t i = 0; i < assetfiles->count; ++i) {
+            struct split_filemapping* split_filemapping = assetfiles->split_filemappings[i];
+            if (split_filemapping)
+                split_filemapping_destory(split_filemapping);
+        }
+        free(assetfiles->split_filemappings);
     }
-	free(assetfiles);
+
+    if (assetfiles->filemapping_base) {
+        free(assetfiles->filemapping_base);
+    }
+    free(assetfiles);
 }
 
-void assetfiles_insert(struct assetfiles* assetfiles, struct assetfile* assetfile, struct split_filemaping* split_filemaping, unsigned char* filemaping_base)
+void assetfiles_insert(struct assetfiles* assetfiles, struct assetfile* assetfile, struct split_filemapping* split_filemapping, unsigned char* filemapping_base)
 {
-	if (assetfiles->count == assetfiles->max_count) {
+    if (assetfiles->count == assetfiles->max_count) {
         assetfiles->max_count = 2 * ((assetfiles->max_count == 0) ? 100 : assetfiles->max_count);
         assetfiles->assetfiles = (struct assetfile**)realloc(assetfiles->assetfiles, assetfiles->max_count * sizeof(*assetfiles->assetfiles));
-        assetfiles->split_filemapings = (struct split_filemaping**)realloc(assetfiles->split_filemapings, assetfiles->max_count * sizeof(*assetfiles->split_filemapings));
-        assetfiles->filemaping_base = (unsigned char**)realloc(assetfiles->filemaping_base, assetfiles->max_count * sizeof(*assetfiles->filemaping_base));
+        assetfiles->split_filemappings = (struct split_filemapping**)realloc(assetfiles->split_filemappings, assetfiles->max_count * sizeof(*assetfiles->split_filemappings));
+        assetfiles->filemapping_base = (unsigned char**)realloc(assetfiles->filemapping_base, assetfiles->max_count * sizeof(*assetfiles->filemapping_base));
     }
 
     assetfiles->assetfiles[assetfiles->count] = assetfile;
-    assetfiles->split_filemapings[assetfiles->count] = split_filemaping;
-    assetfiles->filemaping_base[assetfiles->count] = filemaping_base;
+    assetfiles->split_filemappings[assetfiles->count] = split_filemapping;
+    assetfiles->filemapping_base[assetfiles->count] = filemapping_base;
     assetfiles->count++;
 }
 
 bool assetfiles_loadfrom_assetbundle(struct assetfiles* assetfiles, const char* filename)
 {
-	struct assetbundle* assetbundle = assetbundle_load(filename);
-	if (!assetbundle)
-		return false;
+    struct assetbundle* assetbundle = assetbundle_load(filename);
+    if (!assetbundle)
+        return false;
 
-	if (!assetbundle_check(assetbundle)) {
-		assetbundle_destory(assetbundle);
-		return false;
-	}
+    if (!assetbundle_check(assetbundle)) {
+        assetbundle_destory(assetbundle);
+        return false;
+    }
 
-	size_t count = assetbundle_assetfile_count(assetbundle);
-    unsigned char* data = filemaping_getdata(assetbundle->filemaping); // bad code,
+    size_t count = assetbundle_assetfile_count(assetbundle);
+    unsigned char* data = filemapping_getdata(assetbundle->filemapping); // bad code,
 
-	for (size_t i = 0; i < count; ++i)	{
-		struct assetfile* assetfile = assetbundle_get_assetfile(assetbundle, i);
+    for (size_t i = 0; i < count; ++i)    {
+        struct assetfile* assetfile = assetbundle_get_assetfile(assetbundle, i);
         assetfiles_insert(assetfiles, assetfile, NULL, data);
-	}
+    }
 
     assetfiles->assetbundle = assetbundle;
-	assetfiles->assetbundle_assetfile_count = count;
+    assetfiles->assetbundle_assetfile_count = count;
     return true;
 }
 
 bool load_assetfile_dir(const char* fullpath, const char* filename, void* userdata)
 {
-    struct split_filemaping* split_filemaping = split_filemaping_create(fullpath, filename);
-    if (!split_filemaping)
+    struct split_filemapping* split_filemapping = split_filemapping_create(fullpath, filename);
+    if (!split_filemapping)
         return true;
 
-    unsigned char* data = filemaping_getdata(split_filemaping->filemaping);
-    size_t length = filemaping_getlength(split_filemaping->filemaping);
+    unsigned char* data = filemapping_getdata(split_filemapping->filemapping);
+    size_t length = filemapping_getlength(split_filemapping->filemapping);
 
     if (!is_assetfile(data, 0, length)) {
-        split_filemaping_destory(split_filemaping);
+        split_filemapping_destory(split_filemapping);
         return true;
     }
     
     struct assetfile* assetfile = assetfile_load(data, 0, length);
     if (!assetfile) {
-        split_filemaping_destory(split_filemaping);
+        split_filemapping_destory(split_filemapping);
         return true;
     }
 
-    assetfiles_insert((struct assetfiles*)userdata, assetfile, split_filemaping, data);
+    assetfiles_insert((struct assetfiles*)userdata, assetfile, split_filemapping, data);
     return true;
 }
 
@@ -199,8 +199,8 @@ void assetbundle_diff_destory(struct assetbundle_diff* assetbundle_diff)
     if (assetbundle_diff->assetbundle) 
         assetbundle_destory(assetbundle_diff->assetbundle);
 
-    if (assetbundle_diff->filemaping)
-        filemaping_destory(assetbundle_diff->filemaping);
+    if (assetbundle_diff->filemapping)
+        filemapping_destory(assetbundle_diff->filemapping);
 
     free(assetbundle_diff);
 }
@@ -233,19 +233,19 @@ struct assetbundle_diff* assetbundle_diff_loaddata(unsigned char* data, size_t l
 
 struct assetbundle_diff* assetbundle_diff_load(const char* filename)
 {
-    struct filemaping* filemaping = filemaping_create_readonly(filename);
-    if (!filemaping)
+    struct filemapping* filemapping = filemapping_create_readwrite(filename, 0);
+    if (!filemapping)
         return NULL;
     
-    unsigned char* data = filemaping_getdata(filemaping);
-    size_t length = filemaping_getlength(filemaping);
+    unsigned char* data = filemapping_getdata(filemapping);
+    size_t length = filemapping_getlength(filemapping);
     
     struct assetbundle_diff* assetbundle_diff = assetbundle_diff_loaddata(data, length);
     if (!assetbundle_diff) {
-        filemaping_destory(filemaping);
+        filemapping_destory(filemapping);
         return NULL;
     }
-    assetbundle_diff->filemaping = filemaping;
+    assetbundle_diff->filemapping = filemapping;
     return assetbundle_diff;
 }
 
@@ -265,21 +265,21 @@ struct assetbundle_diff* assetbundle_diff_create(const char* src, const char* ds
     if (!assertbundle_checkfile(src))
         return NULL;
     
-    struct filemaping* src_filemaping = filemaping_create_readonly(src);
-    if (!src_filemaping)
+    struct filemapping* src_filemapping = filemapping_create_readonly(src);
+    if (!src_filemapping)
         return NULL;
 
-    unsigned char* src_data = filemaping_getdata(src_filemaping);
-    size_t src_length = filemaping_getlength(src_filemaping);
+    unsigned char* src_data = filemapping_getdata(src_filemapping);
+    size_t src_length = filemapping_getlength(src_filemapping);
 
-    struct filemaping* dst_filemaping = filemaping_create_readwrite(dst, src_length + MAX_DIFF_RESERVED_SIZE);
-    if (!dst_filemaping) {
-        filemaping_destory(src_filemaping);
+    struct filemapping* dst_filemapping = filemapping_create_readwrite(dst, src_length + MAX_DIFF_RESERVED_SIZE);
+    if (!dst_filemapping) {
+        filemapping_destory(src_filemapping);
         return NULL;    
     }
     
-    unsigned char* dst_data = filemaping_getdata(dst_filemaping);
-    size_t dst_length = filemaping_getlength(dst_filemaping);
+    unsigned char* dst_data = filemapping_getdata(dst_filemapping);
+    size_t dst_length = filemapping_getlength(dst_filemapping);
     memset(dst_data, 0, dst_length);
 
     size_t offset = 0;
@@ -289,12 +289,12 @@ struct assetbundle_diff* assetbundle_diff_create(const char* src, const char* ds
     
     struct assetbundle_diff* assetbundle_diff = assetbundle_diff_loaddata(dst_data, dst_length);
     if (!assetbundle_diff) {
-        filemaping_destory(src_filemaping);
-        filemaping_destory(dst_filemaping);
+        filemapping_destory(src_filemapping);
+        filemapping_destory(dst_filemapping);
         return NULL;
     }
-    assetbundle_diff->filemaping = dst_filemaping;
-    filemaping_destory(src_filemaping);
+    assetbundle_diff->filemapping = dst_filemapping;
+    filemapping_destory(src_filemapping);
     return assetbundle_diff;
 } 
 
@@ -326,6 +326,9 @@ size_t assetbundle_diff_insert(struct assetbundle_diff* assetbundle_diff, char* 
     assert(assetbundle_diff->buffer_pos < assetbundle_diff->buffer_end);
 
     assetbundle_diff->assetfile_index_count++;
+    memset(assetbundle_diff->buffer_begin + 4 + assetbundle_diff->assetbundle_size, 0, 4);
+    write_uint32(assetbundle_diff->buffer_begin, 4 + assetbundle_diff->assetbundle_size, assetbundle_diff->assetfile_index_count, false);
+    
     assetbundle_diff->assetfile_index = realloc(assetbundle_diff->assetfile_index, assetbundle_diff->assetfile_index_count * sizeof(*assetbundle_diff->assetfile_index));
     
     read_string(buffer_pos, 0, assetbundle_diff->assetfile_index + assetbundle_diff->assetfile_index_count - 1);
@@ -354,28 +357,28 @@ void objectinfo_diff(struct objectinfo* objectinfo, struct assetbundle_diff* ass
     struct objectinfo_diff_info objectinfo_diff_info;
     memcpy(objectinfo_diff_info.verify, DIFF_INFO_VERIFY, sizeof(DIFF_INFO_VERIFY));
 
-    struct split_filemaping* split_filemaping = assetfiles->split_filemapings[assetfile_index];
-    unsigned char* filemaping_base = assetfiles->filemaping_base[assetfile_index];
+    struct split_filemapping* split_filemapping = assetfiles->split_filemappings[assetfile_index];
+    unsigned char* filemapping_base = assetfiles->filemapping_base[assetfile_index];
 
     objectinfo_diff_info.index = 0;
-    objectinfo_diff_info.offset = (uint32_t)(objectinfo_same->buffer - filemaping_base);
+    objectinfo_diff_info.offset = (uint32_t)(objectinfo_same->buffer - filemapping_base);
 
-    if (split_filemaping && split_filemaping->format) {
+    if (split_filemapping && split_filemapping->format) {
         int split_index = 0;
-        for (int i = (int)split_filemaping->offsets_count - 1; i >= 0; --i) {
-            if (objectinfo_diff_info.offset > split_filemaping->offsets[i]) {
+        for (int i = (int)split_filemapping->offsets_count - 1; i >= 0; --i) {
+            if (objectinfo_diff_info.offset > split_filemapping->offsets[i]) {
                 split_index = i;
-                objectinfo_diff_info.offset -= split_filemaping->offsets[i];
+                objectinfo_diff_info.offset -= split_filemapping->offsets[i];
                 break;
             }
         }
 
         char split_asset_path[MAX_PATH];
-        sprintf(split_asset_path, "%s.split%d", split_filemaping->name, split_index);
+        sprintf(split_asset_path, "%s.split%d", split_filemapping->name, split_index);
 
         objectinfo_diff_info.index = assetbundle_diff_insert(assetbundle_diff, split_asset_path);;
-    } else if (split_filemaping) {
-        objectinfo_diff_info.index = assetbundle_diff_insert(assetbundle_diff, split_filemaping->name);
+    } else if (split_filemapping) {
+        objectinfo_diff_info.index = assetbundle_diff_insert(assetbundle_diff, split_filemapping->name);
     } 
 
     memset(objectinfo->buffer, 0, objectinfo->length);
@@ -395,14 +398,22 @@ void assetbundle_diff_process(struct assetbundle_diff* assetbundle_diff, struct 
     }
 }
 
+struct objectinfo_diff_info* get_objectinfo_diff_info(unsigned char* buffer)
+{
+    struct objectinfo_diff_info* ret = (struct objectinfo_diff_info*)buffer;
+    if (strcmp(ret->verify, DIFF_INFO_VERIFY) == 0)
+        return ret;
+    return NULL;
+}
+
 EXTERN_API errno_t assetbundle_diff(const char* dir, const char* from, const char* to, const char* diff)
 {
     struct assetfiles* assetfiles = assetfiles_create();
 
-	if (from && !assetfiles_loadfrom_assetbundle(assetfiles, from)) {
+    if (from && !assetfiles_loadfrom_assetbundle(assetfiles, from)) {
         assetfiles_destory(assetfiles);
         return ASSETBUNDLE_FROM_LOAD_FAILED;
-	}
+    }
 
     if (dir) {
         traversedir(dir, load_assetfile_dir, assetfiles, true);
@@ -420,17 +431,9 @@ EXTERN_API errno_t assetbundle_diff(const char* dir, const char* from, const cha
     assetbundle_diff_destory(assetbundle_diff);
     assetfiles_destory(assetfiles);
 
-    filemaping_truncate(diff, assetbundle_diff_length);
+    filemapping_truncate(diff, assetbundle_diff_length);
 
     return ASSETBUNDLE_SUCCEED;    
-}
-
-struct objectinfo_diff_info* get_objectinfo_diff_info(unsigned char* buffer)
-{
-    struct objectinfo_diff_info* ret = (struct objectinfo_diff_info*)buffer;
-    if (strcmp(ret->verify, DIFF_INFO_VERIFY) == 0)
-        return ret;
-    return NULL;
 }
 
 EXTERN_API void assetbundle_diff_print(const char* filename)
@@ -461,7 +464,7 @@ EXTERN_API void assetbundle_diff_print(const char* filename)
                 debug_tree_create(unchangelist, "path_id:%d\tindex:%hu\toffset:%u", objectinfo->path_id, objectinfo_diff_info->index, objectinfo_diff_info->offset);
             } else {
                 char* objectinfo_name = objectinfo_getname(objectinfo->buffer, 0, objectinfo->length);
-                debug_tree_create(changelist, "path_id:%d\name:%s", objectinfo->path_id, objectinfo_name);
+                debug_tree_create(changelist, "path_id:%d\tname:%s", objectinfo->path_id, objectinfo_name);
                 free(objectinfo_name);
             }
         }
@@ -473,4 +476,67 @@ EXTERN_API void assetbundle_diff_print(const char* filename)
     debug_tree_print(root, stdout);
     debug_tree_destory(root);
     assetbundle_diff_destory(assetbundle_diff);
+}
+
+EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, const char* from, const char* to, const char* diff)
+{
+    struct filemapping* filemapping_from = NULL;
+    unsigned char* data_from = NULL;
+    size_t data_from_length = 0;
+    
+    if (from) {
+        filemapping_from = filemapping_create_readonly(from);
+        if (!filemapping_from) {
+            return ASSETBUNDLE_FROM_LOAD_FAILED;
+        }
+        data_from = filemapping_getdata(filemapping_from);
+        data_from_length = filemapping_getlength(filemapping_from);
+    }
+
+    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_load(diff);
+    if (!assetbundle_diff) {
+        filemapping_destory(filemapping_from);
+        return ASSETBUNDLE_DIFF_LOAD_FAILED;
+    }
+
+    bool merge_error = false;
+    size_t file_count = assetbundle_assetfile_count(assetbundle_diff->assetbundle);
+    for (size_t i = 0; i < file_count; ++i)  {
+        struct assetfile* assetfile = assetbundle_get_assetfile(assetbundle_diff->assetbundle, i);
+        size_t obj_count = assetfile_objectinfo_count(assetfile);        
+
+        for (size_t j = 0; j < obj_count; ++j) {
+            struct objectinfo* objectinfo = assetfile_get_objectinfo(assetfile, j);
+            struct objectinfo_diff_info* objectinfo_diff_info = get_objectinfo_diff_info(objectinfo->buffer);
+
+            if (!objectinfo_diff_info) 
+                continue;
+
+            if (objectinfo_diff_info->index == 0) {
+                assert(objectinfo_diff_info->offset + objectinfo->length < data_from_length);
+                memcpy(objectinfo->buffer, data_from + objectinfo_diff_info->offset, objectinfo->length);
+                continue;
+            }
+
+            assert(objectinfo_diff_info->index <= assetbundle_diff->assetfile_index_count);
+            char* assetfile_name = assetbundle_diff->assetfile_index[objectinfo_diff_info->index - 1];
+            if (!fn_readfile(objectinfo->buffer, assetfile_name, objectinfo_diff_info->offset, objectinfo->length)) {
+                merge_error = true;
+                break;
+            }
+        }
+    }
+    
+    size_t assetbundle_size = assetbundle_diff->assetbundle_size;
+    if (!merge_error) {
+        memmove(assetbundle_diff->buffer_begin, assetbundle_diff->buffer_begin + 4, assetbundle_size);
+    }
+    
+    assetbundle_diff_destory(assetbundle_diff);
+    filemapping_destory(filemapping_from);
+
+    if (!merge_error) {
+        filemapping_truncate(diff, assetbundle_size);
+    }    
+    return merge_error ? ASSETBUNDLE_FAILED : ASSETBUNDLE_SUCCEED;
 }

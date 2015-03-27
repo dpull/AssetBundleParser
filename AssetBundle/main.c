@@ -16,7 +16,7 @@
 #include "assetbundle.h"
 #include "assetbundle_diff.h"
 #include "assetfile.h"
-#include "filemaping.h"
+#include "filemapping.h"
 #include "field_type.h"
 #include "traversedir.h"
 #include "assetbundle_diff.h"
@@ -27,7 +27,7 @@ int main(int argc, const char * argv[])
     
     ret = assetbundle_diff(
                            "/Users/dpull/Documents/AssetBundle/Untitled",
-                           "/Users/dpull/Documents/AssetBundle/Untitled.asset",
+                           NULL,
                            "/Users/dpull/Documents/AssetBundle/Untitled.asset",
                            "/Users/dpull/Documents/AssetBundle/diff.asset");
     assert(ret == 0);
@@ -83,9 +83,9 @@ int main(int argc, const char * argv[])
     assert(ret == 0);
     
     ret = assetbundle_merge(
-		"D:\\OneDrive\\Code\\assetbundleparser\\Untitled1.asset",
-		"D:\\OneDrive\\Code\\assetbundleparser\\Untitled3.asset",
-		"D:\\OneDrive\\Code\\assetbundleparser\\diff.asset"
+        "D:\\OneDrive\\Code\\assetbundleparser\\Untitled1.asset",
+        "D:\\OneDrive\\Code\\assetbundleparser\\Untitled3.asset",
+        "D:\\OneDrive\\Code\\assetbundleparser\\diff.asset"
     );
     assert(ret == 0);
 */

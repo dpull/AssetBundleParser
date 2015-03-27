@@ -7,7 +7,7 @@
 #include "utils/platform.h"
 #include "utils/debug_tree.h"
 #include "tools.h"
-#include "filemaping.h"
+#include "filemapping.h"
 #include "field_type.h"
 
 // http://docs.unity3d.com/Manual/ClassIDReference.html
@@ -15,18 +15,18 @@
 
 struct field_type
 {
-	char* type;    
-	char* name;
-	int size;
-	int index;
-	int is_array;
-	int version;
-	int meta_flag;
+    char* type;    
+    char* name;
+    int size;
+    int index;
+    int is_array;
+    int version;
+    int meta_flag;
 };
 
 struct field_type_list
 {
-	struct field_type field_type;
+    struct field_type field_type;
     size_t children_count;
     struct field_type_list* children_field_type_list;
 };
@@ -36,7 +36,7 @@ struct field_type_db
     int version;
     size_t count;
     struct field_type_list* field_type_list;
- 	struct filemaping* filemaping;   
+     struct filemapping* filemapping;   
     size_t versions_count;
     char** versions;
 
@@ -44,17 +44,17 @@ struct field_type_db
 
 size_t field_type_load(unsigned char* data, size_t start, size_t length, struct field_type* field_type)
 {
-	size_t offset = start;
+    size_t offset = start;
 
-	offset += read_string(data, offset, &field_type->type);
-	offset += read_string(data, offset, &field_type->name);
-	offset += read_int32(data, offset, &field_type->size, false);
-	offset += read_int32(data, offset, &field_type->index, false);
-	offset += read_int32(data, offset, &field_type->is_array, false);
-	offset += read_int32(data, offset, &field_type->version, false);
-	offset += read_int32(data, offset, &field_type->meta_flag, false);
+    offset += read_string(data, offset, &field_type->type);
+    offset += read_string(data, offset, &field_type->name);
+    offset += read_int32(data, offset, &field_type->size, false);
+    offset += read_int32(data, offset, &field_type->index, false);
+    offset += read_int32(data, offset, &field_type->is_array, false);
+    offset += read_int32(data, offset, &field_type->version, false);
+    offset += read_int32(data, offset, &field_type->meta_flag, false);
 
-	return offset - start;
+    return offset - start;
 }
 
 size_t field_type_list_load(unsigned char* data, size_t start, size_t length, struct field_type_list* field_type_list)
@@ -86,15 +86,15 @@ void field_type_list_destory(struct field_type_list* field_type_list)
 
 struct field_type_db* field_type_db_load(const char* file)
 {
-    struct filemaping* filemaping = filemaping_create_readonly(file);
-    if (!filemaping)
+    struct filemapping* filemapping = filemapping_create_readonly(file);
+    if (!filemapping)
         return NULL;
 
     struct field_type_db* field_type_db = (struct field_type_db*)calloc(1, sizeof(*field_type_db)); 
-    field_type_db->filemaping = filemaping;
+    field_type_db->filemapping = filemapping;
 
-    unsigned char* data = filemaping_getdata(filemaping);
-    size_t length = filemaping_getlength(filemaping);
+    unsigned char* data = filemapping_getdata(filemapping);
+    size_t length = filemapping_getlength(filemapping);
     size_t offset = 0;
 
     offset += read_int32(data, offset, &field_type_db->version, false);
@@ -124,8 +124,8 @@ void field_type_db_destory(struct field_type_db* field_type_db)
     if (field_type_db->field_type_list)
         free(field_type_db->field_type_list);
 
-    if (field_type_db->filemaping)
-        filemaping_destory(field_type_db->filemaping);
+    if (field_type_db->filemapping)
+        filemapping_destory(field_type_db->filemapping);
 
     free(field_type_db);
 }

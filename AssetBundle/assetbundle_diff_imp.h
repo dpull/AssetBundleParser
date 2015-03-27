@@ -1,16 +1,16 @@
 #ifndef ASSETBUNDLE_DIFF_IMP_H
 #define ASSETBUNDLE_DIFF_IMP_H
 
-#define MAX_PATH 				(512)
-#define MAX_COMBINE_FILE_SIZE	(1024 * 1024 * 100)
-#define MAX_SPLIT_FILE_COUNT	(100)
+#define MAX_PATH                 (512)
+#define MAX_COMBINE_FILE_SIZE    (1024 * 1024 * 100)
+#define MAX_SPLIT_FILE_COUNT    (100)
 #define MAX_DIFF_RESERVED_SIZE  (1024 * 1024)
 #define MAX_DIFF_INFO_SIZE      (1024)
 #define DIFF_INFO_VERIFY        ("dpull@v1")
 
-struct split_filemaping
+struct split_filemapping
 {
-    struct filemaping* filemaping;
+    struct filemapping* filemapping;
     char* name;
     bool format;
     size_t offsets_count;
@@ -27,15 +27,17 @@ struct assetfiles
     struct assetbundle* assetbundle;
     size_t assetbundle_assetfile_count;
     
-    struct split_filemaping** split_filemapings;
-    unsigned char** filemaping_base;
+    struct split_filemapping** split_filemappings;
+    unsigned char** filemapping_base;
 };
 
 struct assetbundle_diff
 {
-    struct filemaping* filemaping;
+    struct filemapping* filemapping;
+    
     size_t assetbundle_size;
     struct assetbundle* assetbundle;
+    
     size_t assetfile_index_count;
     char** assetfile_index;
     

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		87096FDA1A6A4C4600409D52 /* filemaping.c in Sources */ = {isa = PBXBuildFile; fileRef = 87096FD81A6A4C4600409D52 /* filemaping.c */; };
+		87096FDA1A6A4C4600409D52 /* filemapping.c in Sources */ = {isa = PBXBuildFile; fileRef = 87096FD81A6A4C4600409D52 /* filemapping.c */; };
 		8731B89A1AAEC92E00045628 /* field_type.c in Sources */ = {isa = PBXBuildFile; fileRef = 8731B8991AAEC92E00045628 /* field_type.c */; };
 		874C1E9B1A69026600EB9999 /* assetfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 874C1E991A69026600EB9999 /* assetfile.c */; };
 		8769BB0B1A67C7F4000BFF71 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 8769BB0A1A67C7F4000BFF71 /* main.c */; };
@@ -33,8 +33,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		87096FD81A6A4C4600409D52 /* filemaping.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = filemaping.c; sourceTree = "<group>"; };
-		87096FD91A6A4C4600409D52 /* filemaping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filemaping.h; sourceTree = "<group>"; };
+		87096FD81A6A4C4600409D52 /* filemapping.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = filemapping.c; sourceTree = "<group>"; };
+		87096FD91A6A4C4600409D52 /* filemapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filemapping.h; sourceTree = "<group>"; };
 		871022E51AC3B08E003451E2 /* assetbundle_diff_imp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetbundle_diff_imp.h; sourceTree = "<group>"; };
 		8731B8981AAEC92D00045628 /* field_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = field_type.h; sourceTree = "<group>"; };
 		8731B8991AAEC92E00045628 /* field_type.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = field_type.c; sourceTree = "<group>"; };
@@ -101,8 +101,8 @@
 				874C1E9A1A69026600EB9999 /* assetfile.h */,
 				8731B8991AAEC92E00045628 /* field_type.c */,
 				8731B8981AAEC92D00045628 /* field_type.h */,
-				87096FD81A6A4C4600409D52 /* filemaping.c */,
-				87096FD91A6A4C4600409D52 /* filemaping.h */,
+				87096FD81A6A4C4600409D52 /* filemapping.c */,
+				87096FD91A6A4C4600409D52 /* filemapping.h */,
 				8769BB0A1A67C7F4000BFF71 /* main.c */,
 				87A0227D1AAFF1350008438E /* object_class.c */,
 				87A0227E1AAFF1350008438E /* object_class.h */,
@@ -190,7 +190,7 @@
 				8731B89A1AAEC92E00045628 /* field_type.c in Sources */,
 				87A0227F1AAFF1350008438E /* object_class.c in Sources */,
 				8774AFEA1A70B64B0040BB8B /* md5.c in Sources */,
-				87096FDA1A6A4C4600409D52 /* filemaping.c in Sources */,
+				87096FDA1A6A4C4600409D52 /* filemapping.c in Sources */,
 				8769BB131A67E491000BFF71 /* assetbundle.c in Sources */,
 				8769BB0B1A67C7F4000BFF71 /* main.c in Sources */,
 			);

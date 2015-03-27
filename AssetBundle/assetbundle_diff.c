@@ -205,18 +205,21 @@ void assetbundle_diff_destory(struct assetbundle_diff* assetbundle_diff)
     free(assetbundle_diff);
 }
 
-struct assetbundle_diff* assetbundle_diff_loaddata(unsigned char* data, size_t length)
+struct assetbundle_diff* assetbundle_diff_loaddata(unsigned char* data, size_t length, bool is_load_assetbundle)
 {
     struct assetbundle_diff* assetbundle_diff = (struct assetbundle_diff*)calloc(1, sizeof(*assetbundle_diff));
     size_t offset = 0;
     
     offset += read_uint32(data, offset, &assetbundle_diff->assetbundle_size, false);
     
-    assetbundle_diff->assetbundle = assetbundle_load_data(data + offset, length - offset);    
-    if (!assetbundle_diff->assetbundle) {
-        assetbundle_diff_destory(assetbundle_diff);
-        return NULL;
+    if (is_load_assetbundle) {
+        assetbundle_diff->assetbundle = assetbundle_load_data(data + offset, length - offset);    
+        if (!assetbundle_diff->assetbundle) {
+            assetbundle_diff_destory(assetbundle_diff);
+            return NULL;
+        }        
     }
+
     offset += assetbundle_diff->assetbundle_size;
 
     offset += read_uint32(data, offset, &assetbundle_diff->assetfile_index_count, false);
@@ -231,16 +234,16 @@ struct assetbundle_diff* assetbundle_diff_loaddata(unsigned char* data, size_t l
     return assetbundle_diff;
 }
 
-struct assetbundle_diff* assetbundle_diff_load(const char* filename)
+struct assetbundle_diff* assetbundle_diff_load(const char* filename, bool is_load_assetbundle)
 {
-    struct filemapping* filemapping = filemapping_create_readwrite(filename, 0);
+    struct filemapping* filemapping = filemapping_create_readonly(filename);
     if (!filemapping)
         return NULL;
     
     unsigned char* data = filemapping_getdata(filemapping);
     size_t length = filemapping_getlength(filemapping);
     
-    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_loaddata(data, length);
+    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_loaddata(data, length, is_load_assetbundle);
     if (!assetbundle_diff) {
         filemapping_destory(filemapping);
         return NULL;
@@ -287,7 +290,7 @@ struct assetbundle_diff* assetbundle_diff_create(const char* src, const char* ds
     offset += write_buffer(dst_data, offset, src_data, src_length);
     offset += write_uint32(dst_data, offset, 0, false);
     
-    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_loaddata(dst_data, dst_length);
+    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_loaddata(dst_data, dst_length, true);
     if (!assetbundle_diff) {
         filemapping_destory(src_filemapping);
         filemapping_destory(dst_filemapping);
@@ -438,7 +441,7 @@ EXTERN_API errno_t assetbundle_diff(const char* dir, const char* from, const cha
 
 EXTERN_API void assetbundle_diff_print(const char* filename)
 {
-    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_load(filename);
+    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_load(filename, true);
     if (!assetbundle_diff)
         return;
         
@@ -478,7 +481,7 @@ EXTERN_API void assetbundle_diff_print(const char* filename)
     assetbundle_diff_destory(assetbundle_diff);
 }
 
-EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, const char* from, const char* to, const char* diff)
+EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, void* userdata, const char* from, const char* to, const char* diff)
 {
     struct filemapping* filemapping_from = NULL;
     unsigned char* data_from = NULL;
@@ -493,16 +496,22 @@ EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, const char*
         data_from_length = filemapping_getlength(filemapping_from);
     }
 
-    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_load(diff);
+    struct assetbundle_diff* assetbundle_diff = assetbundle_diff_load(diff, false);
     if (!assetbundle_diff) {
         filemapping_destory(filemapping_from);
         return ASSETBUNDLE_DIFF_LOAD_FAILED;
     }
 
+    struct filemapping* filemapping_to = filemapping_create_readwrite(to, assetbundle_diff->assetbundle_size);
+    unsigned char* data_to = filemapping_getdata(filemapping_to);
+    memcpy(data_to, assetbundle_diff->buffer_begin + sizeof(uint32_t), assetbundle_diff->assetbundle_size);
+
+    struct assetbundle* assetbundle_to = assetbundle_load_data(data_to, assetbundle_diff->assetbundle_size);    
+    
     bool merge_error = false;
-    size_t file_count = assetbundle_assetfile_count(assetbundle_diff->assetbundle);
+    size_t file_count = assetbundle_assetfile_count(assetbundle_to);
     for (size_t i = 0; i < file_count; ++i)  {
-        struct assetfile* assetfile = assetbundle_get_assetfile(assetbundle_diff->assetbundle, i);
+        struct assetfile* assetfile = assetbundle_get_assetfile(assetbundle_to, i);
         size_t obj_count = assetfile_objectinfo_count(assetfile);        
 
         for (size_t j = 0; j < obj_count; ++j) {
@@ -520,23 +529,15 @@ EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, const char*
 
             assert(objectinfo_diff_info->index <= assetbundle_diff->assetfile_index_count);
             char* assetfile_name = assetbundle_diff->assetfile_index[objectinfo_diff_info->index - 1];
-            if (!fn_readfile(objectinfo->buffer, assetfile_name, objectinfo_diff_info->offset, objectinfo->length)) {
+            if (!fn_readfile(objectinfo->buffer, assetfile_name, objectinfo_diff_info->offset, objectinfo->length, userdata)) {
                 merge_error = true;
                 break;
             }
         }
     }
     
-    size_t assetbundle_size = assetbundle_diff->assetbundle_size;
-    if (!merge_error) {
-        memmove(assetbundle_diff->buffer_begin, assetbundle_diff->buffer_begin + 4, assetbundle_size);
-    }
-    
     assetbundle_diff_destory(assetbundle_diff);
+    filemapping_destory(filemapping_to);
     filemapping_destory(filemapping_from);
-
-    if (!merge_error) {
-        filemapping_truncate(diff, assetbundle_size);
-    }    
     return merge_error ? ASSETBUNDLE_FAILED : ASSETBUNDLE_SUCCEED;
 }

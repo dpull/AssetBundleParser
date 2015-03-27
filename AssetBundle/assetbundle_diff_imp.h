@@ -55,6 +55,4 @@ struct objectinfo_diff_info
 };
 #pragma pack()
 
-
-
 #endif

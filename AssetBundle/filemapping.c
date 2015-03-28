@@ -133,7 +133,7 @@ struct filemapping* filemapping_create_readonly(const char* file)
 		return NULL;
 	}
 
-	unsigned char* data = (unsigned char*)mmap(0, stat.st_size, PROT_READ, MAP_SHARED, fd, 0);    
+	unsigned char* data = (unsigned char*)mmap(0, (size_t)stat.st_size, PROT_READ, MAP_SHARED, fd, 0);
 	if (data == MAP_FAILED) {
 		close(fd);
 		return NULL;
@@ -145,7 +145,7 @@ struct filemapping* filemapping_create_readonly(const char* file)
 	memset(filemapping, 0, sizeof(*filemapping));
 
 	filemapping->data = data;
-	filemapping->length = stat.st_size;
+	filemapping->length = (size_t)stat.st_size;
 	return filemapping;
 }
 
@@ -161,7 +161,7 @@ struct filemapping* filemapping_create_readwrite(const char* file, size_t length
 			close(fd);
 			return NULL;
 		}    
-		length = stat.st_size;    
+		length = (size_t)stat.st_size;    
 	} else {
 		if (ftruncate(fd, length) != 0){
 			close(fd);

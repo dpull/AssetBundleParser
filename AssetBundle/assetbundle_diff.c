@@ -506,6 +506,12 @@ EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, void* userd
 	}
 
 	struct filemapping* filemapping_to = filemapping_create_readwrite(to, assetbundle_diff->assetbundle_size);
+    if (!filemapping_to) {
+        assetbundle_diff_destory(assetbundle_diff);
+        filemapping_destory(filemapping_from);
+        return ASSETBUNDLE_TO_CREATE_FAILED;
+    }
+        
 	unsigned char* data_to = filemapping_getdata(filemapping_to);
 	memcpy(data_to, assetbundle_diff->buffer_begin + sizeof(uint32_t), assetbundle_diff->assetbundle_size);
 
@@ -542,6 +548,7 @@ EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, void* userd
 	assetbundle_diff_destory(assetbundle_diff);
 	assetbundle_destory(assetbundle_to);
 	filemapping_destory(filemapping_to);
-	filemapping_destory(filemapping_from);
+    if (filemapping_from)
+        filemapping_destory(filemapping_from);
 	return merge_error ? ASSETBUNDLE_FAILED : ASSETBUNDLE_SUCCEED;
 }

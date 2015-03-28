@@ -9,6 +9,7 @@ enum ASSETBUNDLE_RETCODE
 	ASSETBUNDLE_FROM_LOAD_FAILED,
 	ASSETBUNDLE_DIFF_CREATE_FAILED,
 	ASSETBUNDLE_DIFF_LOAD_FAILED,
+    ASSETBUNDLE_TO_CREATE_FAILED,
 };
 
 EXTERN_API errno_t assetbundle_diff(const char* dir, const char* from, const char* to, const char* diff);

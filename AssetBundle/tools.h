@@ -24,8 +24,3 @@ size_t write_byte(unsigned char* data, size_t offset, unsigned char value);
 
 void check_write_overlapping_zero_buffer(unsigned char* data, size_t offset, size_t size);
 #endif
-
-
-
-
-

@@ -1,11 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="src">
-      <UniqueIdentifier>{4b10beac-0a69-450d-a1c4-999e0ce7f1cf}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\AssetBundle\assetbundle.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -15,23 +10,29 @@
     <ClCompile Include="..\AssetBundle\assetfile.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\AssetBundle\assetfile_diff.c">
+    <ClCompile Include="..\AssetBundle\field_type.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\AssetBundle\filemaping.c">
+    <ClCompile Include="..\AssetBundle\filemapping.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AssetBundle\object_class.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\AssetBundle\tools.c">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\AssetBundle\utils\debug_tree.c">
-      <Filter>src</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\AssetBundle\utils\md5.c">
-      <Filter>src</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\AssetBundle\main.c">
-      <Filter>src</Filter>
+    <ClCompile Include="..\AssetBundle\utils\traversedir.c">
+      <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AssetBundle\utils\platform.c">
+      <Filter>src\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,29 +42,46 @@
     <ClInclude Include="..\AssetBundle\assetbundle_diff.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\AssetBundle\assetbundle_diff_imp.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\AssetBundle\assetbundle_imp.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\AssetBundle\assetfile.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\AssetBundle\assetfile_diff.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\AssetBundle\assetfile_imp.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\AssetBundle\filemaping.h">
+    <ClInclude Include="..\AssetBundle\field_type.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\filemapping.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AssetBundle\object_class.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\AssetBundle\tools.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\AssetBundle\utils\debug_tree.h">
-      <Filter>src</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\AssetBundle\utils\platform.h">
-      <Filter>src</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\AssetBundle\utils\traversedir.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{877bce92-dddd-403b-9d17-e037e31a312d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils">
+      <UniqueIdentifier>{1c075dea-4f8b-4c14-88b6-8b1c4f117433}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

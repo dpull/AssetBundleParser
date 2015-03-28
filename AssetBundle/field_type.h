@@ -6,5 +6,3 @@ void field_type_db_destory(struct field_type_db* field_type_db);
 void field_type_db_print(struct field_type_db* field_type_db, struct debug_tree* root);
 
 #endif
-
-

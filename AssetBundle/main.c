@@ -25,37 +25,37 @@
 
 bool readfile_in_dir(unsigned char* buffer, const char* filename, size_t offset, size_t length, void* userdata)
 {
-    char* dir = (char*)userdata;
-    char filename_buffer[512];
-    snprintf(filename_buffer, sizeof(filename_buffer), "%s/%s", dir, filename);
-    
-    struct filemapping* filemapping = filemapping_create_readonly(filename_buffer);
-    if (!filemapping)
-        return false;
-    size_t file_length = filemapping_getlength(filemapping);
-    if (file_length < offset + length) {
-        filemapping_destory(filemapping);
-        return false;
-    }
-    
-    unsigned char* data = filemapping_getdata(filemapping);
-    memcpy(buffer, data + offset, length);
-    filemapping_destory(filemapping);
-    return true;
+	char* dir = (char*)userdata;
+	char filename_buffer[512];
+	snprintf(filename_buffer, sizeof(filename_buffer), "%s/%s", dir, filename);
+
+	struct filemapping* filemapping = filemapping_create_readonly(filename_buffer);
+	if (!filemapping)
+		return false;
+	size_t file_length = filemapping_getlength(filemapping);
+	if (file_length < offset + length) {
+		filemapping_destory(filemapping);
+		return false;
+	}
+
+	unsigned char* data = filemapping_getdata(filemapping);
+	memcpy(buffer, data + offset, length);
+	filemapping_destory(filemapping);
+	return true;
 }
 
 int main(int argc, const char * argv[])
 {
-    int ret;
-    
-    ret = assetbundle_diff(DIR"Untitled", NULL, DIR"Untitled.asset", DIR"diff.asset");
-    assert(ret == 0);
-    
-    ret = assetbundle_merge(readfile_in_dir, DIR"Untitled/Data", DIR"Untitled.asset", DIR"Untitled_new.asset", DIR"diff.asset");
-    assert(ret == 0);
-    
-    assetbundle_diff_print(DIR"diff.asset");
-    
-    
-    return 0;
+	int ret;
+
+	ret = assetbundle_diff(DIR"Untitled", NULL, DIR"Untitled.asset", DIR"diff.asset");
+	assert(ret == 0);
+
+	ret = assetbundle_merge(readfile_in_dir, DIR"Untitled/Data", DIR"Untitled.asset", DIR"Untitled_new.asset", DIR"diff.asset");
+	assert(ret == 0);
+
+	assetbundle_diff_print(DIR"diff.asset");
+
+
+	return 0;
 }

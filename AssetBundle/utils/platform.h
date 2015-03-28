@@ -15,6 +15,9 @@
 #ifndef strdup
 #define strdup      _strdup
 #endif
+
+char *strndup(const char *s, size_t n);
+
 #ifndef wcsdup
 #define wcsdup      _wcsdup
 #endif
@@ -26,6 +29,9 @@
 #define getpid      _getpid
 #define fseek64     _fseeki64
 #define ftell64     _ftelli64
+
+#include <io.h>
+#define mktemp		_mktemp
 #endif
 
 #if defined(_MSC_VER)

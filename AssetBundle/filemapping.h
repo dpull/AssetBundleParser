@@ -11,4 +11,3 @@ unsigned char* filemapping_getdata(struct filemapping* filemapping);
 
 bool filemapping_truncate(const char* file, size_t length);
 #endif
-

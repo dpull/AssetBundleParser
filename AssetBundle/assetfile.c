@@ -302,5 +302,5 @@ size_t assetfile_objectinfo_count(struct assetfile* assetfile)
 
 struct objectinfo* assetfile_get_objectinfo(struct assetfile* assetfile, size_t index)
 {
-    return &assetfile->objectinfo_struct[index];
+    return assetfile->objectinfo_struct + index;
 }

@@ -126,10 +126,10 @@ EXTERN_API struct assetbundle* assetbundle_load_data(unsigned char* data, size_t
     memset(bundle, 0, sizeof(*bundle));
     size_t offset = 0;
 
-       offset += assetbundle_header_load(&bundle->header, data, offset);
+    offset += assetbundle_header_load(&bundle->header, data, offset);
     assert(strcmp(bundle->header.signature, "UnityRaw") == 0); // only support uncompressed assetbundle
     
-       offset += assetbundle_entryinfo_load(bundle, data, offset);
+    offset += assetbundle_entryinfo_load(bundle, data, offset);
 
     for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
         struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
@@ -164,8 +164,8 @@ EXTERN_API bool assetbundle_check(struct assetbundle* bundle)
     memset(dest_data, 0, length);
     
     size_t offset = 0;
-       offset += assetbundle_header_save(&bundle->header, dest_data, offset);
-       offset += assetbundle_entryinfo_save(bundle, dest_data, offset);
+    offset += assetbundle_header_save(&bundle->header, dest_data, offset);
+    offset += assetbundle_entryinfo_save(bundle, dest_data, offset);
 
     for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
         struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
@@ -183,11 +183,11 @@ EXTERN_API bool assetbundle_check(struct assetbundle* bundle)
             printf("offset %d:[%hho]\t[%hho]\n", (int)i, src_data[i], dest_data[i]);
             error_bytes++;
         }
-       }
+    }
 
-       free(dest_data);
+    free(dest_data);
 
-       if (error_bytes > 0) 
+    if (error_bytes > 0) 
         printf("check failed, error bytes count:%d\n", error_bytes);
 
     return error_bytes == 0;

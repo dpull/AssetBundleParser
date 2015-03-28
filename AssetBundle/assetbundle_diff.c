@@ -537,6 +537,7 @@ EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, void* userd
     }
     
     assetbundle_diff_destory(assetbundle_diff);
+    assetbundle_destory(assetbundle_to);
     filemapping_destory(filemapping_to);
     filemapping_destory(filemapping_from);
     return merge_error ? ASSETBUNDLE_FAILED : ASSETBUNDLE_SUCCEED;

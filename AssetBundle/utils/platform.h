@@ -40,4 +40,8 @@ char *strndup(const char *s, size_t n);
 #define EXTERN_API  
 #endif
 
+#ifdef ANDROID
+typedef int			errno_t;  
+#endif  
+
 #endif

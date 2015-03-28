@@ -18,7 +18,7 @@
 #include "assetfile.h"
 #include "filemapping.h"
 #include "field_type.h"
-#include "traversedir.h"
+#include "utils/traversedir.h"
 #include "assetbundle_diff.h"
 
 #define DIR "/Users/dpull/Documents/AssetBundle/"

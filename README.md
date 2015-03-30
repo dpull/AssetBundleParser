@@ -56,12 +56,10 @@ Return: 0: Success; None-zero: error code
 
 # Sample to show how to create and merge diff files. #
 	
-	// "scenes_v1.unity3d", "scenes_v2.unity3d" must exist. Create "v1to2.diff"
-	assetbundle_diff("scenes_v1.unity3d", "scenes_v2.unity3d", "v1to2.diff"); 
+	errno_t assetbundle_diff(const char* dir, const char* from, const char* to, const char* diff);
 
-	// "scenes_v1.unity3d", "v1to2.diff" must exist，create "scenes_v2.unity3d"
-	// The order of arguments is a little weird. Any suggestions?
-	assetbundle_merge("scenes_v1.unity3d", "scenes_v2.unity3d", "v1to2.diff");
+	typedef bool (readfile_callback)(unsigned char* buffer, const char* filename, size_t offset, size_t length, void* userdata);
+	errno_t assetbundle_merge(readfile_callback* fn_readfile, void* userdata, const char* from, const char* to, const char* diff);
 
 
 # 开源协议 #

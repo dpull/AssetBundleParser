@@ -19,6 +19,8 @@
 #include "assetbundle_diff.h"
 #include "assetbundle_diff_imp.h"
 
+#define SPLIT_FILE_FROMAT ("%s.split%d")
+
 void split_filemapping_destory(struct split_filemapping* split_filemapping)
 {
 	if (split_filemapping->filemapping)
@@ -45,7 +47,6 @@ struct split_filemapping* split_filemapping_create(const char* fullpath, const c
 			return NULL;
 		}
 		split_filemapping->name = strdup(filename);
-		split_filemapping->format = false;
 		split_filemapping->offsets_count = 0;
 
 		return split_filemapping;
@@ -62,7 +63,6 @@ struct split_filemapping* split_filemapping_create(const char* fullpath, const c
 		}
 
 		split_filemapping->name = strndup(filename, split0 - filename);
-		split_filemapping->format = true;
 		split_filemapping->offsets = (size_t*)calloc(MAX_SPLIT_FILE_COUNT, sizeof(*split_filemapping->offsets));
 
 		unsigned char* data = filemapping_getdata(split_filemapping->filemapping);
@@ -72,7 +72,7 @@ struct split_filemapping* split_filemapping_create(const char* fullpath, const c
 			char split_asset_path[MAX_PATH];
 			size_t dir_length = strlen(fullpath) - strlen(filename);
 			strncpy(split_asset_path, fullpath, dir_length);
-			sprintf(split_asset_path + dir_length, "%s.split%d", split_filemapping->name, i);
+			sprintf(split_asset_path + dir_length, SPLIT_FILE_FROMAT, split_filemapping->name, i);
 
 			struct filemapping* filemapping = filemapping_create_readonly(split_asset_path);
 			if (!filemapping)
@@ -371,7 +371,7 @@ void objectinfo_diff(struct objectinfo* objectinfo, struct assetbundle_diff* ass
 	objectinfo_diff_info.index = 0;
 	objectinfo_diff_info.offset = (uint32_t)(objectinfo_same->buffer - filemapping_base);
 
-	if (split_filemapping && split_filemapping->format) {
+	if (split_filemapping && split_filemapping->offsets) {
 		int split_index = 0;
 		for (int i = (int)split_filemapping->offsets_count - 1; i >= 0; --i) {
 			if (objectinfo_diff_info.offset > split_filemapping->offsets[i]) {
@@ -382,7 +382,7 @@ void objectinfo_diff(struct objectinfo* objectinfo, struct assetbundle_diff* ass
 		}
 
 		char split_asset_path[MAX_PATH];
-		sprintf(split_asset_path, "%s.split%d", split_filemapping->name, split_index);
+		sprintf(split_asset_path, SPLIT_FILE_FROMAT, split_filemapping->name, split_index);
 
 		objectinfo_diff_info.index = assetbundle_diff_insert(assetbundle_diff, split_asset_path);;
 	}

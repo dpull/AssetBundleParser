@@ -12,7 +12,6 @@ struct split_filemapping
 {
 	struct filemapping* filemapping;
 	char* name;
-	bool format;
 	size_t offsets_count;
 	size_t* offsets;
 };

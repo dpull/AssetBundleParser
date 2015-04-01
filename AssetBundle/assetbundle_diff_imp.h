@@ -29,6 +29,8 @@ struct assetfiles
 
 	struct split_filemapping** split_filemappings;
 	unsigned char** filemapping_base;
+    
+    const void* userdata;
 };
 
 struct assetbundle_diff

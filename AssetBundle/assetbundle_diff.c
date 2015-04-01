@@ -126,6 +126,7 @@ void assetfiles_destory(struct assetfiles* assetfiles)
 	if (assetfiles->filemapping_base) {
 		free(assetfiles->filemapping_base);
 	}
+    
 	free(assetfiles);
 }
 
@@ -170,7 +171,10 @@ bool assetfiles_loadfrom_assetbundle(struct assetfiles* assetfiles, const char* 
 
 bool load_assetfile_dir(const char* fullpath, const char* filename, void* userdata)
 {
-	struct split_filemapping* split_filemapping = split_filemapping_create(fullpath, filename);
+    struct assetfiles* assetfiles = (struct assetfiles*)userdata;
+    size_t dir_root_length = *(size_t*)assetfiles->userdata;
+    
+	struct split_filemapping* split_filemapping = split_filemapping_create(fullpath, fullpath + dir_root_length);
 	if (!split_filemapping)
 		return true;
 
@@ -188,7 +192,7 @@ bool load_assetfile_dir(const char* fullpath, const char* filename, void* userda
 		return true;
 	}
 
-	assetfiles_insert((struct assetfiles*)userdata, assetfile, split_filemapping, data);
+	assetfiles_insert(assetfiles, assetfile, split_filemapping, data);
 	return true;
 }
 
@@ -414,14 +418,20 @@ struct objectinfo_diff_info* get_objectinfo_diff_info(unsigned char* buffer)
 EXTERN_API errno_t assetbundle_diff(const char* dir, const char* from, const char* to, const char* diff)
 {
 	struct assetfiles* assetfiles = assetfiles_create();
-
+    
 	if (from && !assetfiles_loadfrom_assetbundle(assetfiles, from)) {
 		assetfiles_destory(assetfiles);
 		return ASSETBUNDLE_FROM_LOAD_FAILED;
 	}
 
 	if (dir) {
+        size_t dir_length = strlen(dir);
+        if (dir_length > 0 && dir[dir_length - 1] != '/' && dir[dir_length - 1] != '\\')
+            dir_length++;
+        
+        assetfiles->userdata = &dir_length;
 		traversedir(dir, load_assetfile_dir, assetfiles, true);
+        assetfiles->userdata = NULL;
 	}
 
 	struct assetbundle_diff* assetbundle_diff = assetbundle_diff_create(to, diff);

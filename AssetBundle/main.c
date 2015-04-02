@@ -51,10 +51,10 @@ int main(int argc, const char * argv[])
 	ret = assetbundle_diff(DIR"Untitled", NULL, DIR"Untitled.asset", DIR"diff.asset");
 	assert(ret == 0);
 
-	ret = assetbundle_merge(readfile_in_dir, DIR"Untitled/Data", DIR"Untitled.asset", DIR"Untitled_new.asset", DIR"diff.asset");
-	assert(ret == 0);
+	// ret = assetbundle_merge(readfile_in_dir, DIR"Untitled/Data", DIR"Untitled.asset", DIR"Untitled_new.asset", DIR"diff.asset");
+	// assert(ret == 0);
 
-	assetbundle_diff_print(DIR"diff.asset");
+	assetbundle_diff_print(DIR"diff.asset", DIR"log.txt");
 
 
 	return 0;

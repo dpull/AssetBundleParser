@@ -455,7 +455,7 @@ EXTERN_API errno_t assetbundle_diff(const char* dir, const char* from, const cha
 	return ASSETBUNDLE_SUCCEED;
 }
 
-EXTERN_API void assetbundle_diff_print(const char* filename)
+EXTERN_API void assetbundle_diff_print(const char* filename, const char* output)
 {
 	struct assetbundle_diff* assetbundle_diff = assetbundle_diff_load(filename, true);
 	if (!assetbundle_diff)
@@ -465,7 +465,7 @@ EXTERN_API void assetbundle_diff_print(const char* filename)
 
 	struct debug_tree* fileindex = debug_tree_create(root, "fileindex count:%hu", assetbundle_diff->assetfile_index_count);
 	for (size_t i = 0; i < assetbundle_diff->assetfile_index_count; ++i) {
-		debug_tree_create(fileindex, "index:%u\t%s", i + 1, assetbundle_diff->assetfile_index[i]);
+		debug_tree_create(fileindex, "index:%u\tpath:%s", i + 1, assetbundle_diff->assetfile_index[i]);
 	}
 
 	struct debug_tree* unchangelist = debug_tree_create(root, "unchange list");
@@ -492,10 +492,14 @@ EXTERN_API void assetbundle_diff_print(const char* filename)
 
 	struct debug_tree* assetbundle = debug_tree_create(root, "assetbundle size:%u", assetbundle_diff->assetbundle_size);
 	assetbundle_print(assetbundle_diff->assetbundle, assetbundle);
-
-	debug_tree_print(root, stdout);
+    assetbundle_diff_destory(assetbundle_diff);
+    
+    FILE* output_stream = output ? fopen(output, "wb+") : NULL;
+    
+    debug_tree_print(root, output_stream ? output_stream : stdout);
 	debug_tree_destory(root);
-	assetbundle_diff_destory(assetbundle_diff);
+    if (output_stream)
+        fclose(output_stream);
 }
 
 EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, void* userdata, const char* from, const char* to, const char* diff)

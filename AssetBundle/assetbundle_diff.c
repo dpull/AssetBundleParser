@@ -407,12 +407,16 @@ void assetbundle_diff_process(struct assetbundle_diff* assetbundle_diff, struct 
 	}
 }
 
-struct objectinfo_diff_info* get_objectinfo_diff_info(unsigned char* buffer)
+bool get_objectinfo_diff_info(unsigned char* buffer, size_t length, struct objectinfo_diff_info* ret_objectinfo_diff_info)
 {
-	struct objectinfo_diff_info* ret = (struct objectinfo_diff_info*)buffer;
-	if (strcmp(ret->verify, DIFF_INFO_VERIFY) == 0)
-		return ret;
-	return NULL;
+    if (length < sizeof(*ret_objectinfo_diff_info))
+        return false;
+    
+    if (strcmp((char*)buffer, DIFF_INFO_VERIFY) != 0)
+        return false;
+    
+    memcpy(ret_objectinfo_diff_info, buffer, sizeof(*ret_objectinfo_diff_info));
+    return true;
 }
 
 EXTERN_API errno_t assetbundle_diff(const char* dir, const char* from, const char* to, const char* diff)
@@ -466,6 +470,7 @@ EXTERN_API void assetbundle_diff_print(const char* filename)
 
 	struct debug_tree* unchangelist = debug_tree_create(root, "unchange list");
 	struct debug_tree* changelist = debug_tree_create(root, "changed list");
+    struct objectinfo_diff_info objectinfo_diff_info;
 
 	size_t file_count = assetbundle_assetfile_count(assetbundle_diff->assetbundle);
 	for (size_t i = 0; i < file_count; ++i)  {
@@ -474,9 +479,8 @@ EXTERN_API void assetbundle_diff_print(const char* filename)
 
 		for (size_t j = 0; j < obj_count; ++j) {
 			struct objectinfo* objectinfo = assetfile_get_objectinfo(assetfile, j);
-			struct objectinfo_diff_info* objectinfo_diff_info = get_objectinfo_diff_info(objectinfo->buffer);
-			if (objectinfo_diff_info) {
-				debug_tree_create(unchangelist, "path_id:%d\tindex:%hu\toffset:%u", objectinfo->path_id, objectinfo_diff_info->index, objectinfo_diff_info->offset);
+			if (get_objectinfo_diff_info(objectinfo->buffer, objectinfo->length, &objectinfo_diff_info)) {
+				debug_tree_create(unchangelist, "path_id:%d\tindex:%hu\toffset:%u", objectinfo->path_id, objectinfo_diff_info.index, objectinfo_diff_info.offset);
 			}
 			else {
 				char* objectinfo_name = objectinfo_getname(objectinfo->buffer, 0, objectinfo->length);
@@ -526,7 +530,8 @@ EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, void* userd
 	memcpy(data_to, assetbundle_diff->buffer_begin + sizeof(uint32_t), assetbundle_diff->assetbundle_size);
 
 	struct assetbundle* assetbundle_to = assetbundle_load_data(data_to, assetbundle_diff->assetbundle_size);
-
+    
+    struct objectinfo_diff_info objectinfo_diff_info;
 	bool merge_error = false;
 	size_t file_count = assetbundle_assetfile_count(assetbundle_to);
 	for (size_t i = 0; i < file_count; ++i)  {
@@ -535,20 +540,18 @@ EXTERN_API errno_t assetbundle_merge(readfile_callback* fn_readfile, void* userd
 
 		for (size_t j = 0; j < obj_count; ++j) {
 			struct objectinfo* objectinfo = assetfile_get_objectinfo(assetfile, j);
-			struct objectinfo_diff_info* objectinfo_diff_info = get_objectinfo_diff_info(objectinfo->buffer);
-
-			if (!objectinfo_diff_info)
+            if (!get_objectinfo_diff_info(objectinfo->buffer, objectinfo->length, &objectinfo_diff_info))
 				continue;
 
-			if (objectinfo_diff_info->index == 0) {
-				assert(objectinfo_diff_info->offset + objectinfo->length < data_from_length);
-				memcpy(objectinfo->buffer, data_from + objectinfo_diff_info->offset, objectinfo->length);
+			if (objectinfo_diff_info.index == 0) {
+				assert(objectinfo_diff_info.offset + objectinfo->length < data_from_length);
+				memcpy(objectinfo->buffer, data_from + objectinfo_diff_info.offset, objectinfo->length);
 				continue;
 			}
 
-			assert(objectinfo_diff_info->index <= assetbundle_diff->assetfile_index_count);
-			char* assetfile_name = assetbundle_diff->assetfile_index[objectinfo_diff_info->index - 1];
-			if (!fn_readfile(objectinfo->buffer, assetfile_name, objectinfo_diff_info->offset, objectinfo->length, userdata)) {
+			assert(objectinfo_diff_info.index <= assetbundle_diff->assetfile_index_count);
+			char* assetfile_name = assetbundle_diff->assetfile_index[objectinfo_diff_info.index - 1];
+			if (!fn_readfile(objectinfo->buffer, assetfile_name, objectinfo_diff_info.offset, objectinfo->length, userdata)) {
 				merge_error = true;
 				break;
 			}

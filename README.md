@@ -39,28 +39,6 @@ assetbundle_merge
 Description: Merge diff files.
 Return: 0: Success; None-zero: error code
 
-# Sample to show how to create bundle. #
-
-	BuildPipeline.BuildStreamedSceneAssetBundle(
-		new string[]{"Assets/Client.unity", "Assets/Art/Maps/map001/map001.unity"}, 
-		"Assets/scenes.unity3d", 
-		BuildTarget.iPhone,
-		BuildOptions.UncompressedAssetBundle);
-
-	BuildPipeline.BuildAssetBundle(
-		o1, 
-		new Object[]{o2, o3, o4}, 
-		"Assets/res.unity3d",
-		BuildAssetBundleOptions.CollectDependencies | BuildAssetBundleOptions.CompleteAssets| BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.DisableWriteTypeTree, 
-		BuildTarget.iPhone);	
-
-# Sample to show how to create and merge diff files. #
-	
-	errno_t assetbundle_diff(const char* dir, const char* from, const char* to, const char* diff);
-
-	typedef bool (readfile_callback)(unsigned char* buffer, const char* filename, size_t offset, size_t length, void* userdata);
-	errno_t assetbundle_merge(readfile_callback* fn_readfile, void* userdata, const char* from, const char* to, const char* diff);
-
 
 # 开源协议 #
 采用MIT开源许可证。
@@ -106,30 +84,3 @@ assetbundle_diff
 assetbundle_merge
 描述 合并差异文件
 返回 0 成功，非0各种错误码
-
-# 打包代码示例 #
-
-	BuildPipeline.BuildStreamedSceneAssetBundle(
-		new string[]{"Assets/Client.unity", "Assets/Art/Maps/map001/map001.unity"}, 
-		"Assets/scenes.unity3d", 
-		BuildTarget.iPhone,
-		BuildOptions.UncompressedAssetBundle);
-
-	BuildPipeline.BuildAssetBundle(
-		o1, 
-		new Object[]{o2, o3, o4}, 
-		"Assets/res.unity3d",
-		BuildAssetBundleOptions.CollectDependencies | BuildAssetBundleOptions.CompleteAssets| BuildAssetBundleOptions.UncompressedAssetBundle | BuildAssetBundleOptions.DisableWriteTypeTree, 
-		BuildTarget.iPhone);	
-
-# 生成差异及合并代码示例 #
-	
-	// "scenes_v1.unity3d", "scenes_v2.unity3d" 必须存在，生成"v1to2.diff"
-	assetbundle_diff("scenes_v1.unity3d", "scenes_v2.unity3d", "v1to2.diff"); 
-
-	// "scenes_v1.unity3d", "v1to2.diff" 必须存在，生成 "scenes_v2.unity3d"
-	// 该接口参数顺序有点诡异，大家是否有建议？
-	assetbundle_merge("scenes_v1.unity3d", "scenes_v2.unity3d", "v1to2.diff");
-
-
- 

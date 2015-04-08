@@ -1,3 +1,3 @@
-[submodule "googletest"]
-	path = googletest
+[submodule "GoogleTest"]
+	path = GoogleTest
 	url = https://github.com/dpull/googletest.git

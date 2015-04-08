@@ -36,17 +36,17 @@ bool readfile_in_dir(unsigned char* buffer, const char* filename, size_t offset,
 
 TEST_F(assetbundle_diff_test, test_diff_dir)
 {
-    ASSERT_TRUE(::assetbundle_diff("TestData/4.6_ios_player", NULL, "TestData/4.6_ios_scene_1", "TestData/diff") == ASSETBUNDLE_SUCCEED);
-    ASSERT_TRUE(::assetbundle_merge(readfile_in_dir, (void*)"TestData/4.6_ios_player", NULL, "TestData/4.6_ios_scene_1_tmp", "TestData/diff") == ASSETBUNDLE_SUCCEED);
+    ASSERT_EQ(::assetbundle_diff("TestData/4.6_ios_player", NULL, "TestData/4.6_ios_scene_1", "TestData/diff"), ASSETBUNDLE_SUCCEED);
+    ASSERT_EQ(::assetbundle_merge(readfile_in_dir, (void*)"TestData/4.6_ios_player", NULL, "TestData/4.6_ios_scene_1_tmp", "TestData/diff"), ASSETBUNDLE_SUCCEED);
     
     struct filemapping* file1 = ::filemapping_create_readonly("TestData/4.6_ios_scene_1");
-    ASSERT_TRUE(file1 != NULL);
+    ASSERT_TRUE(file1);
     
     struct filemapping* file2 = ::filemapping_create_readonly("TestData/4.6_ios_scene_1_tmp");
-    ASSERT_TRUE(file2 != NULL);
+    ASSERT_TRUE(file2);
     
-    ASSERT_TRUE(::filemapping_getlength(file1) == ::filemapping_getlength(file2));
-    ASSERT_TRUE(memcmp(::filemapping_getdata(file1), ::filemapping_getdata(file2), ::filemapping_getlength(file1)) == 0);
+    ASSERT_EQ(::filemapping_getlength(file1), ::filemapping_getlength(file2));
+    ASSERT_EQ(memcmp(::filemapping_getdata(file1), ::filemapping_getdata(file2), ::filemapping_getlength(file1)), 0);
     
     ::filemapping_destory(file1);
     ::filemapping_destory(file2);

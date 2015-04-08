@@ -36,8 +36,10 @@ char *strndup(const char *s, size_t n);
 
 #if defined(_MSC_VER)
 #define EXTERN_API __declspec(dllexport)
+#define STDCALL __stdcall
 #else
 #define EXTERN_API  
+#define STDCALL
 #endif
 
 #endif

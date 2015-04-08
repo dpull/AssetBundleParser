@@ -14,62 +14,62 @@
 		8769BB131A67E491000BFF71 /* assetbundle.c in Sources */ = {isa = PBXBuildFile; fileRef = 8769BB111A67E491000BFF71 /* assetbundle.c */; };
 		8774AFEA1A70B64B0040BB8B /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 8774AFE91A70B64B0040BB8B /* md5.c */; };
 		8774AFF11A722F240040BB8B /* debug_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 8774AFEE1A722F240040BB8B /* debug_tree.c */; };
+		879C5D3C1AD4CFA300A1BDDB /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 879C5D291AD4BAAC00A1BDDB /* gtest.framework */; };
 		87A0227F1AAFF1350008438E /* object_class.c in Sources */ = {isa = PBXBuildFile; fileRef = 87A0227D1AAFF1350008438E /* object_class.c */; };
 		87B29DF21A68E2670099584F /* tools.c in Sources */ = {isa = PBXBuildFile; fileRef = 87B29DF01A68E2670099584F /* tools.c */; };
 		87DC4BCB1AAAFCFF00317403 /* traversedir.c in Sources */ = {isa = PBXBuildFile; fileRef = 87DC4BC91AAAFCFF00317403 /* traversedir.c */; };
 		87E0149F1AD41DB300D74BAD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87E0149D1AD41DB300D74BAD /* main.cpp */; };
 		87E014A01AD41DB300D74BAD /* test_assetbundle_diff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 87E0149E1AD41DB300D74BAD /* test_assetbundle_diff.cpp */; };
-		87E014BB1AD41EAD00D74BAD /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E014AE1AD41DE000D74BAD /* gtest.framework */; };
 		87E014BD1AD41F5600D74BAD /* TestData in CopyFiles */ = {isa = PBXBuildFile; fileRef = 87E014BC1AD41F3500D74BAD /* TestData */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		87FCD5E91A70978700E67100 /* assetbundle_diff.c in Sources */ = {isa = PBXBuildFile; fileRef = 87FCD5E31A70978700E67100 /* assetbundle_diff.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		87E014AD1AD41DE000D74BAD /* PBXContainerItemProxy */ = {
+		879C5D281AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 87E014A11AD41DE000D74BAD /* gtest.xcodeproj */;
+			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 4539C8FF0EC27F6400A70F4C;
 			remoteInfo = "gtest-framework";
 		};
-		87E014AF1AD41DE000D74BAD /* PBXContainerItemProxy */ = {
+		879C5D2A1AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 87E014A11AD41DE000D74BAD /* gtest.xcodeproj */;
+			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 40C848FA101A209C0083642A;
 			remoteInfo = "gtest-static";
 		};
-		87E014B11AD41DE000D74BAD /* PBXContainerItemProxy */ = {
+		879C5D2C1AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 87E014A11AD41DE000D74BAD /* gtest.xcodeproj */;
+			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 40C8490B101A217E0083642A;
 			remoteInfo = "gtest_main-static";
 		};
-		87E014B31AD41DE000D74BAD /* PBXContainerItemProxy */ = {
+		879C5D2E1AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 87E014A11AD41DE000D74BAD /* gtest.xcodeproj */;
+			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 40899F430FFA7184000B29AE;
 			remoteInfo = "gtest_unittest-framework";
 		};
-		87E014B51AD41DE000D74BAD /* PBXContainerItemProxy */ = {
+		879C5D301AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 87E014A11AD41DE000D74BAD /* gtest.xcodeproj */;
+			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 40C84987101A36850083642A;
 			remoteInfo = "gtest_unittest-static";
 		};
-		87E014B71AD41DE000D74BAD /* PBXContainerItemProxy */ = {
+		879C5D321AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 87E014A11AD41DE000D74BAD /* gtest.xcodeproj */;
+			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 4089A0130FFACEFC000B29AE;
 			remoteInfo = "sample1_unittest-framework";
 		};
-		87E014B91AD41DE000D74BAD /* PBXContainerItemProxy */ = {
+		879C5D341AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 87E014A11AD41DE000D74BAD /* gtest.xcodeproj */;
+			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 40C84997101A36A60083642A;
 			remoteInfo = "sample1_unittest-static";
@@ -105,6 +105,7 @@
 		8774AFEE1A722F240040BB8B /* debug_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = debug_tree.c; sourceTree = "<group>"; };
 		8774AFEF1A722F240040BB8B /* debug_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = debug_tree.h; sourceTree = "<group>"; };
 		8774AFF01A722F240040BB8B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gtest.xcodeproj; path = GoogleTest/xcode/gtest.xcodeproj; sourceTree = "<group>"; };
 		87A0227D1AAFF1350008438E /* object_class.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = object_class.c; sourceTree = "<group>"; };
 		87A0227E1AAFF1350008438E /* object_class.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = object_class.h; sourceTree = "<group>"; };
 		87B29DF01A68E2670099584F /* tools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tools.c; sourceTree = "<group>"; };
@@ -113,7 +114,6 @@
 		87DC4BCC1AAAFFD100317403 /* traversedir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = traversedir.h; sourceTree = "<group>"; };
 		87E0149D1AD41DB300D74BAD /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		87E0149E1AD41DB300D74BAD /* test_assetbundle_diff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_assetbundle_diff.cpp; sourceTree = "<group>"; };
-		87E014A11AD41DE000D74BAD /* gtest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gtest.xcodeproj; path = googletest/xcode/gtest.xcodeproj; sourceTree = "<group>"; };
 		87E014BC1AD41F3500D74BAD /* TestData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TestData; sourceTree = "<group>"; };
 		87FCD5E31A70978700E67100 /* assetbundle_diff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = assetbundle_diff.c; sourceTree = "<group>"; };
 		87FCD5E41A70978700E67100 /* assetbundle_diff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetbundle_diff.h; sourceTree = "<group>"; };
@@ -126,7 +126,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87E014BB1AD41EAD00D74BAD /* gtest.framework in Frameworks */,
+				879C5D3C1AD4CFA300A1BDDB /* gtest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,7 +136,7 @@
 		8769BAFE1A67C7F4000BFF71 = {
 			isa = PBXGroup;
 			children = (
-				87E014A11AD41DE000D74BAD /* gtest.xcodeproj */,
+				879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */,
 				8769BB091A67C7F4000BFF71 /* AssetBundle */,
 				87E0149C1AD41DB300D74BAD /* Test */,
 				87E014BC1AD41F3500D74BAD /* TestData */,
@@ -191,6 +191,20 @@
 			path = utils;
 			sourceTree = "<group>";
 		};
+		879C5D1D1AD4BAAC00A1BDDB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				879C5D291AD4BAAC00A1BDDB /* gtest.framework */,
+				879C5D2B1AD4BAAC00A1BDDB /* libgtest.a */,
+				879C5D2D1AD4BAAC00A1BDDB /* libgtest_main.a */,
+				879C5D2F1AD4BAAC00A1BDDB /* gtest_unittest-framework */,
+				879C5D311AD4BAAC00A1BDDB /* gtest_unittest */,
+				879C5D331AD4BAAC00A1BDDB /* sample1_unittest-framework */,
+				879C5D351AD4BAAC00A1BDDB /* sample1_unittest-static */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		87E0149C1AD41DB300D74BAD /* Test */ = {
 			isa = PBXGroup;
 			children = (
@@ -198,20 +212,6 @@
 				87E0149E1AD41DB300D74BAD /* test_assetbundle_diff.cpp */,
 			);
 			path = Test;
-			sourceTree = "<group>";
-		};
-		87E014A21AD41DE000D74BAD /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				87E014AE1AD41DE000D74BAD /* gtest.framework */,
-				87E014B01AD41DE000D74BAD /* libgtest.a */,
-				87E014B21AD41DE000D74BAD /* libgtest_main.a */,
-				87E014B41AD41DE000D74BAD /* gtest_unittest-framework */,
-				87E014B61AD41DE000D74BAD /* gtest_unittest */,
-				87E014B81AD41DE000D74BAD /* sample1_unittest-framework */,
-				87E014BA1AD41DE000D74BAD /* sample1_unittest-static */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -260,8 +260,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 87E014A21AD41DE000D74BAD /* Products */;
-					ProjectRef = 87E014A11AD41DE000D74BAD /* gtest.xcodeproj */;
+					ProductGroup = 879C5D1D1AD4BAAC00A1BDDB /* Products */;
+					ProjectRef = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -272,53 +272,53 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		87E014AE1AD41DE000D74BAD /* gtest.framework */ = {
+		879C5D291AD4BAAC00A1BDDB /* gtest.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = gtest.framework;
-			remoteRef = 87E014AD1AD41DE000D74BAD /* PBXContainerItemProxy */;
+			remoteRef = 879C5D281AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		87E014B01AD41DE000D74BAD /* libgtest.a */ = {
+		879C5D2B1AD4BAAC00A1BDDB /* libgtest.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libgtest.a;
-			remoteRef = 87E014AF1AD41DE000D74BAD /* PBXContainerItemProxy */;
+			remoteRef = 879C5D2A1AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		87E014B21AD41DE000D74BAD /* libgtest_main.a */ = {
+		879C5D2D1AD4BAAC00A1BDDB /* libgtest_main.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libgtest_main.a;
-			remoteRef = 87E014B11AD41DE000D74BAD /* PBXContainerItemProxy */;
+			remoteRef = 879C5D2C1AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		87E014B41AD41DE000D74BAD /* gtest_unittest-framework */ = {
+		879C5D2F1AD4BAAC00A1BDDB /* gtest_unittest-framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = "gtest_unittest-framework";
-			remoteRef = 87E014B31AD41DE000D74BAD /* PBXContainerItemProxy */;
+			remoteRef = 879C5D2E1AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		87E014B61AD41DE000D74BAD /* gtest_unittest */ = {
+		879C5D311AD4BAAC00A1BDDB /* gtest_unittest */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = gtest_unittest;
-			remoteRef = 87E014B51AD41DE000D74BAD /* PBXContainerItemProxy */;
+			remoteRef = 879C5D301AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		87E014B81AD41DE000D74BAD /* sample1_unittest-framework */ = {
+		879C5D331AD4BAAC00A1BDDB /* sample1_unittest-framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = "sample1_unittest-framework";
-			remoteRef = 87E014B71AD41DE000D74BAD /* PBXContainerItemProxy */;
+			remoteRef = 879C5D321AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		87E014BA1AD41DE000D74BAD /* sample1_unittest-static */ = {
+		879C5D351AD4BAAC00A1BDDB /* sample1_unittest-static */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = "sample1_unittest-static";
-			remoteRef = 87E014B91AD41DE000D74BAD /* PBXContainerItemProxy */;
+			remoteRef = 879C5D341AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -351,6 +351,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -382,7 +383,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/googletest/include",
+					"$(SRCROOT)/GoogleTest/include",
 					"$(SRCROOT)/AssetBundle",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
@@ -397,6 +398,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -423,7 +425,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/googletest/include",
+					"$(SRCROOT)/GoogleTest/include",
 					"$(SRCROOT)/AssetBundle",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
@@ -436,6 +438,20 @@
 		8769BB0F1A67C7F4000BFF71 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					i386,
+					x86_64,
+					ppc,
+					ppc64,
+				);
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "-DDEBUG=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -443,6 +459,19 @@
 		8769BB101A67C7F4000BFF71 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					i386,
+					x86_64,
+					ppc,
+					ppc64,
+				);
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_MODULES = NO;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				OTHER_CFLAGS = "-DDEBUG=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

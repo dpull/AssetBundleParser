@@ -32,14 +32,18 @@ char *strndup(const char *s, size_t n);
 
 #include <io.h>
 #define mktemp		_mktemp
+#endif	  
+
+#if defined(API_EXTERN) || defined(API_CALLBACK)
+	#error API_EXTERN or API_CALLBACK already defined!
 #endif
 
 #if defined(_MSC_VER)
-#define EXTERN_API __declspec(dllexport)
-#define STDCALL __stdcall
+#define API_EXTERN __declspec(dllexport)
+#define API_CALLBACK __stdcall
 #else
-#define EXTERN_API  
-#define STDCALL
+#define API_EXTERN  
+#define API_CALLBACK
 #endif
 
 #endif

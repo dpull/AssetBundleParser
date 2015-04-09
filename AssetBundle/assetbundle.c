@@ -120,7 +120,7 @@ void assetbundle_entryinfo_destory(struct assetbundle* bundle)
 	free(bundle->entryinfo);
 }
 
-EXTERN_API struct assetbundle* assetbundle_load_data(unsigned char* data, size_t length)
+API_EXTERN struct assetbundle* assetbundle_load_data(unsigned char* data, size_t length)
 {
 	struct assetbundle* bundle = (struct assetbundle*)malloc(sizeof(*bundle));
 	memset(bundle, 0, sizeof(*bundle));
@@ -143,7 +143,7 @@ EXTERN_API struct assetbundle* assetbundle_load_data(unsigned char* data, size_t
 	return bundle;
 }
 
-EXTERN_API struct assetbundle* assetbundle_load(const char* filename)
+API_EXTERN struct assetbundle* assetbundle_load(const char* filename)
 {
 	struct filemapping* filemapping = filemapping_create_readonly(filename);
 	if (!filemapping)
@@ -157,7 +157,7 @@ EXTERN_API struct assetbundle* assetbundle_load(const char* filename)
 	return bundle;
 }
 
-EXTERN_API bool assetbundle_check(struct assetbundle* bundle)
+API_EXTERN bool assetbundle_check(struct assetbundle* bundle)
 {
 	size_t length = filemapping_getlength(bundle->filemapping);
 	unsigned char* dest_data = (unsigned char*)malloc(length);
@@ -193,7 +193,7 @@ EXTERN_API bool assetbundle_check(struct assetbundle* bundle)
 	return error_bytes == 0;
 }
 
-EXTERN_API void assetbundle_destory(struct assetbundle* bundle)
+API_EXTERN void assetbundle_destory(struct assetbundle* bundle)
 {
 	assetbundle_entryinfo_destory(bundle);
 	if (bundle->filemapping)
@@ -201,7 +201,7 @@ EXTERN_API void assetbundle_destory(struct assetbundle* bundle)
 	free(bundle);
 }
 
-EXTERN_API void assetbundle_print(struct assetbundle* bundle, struct debug_tree* root)
+API_EXTERN void assetbundle_print(struct assetbundle* bundle, struct debug_tree* root)
 {
 	struct debug_tree* header = debug_tree_create(root, "header");
 
@@ -219,12 +219,12 @@ EXTERN_API void assetbundle_print(struct assetbundle* bundle, struct debug_tree*
 	}
 }
 
-EXTERN_API size_t assetbundle_assetfile_count(struct assetbundle* bundle)
+API_EXTERN size_t assetbundle_assetfile_count(struct assetbundle* bundle)
 {
 	return bundle->entryinfo_count;
 }
 
-EXTERN_API struct assetfile*  assetbundle_get_assetfile(struct assetbundle* bundle, size_t index)
+API_EXTERN struct assetfile*  assetbundle_get_assetfile(struct assetbundle* bundle, size_t index)
 {
 	return bundle->entryinfo[index].assetfile;
 }

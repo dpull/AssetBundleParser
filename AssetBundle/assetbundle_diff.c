@@ -419,7 +419,7 @@ bool get_objectinfo_diff_info(unsigned char* buffer, size_t length, struct objec
     return true;
 }
 
-EXTERN_API int assetbundle_diff(const char* dir, const char* from, const char* to, const char* diff)
+API_EXTERN int assetbundle_diff(const char* dir, const char* from, const char* to, const char* diff)
 {
 	struct assetfiles* assetfiles = assetfiles_create();
     
@@ -455,7 +455,7 @@ EXTERN_API int assetbundle_diff(const char* dir, const char* from, const char* t
 	return ASSETBUNDLE_SUCCEED;
 }
 
-EXTERN_API void assetbundle_diff_print(const char* filename, const char* output)
+API_EXTERN void assetbundle_diff_print(const char* filename, const char* output)
 {
 	struct assetbundle_diff* assetbundle_diff = assetbundle_diff_load(filename, true);
 	if (!assetbundle_diff)
@@ -502,7 +502,7 @@ EXTERN_API void assetbundle_diff_print(const char* filename, const char* output)
         fclose(output_stream);
 }
 
-EXTERN_API int assetbundle_merge(readfile_callback* fn_readfile, void* userdata, const char* from, const char* to, const char* diff)
+API_EXTERN int assetbundle_merge(readfile_callback* fn_readfile, void* userdata, const char* from, const char* to, const char* diff)
 {
 	struct filemapping* filemapping_from = NULL;
 	unsigned char* data_from = NULL;

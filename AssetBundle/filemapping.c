@@ -63,7 +63,14 @@ struct filemapping* filemapping_create_readwrite(const char* file, size_t length
 	handle = CreateFileA(file, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (handle == INVALID_HANDLE_VALUE)
 		return NULL;
-
+    
+    if (length == 0) {
+        length = GetFileSize(handle, NULL);
+    } else {
+        if (SetFilePointer(handle, length, NULL, FILE_BEGIN))
+            ret = SetEndOfFile(handle);
+    }
+    
 	mapping = CreateFileMappingA(handle, NULL, PAGE_READWRITE, 0, length, NULL);
 	CloseHandle(handle);
 

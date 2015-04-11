@@ -20,6 +20,7 @@ struct assetfile
 	char* unity_revision;
 	int typetree_struct_attribute;
 	size_t typetree_struct_count; // must == 0
+    struct typetree* typetree_struct;
 	int typetree_padding;
 	size_t objectinfo_struct_count;
 	struct objectinfo* objectinfo_struct;
@@ -28,6 +29,31 @@ struct assetfile
 	size_t align_data_length;
 	unsigned char* align_data;
 };
+
+struct field_type
+{
+    char* type;
+    char* name;
+    int size;
+    int index;
+    int is_array;
+    int version;
+    int meta_flag;
+};
+
+struct field_type_list
+{
+    struct field_type field_type;
+    int children_count;
+    struct field_type_list* children_field_type_list;
+};
+
+struct typetree
+{
+    int class_id;
+    struct field_type_list field_type_list;
+};
+
 
 #define OBJECTINFO_BUFFER_ALIGN        (8)
 struct objectinfo

@@ -13,7 +13,12 @@ It's forbidden to sell Unity AssetStore plugins based on this source. Because I'
 
 At current only uncompressed `assetbundle` is supported. This is because  Lzma compression speed is very slow. So when create a bundle, options like `BuildOptions.UncompressedAssetBundle` or `BuildAssetBundleOptions.UncompressedAssetBundle` shall be used.
 
-It only supports mobile platforms. TypeTree related data isn't available on mobile, so it's not parsed. The support for TypeTree maybe added later for non-mobile platforms.
+# Compatibility #
+
+	Unity 				| Support
+	---  				| --- 		
+	4.6 				| √ 
+	5.0 				| ×		
 
 ## Usage ##
 1. Call `assetbundle_diff` to generate a diff file.
@@ -58,8 +63,6 @@ Return: 0: Success; None-zero: error code
 1. 文件的正确性可以通过验证md5等方式来保证， 没必要太增加代码复杂度. 合并差异前，会检查文件diff文件，旧assetbundle文件的md5是否一致，合并后也会检查新assetbundle文件的md5是否一致
 
 目前只支持非压缩的 `assetbundle` 的包，因为Lzma压缩速度很慢，差异合并后再压缩整个过程就太久了，所以做包时需要增加：`BuildOptions.UncompressedAssetBundle` 或 `BuildAssetBundleOptions.UncompressedAssetBundle`。
-
-目前只支持移动端，因为TypeTree相关的数据在移动端上没有，故而也并没有解析。对于非移动端可以考虑加上 `BuildAssetBundleOptions.DisableWriteTypeTree` ，这对我当前的项目支持是足够的， 在下一个版本可能会加上这个支持。
 
 ## 使用流程 ##
 1. 调用 `assetbundle_diff` 生成差异文件

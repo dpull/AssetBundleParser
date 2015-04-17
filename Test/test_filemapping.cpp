@@ -44,6 +44,29 @@ void test_file_size(const char* filename, size_t file_length)
     ::filemapping_destory(filemapping);
 }
 
+TEST_F(filemapping_test, test_readwrite_truncate)
+{
+	const char* filename = "TestData/test_tmp";
+	size_t file_length = 1024;
+
+	struct filemapping* filemapping = ::filemapping_create_readwrite(filename, file_length);
+	ASSERT_TRUE(filemapping);
+	::filemapping_destory(filemapping);
+
+	test_file_size(filename, file_length);
+
+	file_length /= 10;
+	filemapping = ::filemapping_create_readwrite(filename, file_length);
+	ASSERT_TRUE(filemapping);
+	::filemapping_destory(filemapping);
+	test_file_size(filename, file_length);
+
+	file_length *= 100;
+	filemapping = ::filemapping_create_readwrite(filename, file_length);
+	ASSERT_TRUE(filemapping);
+	::filemapping_destory(filemapping);
+	test_file_size(filename, file_length);
+}
 
 TEST_F(filemapping_test, test_truncate)
 {

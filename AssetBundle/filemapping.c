@@ -67,8 +67,8 @@ struct filemapping* filemapping_create_readwrite(const char* file, size_t length
     if (length == 0) {
         length = GetFileSize(handle, NULL);
     } else {
-        if (SetFilePointer(handle, length, NULL, FILE_BEGIN))
-            ret = SetEndOfFile(handle);
+        if (SetFilePointer(handle, length, NULL, FILE_BEGIN)) 
+			SetEndOfFile(handle);
     }
     
 	mapping = CreateFileMappingA(handle, NULL, PAGE_READWRITE, 0, length, NULL);

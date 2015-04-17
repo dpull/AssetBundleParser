@@ -13,7 +13,7 @@ class assetbundle_diff_test : public testing::Test
     
 };
 
-bool readfile_in_dir(unsigned char* buffer, const char* filename, size_t offset, size_t length, void* userdata)
+bool API_CALLBACK readfile_in_dir(unsigned char* buffer, const char* filename, size_t offset, size_t length, void* userdata)
 {
     char* dir = (char*)userdata;
     char filename_buffer[512];

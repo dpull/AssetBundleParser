@@ -108,7 +108,7 @@ size_t filemapping_getlength(struct filemapping* filemapping)
 	return filemapping->length;
 }
 
-bool filemapping_truncate(const char* file, size_t length)
+API_EXTERN bool filemapping_truncate(const char* file, size_t length)
 {
 	BOOL ret = false;
 	HANDLE handle = CreateFileA(file, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -208,7 +208,7 @@ size_t filemapping_getlength(struct filemapping* filemapping)
 	return filemapping->length;
 }
 
-bool filemapping_truncate(const char* file, size_t length)
+API_EXTERN bool filemapping_truncate(const char* file, size_t length)
 {
 	return truncate(file, length);
 }

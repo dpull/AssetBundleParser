@@ -9,5 +9,5 @@ unsigned char* filemapping_getdata(struct filemapping* filemapping);
 size_t filemapping_getlength(struct filemapping* filemapping);
 unsigned char* filemapping_getdata(struct filemapping* filemapping);
 
-bool filemapping_truncate(const char* file, size_t length);
+API_EXTERN bool filemapping_truncate(const char* file, size_t length);
 #endif

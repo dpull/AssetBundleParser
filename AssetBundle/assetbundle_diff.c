@@ -548,7 +548,7 @@ API_EXTERN int assetbundle_merge(readfile_callback* fn_readfile, void* userdata,
 				continue;
 
 			if (objectinfo_diff_info.index == 0) {
-				assert(objectinfo_diff_info.offset + objectinfo->length < data_from_length);
+				assert(objectinfo_diff_info.offset + objectinfo->length <= data_from_length);
 				memcpy(objectinfo->buffer, data_from + objectinfo_diff_info.offset, objectinfo->length);
 				continue;
 			}

@@ -69,3 +69,22 @@ TEST_F(assetbundle_diff_test, test_diff_file)
     ::filemapping_destory(file1);
     ::filemapping_destory(file2);
 }
+
+TEST_F(assetbundle_diff_test, hero_crash_20150423)
+{
+    ASSERT_EQ(ASSETBUNDLE_SUCCEED, ::assetbundle_diff("TestData/iPhone/Client/Payload/ProductName.app/Data", "TestData/iPhone/Patch/20150420_112809.asset", "TestData/iPhone/Patch/20150420_163057.asset", "TestData/iPhone/tmp.diff"));
+    ASSERT_EQ(ASSETBUNDLE_SUCCEED, ::assetbundle_merge(readfile_in_dir, (void*)"TestData/iPhone/Client/Payload/ProductName.app/Data", "TestData/iPhone/Patch/20150420_112809.asset", "TestData/iPhone/Patch/20150420_163057.tmp", "TestData/iPhone/tmp.diff"));
+    
+    struct filemapping* file1 = ::filemapping_create_readonly("TestData/iPhone/Patch/20150420_163057.asset");
+    ASSERT_TRUE(file1);
+    
+    struct filemapping* file2 = ::filemapping_create_readonly("TestData/iPhone/Patch/20150420_163057.tmp");
+    ASSERT_TRUE(file2);
+    
+    ASSERT_EQ(::filemapping_getlength(file1), ::filemapping_getlength(file2));
+    ASSERT_EQ(0, memcmp(::filemapping_getdata(file1), ::filemapping_getdata(file2), ::filemapping_getlength(file1)));
+    
+    ::filemapping_destory(file1);
+    ::filemapping_destory(file2);
+}
+

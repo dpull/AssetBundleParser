@@ -22,7 +22,6 @@
     <ClCompile Include="..\AssetBundle\assetbundle.c" />
     <ClCompile Include="..\AssetBundle\assetbundle_diff.c" />
     <ClCompile Include="..\AssetBundle\assetfile.c" />
-    <ClCompile Include="..\AssetBundle\field_type.c" />
     <ClCompile Include="..\AssetBundle\filemapping.c" />
     <ClCompile Include="..\AssetBundle\object_class.c" />
     <ClCompile Include="..\AssetBundle\tools.c" />
@@ -38,7 +37,6 @@
     <ClInclude Include="..\AssetBundle\assetbundle_imp.h" />
     <ClInclude Include="..\AssetBundle\assetfile.h" />
     <ClInclude Include="..\AssetBundle\assetfile_imp.h" />
-    <ClInclude Include="..\AssetBundle\field_type.h" />
     <ClInclude Include="..\AssetBundle\filemapping.h" />
     <ClInclude Include="..\AssetBundle\object_class.h" />
     <ClInclude Include="..\AssetBundle\tools.h" />

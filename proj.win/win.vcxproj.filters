@@ -10,9 +10,6 @@
     <ClCompile Include="..\AssetBundle\assetfile.c">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\AssetBundle\field_type.c">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\AssetBundle\filemapping.c">
       <Filter>src</Filter>
     </ClCompile>
@@ -52,9 +49,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\AssetBundle\assetfile_imp.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\AssetBundle\field_type.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\AssetBundle\filemapping.h">

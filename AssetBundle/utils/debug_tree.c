@@ -59,10 +59,10 @@ struct debug_tree* debug_tree_create(struct debug_tree* parent, const char* form
 	return debug_tree_insert(parent, data);
 }
 
-void debug_tree_destory(struct debug_tree* tree)
+void debug_tree_destroy(struct debug_tree* tree)
 {
 	while (tree->child) {
-		debug_tree_destory(tree->child);
+		debug_tree_destroy(tree->child);
 	}
 
 	if (tree->parent) {

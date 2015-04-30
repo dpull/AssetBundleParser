@@ -111,10 +111,10 @@ size_t field_type_list_save(unsigned char* data, size_t start, struct field_type
 }
 
 
-void field_type_list_destory(struct field_type_list* field_type_list)
+void field_type_list_destroy(struct field_type_list* field_type_list)
 {
     for (size_t i = 0; i < field_type_list->children_count; ++i) {
-        field_type_list_destory(field_type_list->children_field_type_list + i);
+        field_type_list_destroy(field_type_list->children_field_type_list + i);
     }
     
     if (field_type_list->children_field_type_list)
@@ -170,11 +170,11 @@ size_t typetree_struct_save(struct assetfile* file, unsigned char* data, size_t 
     return offset - start;
 }
 
-void typetree_struct_destory(struct assetfile* file)
+void typetree_struct_destroy(struct assetfile* file)
 {
     for (size_t i = 0; i < file->typetree_struct_count; ++i) {
         struct typetree* typetree = &file->typetree_struct[i];
-        field_type_list_destory(&typetree->field_type_list);
+        field_type_list_destroy(&typetree->field_type_list);
     }
     
     if (file->typetree_struct)
@@ -358,7 +358,7 @@ struct assetfile* assetfile_load(unsigned char* data, size_t start, size_t size)
 	assert(offset - start <= size);
 
 	if (!assetfile_loadobjects(file, data, start, size)) {
-		assetfile_destory(file);
+		assetfile_destroy(file);
 		return NULL;
 	}
 
@@ -375,7 +375,7 @@ bool assetfile_save(struct assetfile* file, unsigned char* data, size_t start, s
 	return assetfile_saveobjects(file, data, start);
 }
 
-void assetfile_destory(struct assetfile* file)
+void assetfile_destroy(struct assetfile* file)
 {
 	if (file->externals_struct)
 		free(file->externals_struct);
@@ -383,7 +383,7 @@ void assetfile_destory(struct assetfile* file)
 	if (file->objectinfo_struct)
 		free(file->objectinfo_struct);
     
-    typetree_struct_destory(file);
+    typetree_struct_destroy(file);
     
 	free(file);
 }

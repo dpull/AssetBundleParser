@@ -110,12 +110,12 @@ size_t assetbundle_entryinfo_save(struct assetbundle* bundle, unsigned char* dat
 	return offset - start;
 }
 
-void assetbundle_entryinfo_destory(struct assetbundle* bundle)
+void assetbundle_entryinfo_destroy(struct assetbundle* bundle)
 {
 	for (size_t i = 0; i < bundle->entryinfo_count; ++i) {
 		struct assetbundle_entryinfo* entryinfo = &bundle->entryinfo[i];
 		if (entryinfo->assetfile)
-			assetfile_destory(entryinfo->assetfile);
+			assetfile_destroy(entryinfo->assetfile);
 	}
 	free(bundle->entryinfo);
 }
@@ -193,11 +193,11 @@ API_EXTERN bool assetbundle_check(struct assetbundle* bundle)
 	return error_bytes == 0;
 }
 
-API_EXTERN void assetbundle_destory(struct assetbundle* bundle)
+API_EXTERN void assetbundle_destroy(struct assetbundle* bundle)
 {
-	assetbundle_entryinfo_destory(bundle);
+	assetbundle_entryinfo_destroy(bundle);
 	if (bundle->filemapping)
-		filemapping_destory(bundle->filemapping);
+		filemapping_destroy(bundle->filemapping);
 	free(bundle);
 }
 

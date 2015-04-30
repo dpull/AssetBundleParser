@@ -58,7 +58,7 @@ struct object_class_audioclip* object_class_audioclip_load(unsigned char* data, 
 	return object_class;
 }
 
-void object_class_audioclip_destory(struct object_class_audioclip* object_class)
+void object_class_audioclip_destroy(struct object_class_audioclip* object_class)
 {
 	if (object_class)
 		free(object_class);

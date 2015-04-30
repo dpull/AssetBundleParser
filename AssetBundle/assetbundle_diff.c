@@ -21,10 +21,10 @@
 
 #define SPLIT_FILE_FROMAT ("%s.split%d")
 
-void split_filemapping_destory(struct split_filemapping* split_filemapping)
+void split_filemapping_destroy(struct split_filemapping* split_filemapping)
 {
 	if (split_filemapping->filemapping)
-		filemapping_destory(split_filemapping->filemapping);
+		filemapping_destroy(split_filemapping->filemapping);
 
 	if (split_filemapping->name)
 		free(split_filemapping->name);
@@ -43,7 +43,7 @@ struct split_filemapping* split_filemapping_create(const char* fullpath, const c
 	if (split0 == NULL) {
 		split_filemapping->filemapping = filemapping_create_readonly(fullpath);
 		if (!split_filemapping->filemapping) {
-			split_filemapping_destory(split_filemapping);
+			split_filemapping_destroy(split_filemapping);
 			return NULL;
 		}
 		split_filemapping->name = strdup(filename);
@@ -58,7 +58,7 @@ struct split_filemapping* split_filemapping_create(const char* fullpath, const c
 
 		split_filemapping->filemapping = filemapping_create_readwrite(temp_file, MAX_COMBINE_FILE_SIZE);
 		if (!split_filemapping->filemapping) {
-			split_filemapping_destory(split_filemapping);
+			split_filemapping_destroy(split_filemapping);
 			return NULL;
 		}
 
@@ -86,7 +86,7 @@ struct split_filemapping* split_filemapping_create(const char* fullpath, const c
 			memcpy(data + offset, split_data, split_length);
 
 			offset += split_length;
-			filemapping_destory(filemapping);
+			filemapping_destroy(filemapping);
 		}
 
 		return split_filemapping;
@@ -99,26 +99,26 @@ struct assetfiles* assetfiles_create()
 	return assetfiles;
 }
 
-void assetfiles_destory(struct assetfiles* assetfiles)
+void assetfiles_destroy(struct assetfiles* assetfiles)
 {
 	if (assetfiles->assetfiles) {
 		for (size_t i = assetfiles->assetbundle_assetfile_count; i < assetfiles->count; ++i) {
 			struct assetfile* assetfile = assetfiles->assetfiles[i];
 			if (assetfile)
-				assetfile_destory(assetfile);
+				assetfile_destroy(assetfile);
 		}
 		free(assetfiles->assetfiles);
 	}
 
 	if (assetfiles->assetbundle) {
-		assetbundle_destory(assetfiles->assetbundle);
+		assetbundle_destroy(assetfiles->assetbundle);
 	}
 
 	if (assetfiles->split_filemappings) {
 		for (size_t i = 0; i < assetfiles->count; ++i) {
 			struct split_filemapping* split_filemapping = assetfiles->split_filemappings[i];
 			if (split_filemapping)
-				split_filemapping_destory(split_filemapping);
+				split_filemapping_destroy(split_filemapping);
 		}
 		free(assetfiles->split_filemappings);
 	}
@@ -152,7 +152,7 @@ bool assetfiles_loadfrom_assetbundle(struct assetfiles* assetfiles, const char* 
 		return false;
 
 	if (!assetbundle_check(assetbundle)) {
-		assetbundle_destory(assetbundle);
+		assetbundle_destroy(assetbundle);
 		return false;
 	}
 
@@ -182,13 +182,13 @@ bool load_assetfile_dir(const char* fullpath, const char* filename, void* userda
 	size_t length = filemapping_getlength(split_filemapping->filemapping);
 
 	if (!is_assetfile(data, 0, length)) {
-		split_filemapping_destory(split_filemapping);
+		split_filemapping_destroy(split_filemapping);
 		return true;
 	}
 
 	struct assetfile* assetfile = assetfile_load(data, 0, length);
 	if (!assetfile) {
-		split_filemapping_destory(split_filemapping);
+		split_filemapping_destroy(split_filemapping);
 		return true;
 	}
 
@@ -196,16 +196,16 @@ bool load_assetfile_dir(const char* fullpath, const char* filename, void* userda
 	return true;
 }
 
-void assetbundle_diff_destory(struct assetbundle_diff* assetbundle_diff)
+void assetbundle_diff_destroy(struct assetbundle_diff* assetbundle_diff)
 {
 	if (assetbundle_diff->assetfile_index)
 		free(assetbundle_diff->assetfile_index);
 
 	if (assetbundle_diff->assetbundle)
-		assetbundle_destory(assetbundle_diff->assetbundle);
+		assetbundle_destroy(assetbundle_diff->assetbundle);
 
 	if (assetbundle_diff->filemapping)
-		filemapping_destory(assetbundle_diff->filemapping);
+		filemapping_destroy(assetbundle_diff->filemapping);
 
 	free(assetbundle_diff);
 }
@@ -220,7 +220,7 @@ struct assetbundle_diff* assetbundle_diff_loaddata(unsigned char* data, size_t l
 	if (is_load_assetbundle) {
 		assetbundle_diff->assetbundle = assetbundle_load_data(data + offset, length - offset);
 		if (!assetbundle_diff->assetbundle) {
-			assetbundle_diff_destory(assetbundle_diff);
+			assetbundle_diff_destroy(assetbundle_diff);
 			return NULL;
 		}
 	}
@@ -250,7 +250,7 @@ struct assetbundle_diff* assetbundle_diff_load(const char* filename, bool is_loa
 
 	struct assetbundle_diff* assetbundle_diff = assetbundle_diff_loaddata(data, length, is_load_assetbundle);
 	if (!assetbundle_diff) {
-		filemapping_destory(filemapping);
+		filemapping_destroy(filemapping);
 		return NULL;
 	}
 	assetbundle_diff->filemapping = filemapping;
@@ -264,7 +264,7 @@ bool assertbundle_checkfile(const char* filename)
 		return false;
 
 	bool ret = assetbundle_check(assetbundle);
-	assetbundle_destory(assetbundle);
+	assetbundle_destroy(assetbundle);
 	return ret;
 }
 
@@ -282,7 +282,7 @@ struct assetbundle_diff* assetbundle_diff_create(const char* src, const char* ds
 
 	struct filemapping* dst_filemapping = filemapping_create_readwrite(dst, src_length + MAX_DIFF_RESERVED_SIZE);
 	if (!dst_filemapping) {
-		filemapping_destory(src_filemapping);
+		filemapping_destroy(src_filemapping);
 		return NULL;
 	}
 
@@ -297,12 +297,12 @@ struct assetbundle_diff* assetbundle_diff_create(const char* src, const char* ds
 
 	struct assetbundle_diff* assetbundle_diff = assetbundle_diff_loaddata(dst_data, dst_length, true);
 	if (!assetbundle_diff) {
-		filemapping_destory(src_filemapping);
-		filemapping_destory(dst_filemapping);
+		filemapping_destroy(src_filemapping);
+		filemapping_destroy(dst_filemapping);
 		return NULL;
 	}
 	assetbundle_diff->filemapping = dst_filemapping;
-	filemapping_destory(src_filemapping);
+	filemapping_destroy(src_filemapping);
 	return assetbundle_diff;
 }
 
@@ -424,7 +424,7 @@ API_EXTERN int assetbundle_diff(const char* dir, const char* from, const char* t
 	struct assetfiles* assetfiles = assetfiles_create();
     
 	if (from && !assetfiles_loadfrom_assetbundle(assetfiles, from)) {
-		assetfiles_destory(assetfiles);
+		assetfiles_destroy(assetfiles);
 		return ASSETBUNDLE_FROM_LOAD_FAILED;
 	}
 
@@ -440,15 +440,15 @@ API_EXTERN int assetbundle_diff(const char* dir, const char* from, const char* t
 
 	struct assetbundle_diff* assetbundle_diff = assetbundle_diff_create(to, diff);
 	if (!assetbundle_diff) {
-		assetfiles_destory(assetfiles);
+		assetfiles_destroy(assetfiles);
 		return ASSETBUNDLE_DIFF_CREATE_FAILED;
 	}
 
 	assetbundle_diff_process(assetbundle_diff, assetfiles);
 
 	size_t assetbundle_diff_length = assetbundle_diff->buffer_pos - assetbundle_diff->buffer_begin;
-	assetbundle_diff_destory(assetbundle_diff);
-	assetfiles_destory(assetfiles);
+	assetbundle_diff_destroy(assetbundle_diff);
+	assetfiles_destroy(assetfiles);
 
 	filemapping_truncate(diff, assetbundle_diff_length);
 
@@ -492,12 +492,12 @@ API_EXTERN void assetbundle_diff_print(const char* filename, const char* output)
 
 	struct debug_tree* assetbundle = debug_tree_create(root, "assetbundle size:%u", assetbundle_diff->assetbundle_size);
 	assetbundle_print(assetbundle_diff->assetbundle, assetbundle);
-    assetbundle_diff_destory(assetbundle_diff);
+    assetbundle_diff_destroy(assetbundle_diff);
     
     FILE* output_stream = output ? fopen(output, "wb+") : NULL;
     
     debug_tree_print(root, output_stream ? output_stream : stdout);
-	debug_tree_destory(root);
+	debug_tree_destroy(root);
     if (output_stream)
         fclose(output_stream);
 }
@@ -519,14 +519,14 @@ API_EXTERN int assetbundle_merge(readfile_callback* fn_readfile, void* userdata,
 
 	struct assetbundle_diff* assetbundle_diff = assetbundle_diff_load(diff, false);
 	if (!assetbundle_diff) {
-		filemapping_destory(filemapping_from);
+		filemapping_destroy(filemapping_from);
 		return ASSETBUNDLE_DIFF_LOAD_FAILED;
 	}
 
 	struct filemapping* filemapping_to = filemapping_create_readwrite(to, assetbundle_diff->assetbundle_size);
     if (!filemapping_to) {
-        assetbundle_diff_destory(assetbundle_diff);
-        filemapping_destory(filemapping_from);
+        assetbundle_diff_destroy(assetbundle_diff);
+        filemapping_destroy(filemapping_from);
         return ASSETBUNDLE_TO_CREATE_FAILED;
     }
         
@@ -562,10 +562,10 @@ API_EXTERN int assetbundle_merge(readfile_callback* fn_readfile, void* userdata,
 		}
 	}
 
-	assetbundle_diff_destory(assetbundle_diff);
-	assetbundle_destory(assetbundle_to);
-	filemapping_destory(filemapping_to);
+	assetbundle_diff_destroy(assetbundle_diff);
+	assetbundle_destroy(assetbundle_to);
+	filemapping_destroy(filemapping_to);
     if (filemapping_from)
-        filemapping_destory(filemapping_from);
+        filemapping_destroy(filemapping_from);
 	return merge_error ? ASSETBUNDLE_FAILED : ASSETBUNDLE_SUCCEED;
 }

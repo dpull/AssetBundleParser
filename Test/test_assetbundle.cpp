@@ -18,7 +18,7 @@ TEST_F(assetbundle_test, test_unity_4_6_ios)
     
     ASSERT_TRUE(::assetbundle_check(assetbundle));
     
-    ::assetbundle_destory(assetbundle);
+    ::assetbundle_destroy(assetbundle);
 }
 
 TEST_F(assetbundle_test, test_unity_4_6_osx)
@@ -28,7 +28,7 @@ TEST_F(assetbundle_test, test_unity_4_6_osx)
     
     ASSERT_TRUE(::assetbundle_check(assetbundle));
     
-    ::assetbundle_destory(assetbundle);
+    ::assetbundle_destroy(assetbundle);
 }
 
 /*
@@ -40,6 +40,6 @@ TEST_F(assetbundle_test, test_unity_5_0_ios)
     
     ASSERT_TRUE(::assetbundle_check(assetbundle));
     
-    ::assetbundle_destory(assetbundle);
+    ::assetbundle_destroy(assetbundle);
 }
 */

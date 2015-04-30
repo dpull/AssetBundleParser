@@ -92,7 +92,7 @@ struct filemapping* filemapping_create_readwrite(const char* file, size_t length
 	return filemapping;
 }
 
-void filemapping_destory(struct filemapping* filemapping)
+void filemapping_destroy(struct filemapping* filemapping)
 {
 	UnmapViewOfFile(filemapping->data);
 	free(filemapping);
@@ -192,7 +192,7 @@ struct filemapping* filemapping_create_readwrite(const char* file, size_t length
 	return filemapping;
 }
 
-void filemapping_destory(struct filemapping* filemapping)
+void filemapping_destroy(struct filemapping* filemapping)
 {
 	munmap(filemapping->data, filemapping->length);
 	free(filemapping);

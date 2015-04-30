@@ -3,7 +3,7 @@
 
 API_EXTERN struct assetbundle* assetbundle_load(const char* filename);
 API_EXTERN bool assetbundle_check(struct assetbundle* bundle);
-API_EXTERN void assetbundle_destory(struct assetbundle* bundle);
+API_EXTERN void assetbundle_destroy(struct assetbundle* bundle);
 API_EXTERN void assetbundle_print(struct assetbundle* bundle, struct debug_tree* root);
 
 API_EXTERN size_t assetbundle_assetfile_count(struct assetbundle* bundle);

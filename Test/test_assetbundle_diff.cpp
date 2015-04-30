@@ -24,13 +24,13 @@ bool API_CALLBACK readfile_in_dir(unsigned char* buffer, const char* filename, s
         return false;
     size_t file_length = filemapping_getlength(filemapping);
     if (file_length < offset + length) {
-        filemapping_destory(filemapping);
+        filemapping_destroy(filemapping);
         return false;
     }
     
     unsigned char* data = filemapping_getdata(filemapping);
     memcpy(buffer, data + offset, length);
-    filemapping_destory(filemapping);
+    filemapping_destroy(filemapping);
     return true;
 }
 
@@ -48,8 +48,8 @@ TEST_F(assetbundle_diff_test, test_diff_dir)
     ASSERT_EQ(::filemapping_getlength(file1), ::filemapping_getlength(file2));
     ASSERT_EQ(0, memcmp(::filemapping_getdata(file1), ::filemapping_getdata(file2), ::filemapping_getlength(file1)));
     
-    ::filemapping_destory(file1);
-    ::filemapping_destory(file2);
+    ::filemapping_destroy(file1);
+    ::filemapping_destroy(file2);
 }
 
 TEST_F(assetbundle_diff_test, test_diff_file)
@@ -66,8 +66,8 @@ TEST_F(assetbundle_diff_test, test_diff_file)
     ASSERT_EQ(::filemapping_getlength(file1), ::filemapping_getlength(file2));
     ASSERT_EQ(0, memcmp(::filemapping_getdata(file1), ::filemapping_getdata(file2), ::filemapping_getlength(file1)));
     
-    ::filemapping_destory(file1);
-    ::filemapping_destory(file2);
+    ::filemapping_destroy(file1);
+    ::filemapping_destroy(file2);
 }
 
 TEST_F(assetbundle_diff_test, hero_crash_20150423)
@@ -84,7 +84,7 @@ TEST_F(assetbundle_diff_test, hero_crash_20150423)
     ASSERT_EQ(::filemapping_getlength(file1), ::filemapping_getlength(file2));
     ASSERT_EQ(0, memcmp(::filemapping_getdata(file1), ::filemapping_getdata(file2), ::filemapping_getlength(file1)));
     
-    ::filemapping_destory(file1);
-    ::filemapping_destory(file2);
+    ::filemapping_destroy(file1);
+    ::filemapping_destroy(file2);
 }
 

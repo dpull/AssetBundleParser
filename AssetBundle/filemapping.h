@@ -3,7 +3,7 @@
 
 struct filemapping* filemapping_create_readonly(const char* file);
 struct filemapping* filemapping_create_readwrite(const char* file, size_t length);
-void filemapping_destory(struct filemapping* filemapping);
+void filemapping_destroy(struct filemapping* filemapping);
 
 unsigned char* filemapping_getdata(struct filemapping* filemapping);
 size_t filemapping_getlength(struct filemapping* filemapping);

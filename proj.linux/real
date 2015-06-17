@@ -1,0 +1,214 @@
+product = AssetBundleParser
+# execute, dynamic_shared, static_shared
+target_type = dynamic_shared
+define_macros =
+include_dir = 
+
+lib = 
+obj_dir	= build
+out_dir	= bin
+# keep it empty for current dir, or, for e.g, "src/"
+src_dir = $(CURDIR)/../AssetBundle/
+
+platform := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+
+ifeq ($(platform), Linux)
+	LIB_OUTPUT_PATH ?= $(CURDIR)/lib/linux
+endif
+
+ifeq ($(platform), Darwin)
+	LIB_OUTPUT_PATH ?= $(CURDIR)/lib/mac
+endif
+lib_dir += $(LIB_OUTPUT_PATH)
+
+CC = gcc
+CXX = g++
+CFLAGS = -fPIC -march=native
+CXXFLAGS = $(CFLAGS) -Wno-invalid-offsetof
+
+#----------------- 下面部分不用改 --------------------------
+
+ifeq ($(target_type), execute)
+	link = g++
+	link_flags = -lcurl -Wl,-rpath ./
+
+	# macos 下不存在单独的uuid lib,所以只对linux加这个库
+	ifeq ($(platform), Linux)
+		link_flags += -luuid 
+	endif	
+endif
+
+ifeq ($(target_type), dynamic_shared)
+	link = g++
+	link_flags = -shared -ldl -fPIC -lpthread -lcurl 
+	after_link = cp -f $@ $(out_dir)
+
+	ifeq ($(platform), Darwin)
+		link_flags += -dynamiclib -Wl,-undefined,dynamic_lookup
+	endif	
+endif
+
+ifeq ($(target_type), static_shared)
+	link = ar
+	link_flags =
+endif
+
+ifeq ($(target_type), execute)
+	product_x86d = $(out_dir)/$(product)_x86d
+	product_x86  = $(out_dir)/$(product)_x86
+	product_x64d = $(out_dir)/$(product)_x64d
+	product_x64  = $(out_dir)/$(product)_x64
+endif
+
+ifeq ($(target_type), dynamic_shared)
+	product_x86d = $(lib_dir)/lib$(product)_x86d.so
+	product_x86  = $(lib_dir)/lib$(product)_x86.so
+	product_x64d = $(lib_dir)/lib$(product)_x64d.so
+	product_x64  = $(lib_dir)/lib$(product)_x64.so
+endif
+
+ifeq ($(target_type), static_shared)
+	product_x86d = $(lib_dir)/lib$(product)_x86d.a
+	product_x86  = $(lib_dir)/lib$(product)_x86.a
+	product_x64d = $(lib_dir)/lib$(product)_x64d.a
+	product_x64  = $(lib_dir)/lib$(product)_x64.a
+endif
+
+obj_dir_x86d = $(obj_dir)/$(product)/debug_x86
+obj_dir_x86  = $(obj_dir)/$(product)/release_x86
+obj_dir_x64d = $(obj_dir)/$(product)/debug_x64
+obj_dir_x64  = $(obj_dir)/$(product)/release_x64
+
+comp_x86d_flags = $(include_dir:%=-I%) $(define_macros:%=-D%) -m32 -c -g -D_DEBUG -o
+comp_x86_flags  = $(include_dir:%=-I%) $(define_macros:%=-D%) -m32 -c -O3 -o
+comp_x64d_flags = $(include_dir:%=-I%) $(define_macros:%=-D%) -m64 -c -g -D_DEBUG -o
+comp_x64_flags  = $(include_dir:%=-I%) $(define_macros:%=-D%) -m64 -c -O3 -o
+
+# exe and .so
+ifneq ($(target_type), static_shared)
+	link_x86d = $(link) -o $@ $^ $(link_flags) -m32 $(lib_dir:%=-L%) $(lib:%=-l%_x86d)
+	link_x86 = $(link) -o $@ $^ $(link_flags) -m32 $(lib_dir:%=-L%) $(lib:%=-l%_x86)
+	link_x64d = $(link) -o $@ $^ $(link_flags) -m64 $(lib_dir:%=-L%) $(lib:%=-l%_x64d)
+	link_x64 = $(link) -o $@ $^ $(link_flags) -m64 $(lib_dir:%=-L%) $(lib:%=-l%_x64)
+endif
+
+# .a
+ifeq ($(target_type), static_shared)
+	link_x86d = $(link) cr $@ $^ $(link_flags)
+	link_x86 = $(link) cr $@ $^ $(link_flags)
+	link_x64d = $(link) cr $@ $^ $(link_flags)
+	link_x64 = $(link) cr $@ $^ $(link_flags)
+endif
+
+src_c = $(wildcard $(src_dir)*.c)
+src_cpp = $(wildcard $(src_dir)*.cpp) 
+
+obj_list = $(patsubst $(src_dir)%.c, %.o, $(src_c)) $(patsubst $(src_dir)%.cpp, %.o, $(src_cpp))
+
+$(shell mkdir -p $(lib_dir))
+$(shell mkdir -p $(out_dir))
+$(shell mkdir -p $(obj_dir_x86d) $(obj_dir_x86) $(obj_dir_x64d) $(obj_dir_x64))
+
+comp_c_echo = @echo gcc $< ... ...
+comp_cxx_echo = @echo g++ $< ... ...
+after_Make = @echo
+
+.PHONY: all
+all: debug_x64 release_x64
+
+.PHONY: clean
+clean :
+	rm -f $(obj_dir_x86d)/* $(obj_dir_x86)/* $(obj_dir_x64d)/* $(obj_dir_x64)/*
+
+.PHONY: debug_x86
+debug_x86: start_x86d $(product_x86d)
+	$(after_Make)
+
+.PHONY: release_x86
+release_x86: start_x86 $(product_x86)
+	$(after_Make)
+
+.PHONY: debug_x64
+debug_x64: start_x64d $(product_x64d)
+	$(after_Make)
+
+.PHONY: release_x64
+release_x64: start_x64 $(product_x64)
+	$(after_Make)
+
+.PHONY: start_x86d
+start_x86d:
+	@echo "---> "build $(product) debug_x86 ... ...
+	@echo $(CC) $(CFLAGS) $(comp_x86d_flags) ...
+	@echo $(CXX) $(CXXFLAGS) $(comp_x86d_flags) ...
+
+.PHONY: start_x86
+start_x86:
+	@echo "---> "build $(product) release_x86 ... ...
+	@echo $(CC) $(CFLAGS) $(comp_x86_flags) ...
+	@echo $(CXX) $(CXXFLAGS) $(comp_x86_flags) ...
+
+.PHONY: start_x64d
+start_x64d:
+	@echo "---> "build $(product) debug_x64 ... ...
+	@echo $(CC) $(CFLAGS) $(comp_x64d_flags) ...
+	@echo $(CXX) $(CXXFLAGS) $(comp_x64d_flags) ...
+
+.PHONY: start_x64
+start_x64:
+	@echo "---> "build $(product) release_x64 ... ...
+	@echo $(CC) $(CFLAGS) $(comp_x64_flags) ...
+	@echo $(CXX) $(CXXFLAGS) $(comp_x64_flags) ...
+
+$(product_x86d): $(obj_list:%=$(obj_dir_x86d)/%)
+	@echo link "-->" $@
+	@$(link_x86d)
+	$(after_link)
+
+$(product_x86): $(obj_list:%=$(obj_dir_x86)/%)
+	@echo link "-->" $@
+	@$(link_x86)
+	$(after_link)
+
+$(product_x64d): $(obj_list:%=$(obj_dir_x64d)/%)
+	@echo link "-->" $@
+	@$(link_x64d)
+	$(after_link)
+
+$(product_x64): $(obj_list:%=$(obj_dir_x64)/%)
+	@echo link "-->" $@
+	@$(link_x64)
+	$(after_link)
+
+$(obj_dir_x86d)/%.o: $(src_dir)%.c
+	$(comp_c_echo)
+	@$(CC) $(CFLAGS) $(comp_x86d_flags) $@ $<
+
+$(obj_dir_x86)/%.o: $(src_dir)%.c
+	$(comp_c_echo)
+	@$(CC) $(CFLAGS) $(comp_x86_flags) $@ $<
+
+$(obj_dir_x64d)/%.o: $(src_dir)%.c
+	$(comp_c_echo)
+	@$(CC) $(CFLAGS) $(comp_x64d_flags) $@ $<
+
+$(obj_dir_x64)/%.o: $(src_dir)%.c
+	$(comp_c_echo)
+	@$(CC) $(CFLAGS) $(comp_x64_flags) $@ $<
+
+$(obj_dir_x86d)/%.o: $(src_dir)%.cpp
+	$(comp_cxx_echo)
+	@$(CXX) $(CXXFLAGS) $(comp_x86d_flags) $@ $<
+
+$(obj_dir_x86)/%.o: $(src_dir)%.cpp
+	$(comp_cxx_echo)
+	@$(CXX) $(CXXFLAGS) $(comp_x86_flags) $@ $<
+
+$(obj_dir_x64d)/%.o: $(src_dir)%.cpp
+	$(comp_cxx_echo)
+	@$(CXX) $(CXXFLAGS) $(comp_x64d_flags) $@ $<
+
+$(obj_dir_x64)/%.o: $(src_dir)%.cpp
+	$(comp_cxx_echo)
+	@$(CXX) $(CXXFLAGS) $(comp_x64_flags) $@ $<
+

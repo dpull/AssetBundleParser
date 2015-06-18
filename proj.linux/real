@@ -23,7 +23,7 @@ lib_dir += $(LIB_OUTPUT_PATH)
 
 CC = gcc
 CXX = g++
-CFLAGS = -fPIC -march=native
+CFLAGS = -fPIC -march=native -std=c99
 CXXFLAGS = $(CFLAGS) -Wno-invalid-offsetof
 
 #----------------- 下面部分不用改 --------------------------

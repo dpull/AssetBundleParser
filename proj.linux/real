@@ -21,7 +21,7 @@ ifeq ($(platform), Darwin)
 endif
 lib_dir += $(LIB_OUTPUT_PATH)
 
-CC = gcc -std=c99
+CC := gcc -std=c99
 CXX = g++
 CFLAGS = -fPIC -march=native
 CXXFLAGS = $(CFLAGS) -Wno-invalid-offsetof

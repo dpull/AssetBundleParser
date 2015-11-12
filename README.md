@@ -1,5 +1,7 @@
 # License:  #
-Released under MIT license.
+Released under MIT license. 
+
+C version of [disunity](https://github.com/ata4/disunity).
 
 It's forbidden to sell Unity AssetStore plugins based on this source. Because I'll write a plugin to sell. :)
 

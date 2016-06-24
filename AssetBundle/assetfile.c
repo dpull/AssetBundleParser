@@ -19,11 +19,11 @@ size_t assetheader_load(struct assetheader* header, unsigned char* data, size_t 
 
 	offset += read_uint32(data, offset, &header->metadata_size, false);
 	offset += read_uint32(data, offset, &header->file_size, false);
-	offset += read_int32(data, offset, &header->version_info, false);
+	offset += read_int32(data, offset, &header->version, false);
 	offset += read_uint32(data, offset, &header->data_offset, false);
 
 	header->endianness = 0;
-	if (header->version_info >= 9){
+	if (header->version >= 9){
 		offset += read_byte(data, offset, &header->endianness);
 		offset += read_buffer(data, offset, &header->reserved, ASSETHEADER_RESERVED_SIZE);
 	}
@@ -37,10 +37,10 @@ size_t assetheader_save(struct assetheader* header, unsigned char* data, size_t 
 
 	offset += write_uint32(data, offset, header->metadata_size, false);
 	offset += write_uint32(data, offset, header->file_size, false);
-	offset += write_int32(data, offset, header->version_info, false);
+	offset += write_int32(data, offset, header->version, false);
 	offset += write_uint32(data, offset, header->data_offset, false);
 
-	if (header->version_info >= 9){
+	if (header->version >= 9){
 		offset += write_byte(data, offset, header->endianness);
 		offset += write_buffer(data, offset, header->reserved, ASSETHEADER_RESERVED_SIZE);
 	}
@@ -52,12 +52,13 @@ size_t field_type_load(unsigned char* data, size_t start, struct field_type* fie
 {
     size_t offset = start;
     
-    offset += read_string(data, offset, &field_type->type);
-    offset += read_string(data, offset, &field_type->name);
+    offset += read_int16(data, offset, &field_type->version, true);
+    offset += read_byte(data, offset, &field_type->tree_level);
+    offset += read_byte(data, offset, &field_type->is_array);
+    offset += read_int32(data, offset, &field_type->type_offset, true);
+    offset += read_int32(data, offset, &field_type->name_offset, true);
     offset += read_int32(data, offset, &field_type->size, true);
     offset += read_int32(data, offset, &field_type->index, true);
-    offset += read_int32(data, offset, &field_type->is_array, true);
-    offset += read_int32(data, offset, &field_type->version, true);
     offset += read_int32(data, offset, &field_type->meta_flag, true);
     
     return offset - start;
@@ -124,23 +125,27 @@ void field_type_list_destroy(struct field_type_list* field_type_list)
 size_t typetree_struct_load(struct assetfile* file, unsigned char* data, size_t offset)
 {
     size_t start = offset;
-    
-    if (file->header.version_info >= 7) {
-        offset += read_string(data, offset, &file->unity_revision);
-        offset += read_int32(data, offset, &file->typetree_struct_attribute, true);
-    }
-    
+    offset += read_string(data, offset, &file->typetree_struct_revision);
+    offset += read_int32(data, offset, &file->typetree_struct_attribute, true);
+    offset += read_byte(data, offset, &file->typetree_struct_embedded);
     offset += read_uint32(data, offset, &file->typetree_struct_count, true);
+    
     if (file->typetree_struct_count > 0) {
         file->typetree_struct = (struct typetree*)calloc(file->typetree_struct_count, sizeof(*file->typetree_struct));
         for (size_t i = 0; i < file->typetree_struct_count; ++i) {
             struct typetree* typetree = &file->typetree_struct[i];
             offset += read_int32(data, offset, &typetree->class_id, true);
-            offset += field_type_list_load(data, offset, &typetree->field_type_list);
+            if (typetree->class_id < 0) {
+                offset += read_buffer(data, offset, &typetree->script_id, UNITY_HASH_128);
+            }
+            offset += read_buffer(data, offset, &typetree->oldtype_hash, UNITY_HASH_128);
+            
+            if (file->typetree_struct_embedded)
+                offset += field_type_list_load(data, offset, &typetree->field_type_list);
         }
     }
     
-    if (file->header.version_info >= 7) {
+    if (file->header.version >= 7) {
         offset += read_int32(data, offset, &file->typetree_padding, true);
     }
     
@@ -151,8 +156,8 @@ size_t typetree_struct_save(struct assetfile* file, unsigned char* data, size_t 
 {
     size_t start = offset;
     
-    if (file->header.version_info >= 7) {
-        offset += write_string(data, offset, file->unity_revision);
+    if (file->header.version >= 7) {
+        offset += write_string(data, offset, file->typetree_struct_revision);
         offset += write_int32(data, offset, file->typetree_struct_attribute, true);
     }
     
@@ -163,7 +168,7 @@ size_t typetree_struct_save(struct assetfile* file, unsigned char* data, size_t 
         offset += field_type_list_save(data, offset, &typetree->field_type_list);
     }
     
-    if (file->header.version_info >= 7) {
+    if (file->header.version >= 7) {
         offset += write_int32(data, offset, file->typetree_padding, true);
     }
     
@@ -276,7 +281,7 @@ size_t externals_struct_load(struct assetfile* file, unsigned char* data, size_t
         for (size_t i = 0; i < file->externals_struct_count; ++i) {
             struct fileidentifier* fileidentifier = &file->externals_struct[i];
             
-            if (file->header.version_info > 5) {
+            if (file->header.version > 5) {
                 offset += read_string(data, offset, &fileidentifier->asset_path);
             }
             offset += read_buffer(data, offset, &fileidentifier->guid, GUID_SIZE);
@@ -296,7 +301,7 @@ size_t externals_struct_save(struct assetfile* file, unsigned char* data, size_t
 	for (size_t i = 0; i < file->externals_struct_count; ++i) {
 		struct fileidentifier* fileidentifier = &file->externals_struct[i];
 
-		if (file->header.version_info > 5) {
+		if (file->header.version > 5) {
 			offset += write_string(data, offset, fileidentifier->asset_path);
 		}
 		offset += write_buffer(data, offset, fileidentifier->guid, GUID_SIZE);

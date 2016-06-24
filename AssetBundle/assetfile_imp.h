@@ -6,19 +6,20 @@ struct assetheader
 {
 	size_t metadata_size;
 	size_t file_size;
-	int version_info;
+	int version;
 	size_t data_offset;
 	unsigned char endianness;
 	unsigned char* reserved;
 };
 
 #define ASSETFILE_META_ALIGN    (4096)
-#define ASSETFILE_ALIGN            (16)
+#define ASSETFILE_ALIGN         (16)
 struct assetfile
 {
 	struct assetheader header;
-	char* unity_revision;
+	char* typetree_struct_revision;
 	int typetree_struct_attribute;
+    unsigned char typetree_struct_embedded;
 	size_t typetree_struct_count; // must == 0
     struct typetree* typetree_struct;
 	int typetree_padding;
@@ -32,12 +33,16 @@ struct assetfile
 
 struct field_type
 {
+    short version;
+    unsigned char tree_level;
+    unsigned char is_array;
+    int type_offset;
+    int name_offset;
+    
     char* type;
     char* name;
     int size;
     int index;
-    int is_array;
-    int version;
     int meta_flag;
 };
 
@@ -48,9 +53,12 @@ struct field_type_list
     struct field_type_list* children_field_type_list;
 };
 
+#define UNITY_HASH_128    (16)
 struct typetree
 {
     int class_id;
+    unsigned char* script_id;
+    unsigned char* oldtype_hash;
     struct field_type_list field_type_list;
 };
 

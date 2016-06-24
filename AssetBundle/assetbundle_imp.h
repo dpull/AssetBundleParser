@@ -12,9 +12,9 @@ struct level_info
 struct assetbundle_header
 {
 	char* signature;
-	int format;
-	char* version_player;
-	char* version_engine;
+	int stream_version;
+	char* unity_version;
+	char* unity_revision;
 	size_t minimum_streamed_bytes;
 	int header_size;
 	int number_of_levels_to_download;

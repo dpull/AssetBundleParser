@@ -18,9 +18,9 @@ size_t assetbundle_header_load(struct assetbundle_header* header, unsigned char*
 	size_t start = offset;
 
 	offset += read_string(data, offset, &header->signature);
-	offset += read_int32(data, offset, &header->format, false);
-	offset += read_string(data, offset, &header->version_player);
-	offset += read_string(data, offset, &header->version_engine);
+	offset += read_int32(data, offset, &header->stream_version, false);
+	offset += read_string(data, offset, &header->unity_version);
+	offset += read_string(data, offset, &header->unity_revision);
 	offset += read_uint32(data, offset, &header->minimum_streamed_bytes, false);
 	offset += read_int32(data, offset, &header->header_size, false);
 	offset += read_int32(data, offset, &header->number_of_levels_to_download, false);
@@ -28,12 +28,12 @@ size_t assetbundle_header_load(struct assetbundle_header* header, unsigned char*
 	offset += read_buffer(data, offset, (unsigned char**)&header->level_byte_end, sizeof(*header->level_byte_end) * header->level_byte_end_count);
 
 	header->complete_file_size = 0;
-	if (header->format >= 2) {
+	if (header->stream_version >= 2) {
 		offset += read_uint32(data, offset, &header->complete_file_size, false);
 	}
 
 	header->data_header_size = 0;
-	if (header->format >= 3) {
+	if (header->stream_version >= 3) {
 		offset += read_uint32(data, offset, &header->data_header_size, false);
 	}
 
@@ -47,20 +47,20 @@ size_t assetbundle_header_save(struct assetbundle_header* header, unsigned char*
 	size_t start = offset;
 
 	offset += write_string(data, offset, header->signature);
-	offset += write_int32(data, offset, header->format, false);
-	offset += write_string(data, offset, header->version_player);
-	offset += write_string(data, offset, header->version_engine);
+	offset += write_int32(data, offset, header->stream_version, false);
+	offset += write_string(data, offset, header->unity_version);
+	offset += write_string(data, offset, header->unity_revision);
 	offset += write_uint32(data, offset, header->minimum_streamed_bytes, false);
 	offset += write_int32(data, offset, header->header_size, false);
 	offset += write_int32(data, offset, header->number_of_levels_to_download, false);
 	offset += write_uint32(data, offset, header->level_byte_end_count, false);
 	offset += write_buffer(data, offset, (unsigned char*)header->level_byte_end, sizeof(*header->level_byte_end) * header->level_byte_end_count);
 
-	if (header->format >= 2) {
+	if (header->stream_version >= 2) {
 		offset += write_uint32(data, offset, header->complete_file_size, false);
 	}
 
-	if (header->format >= 3) {
+	if (header->stream_version >= 3) {
 		offset += write_uint32(data, offset, header->data_header_size, false);
 	}
 

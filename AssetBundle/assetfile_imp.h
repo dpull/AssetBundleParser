@@ -38,9 +38,6 @@ struct field_type
     unsigned char is_array;
     int type_offset;
     int name_offset;
-    
-    char* type;
-    char* name;
     int size;
     int index;
     int meta_flag;
@@ -48,9 +45,10 @@ struct field_type
 
 struct field_type_list
 {
-    struct field_type field_type;
-    int children_count;
-    struct field_type_list* children_field_type_list;
+    int num_fields;
+    int string_table_len;
+    struct field_type* field_type_nodes;
+    unsigned char* type_name_table;
 };
 
 #define UNITY_HASH_128    (16)

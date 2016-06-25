@@ -68,12 +68,13 @@ size_t field_type_save(unsigned char* data, size_t start, struct field_type* fie
 {
     size_t offset = start;
     
-    offset += write_string(data, offset, field_type->type);
-    offset += write_string(data, offset, field_type->name);
+    offset += write_int16(data, offset, field_type->version, true);
+    offset += write_byte(data, offset, field_type->tree_level);
+    offset += write_byte(data, offset, field_type->is_array);
+    offset += write_int32(data, offset, field_type->type_offset, true);
+    offset += write_int32(data, offset, field_type->name_offset, true);
     offset += write_int32(data, offset, field_type->size, true);
     offset += write_int32(data, offset, field_type->index, true);
-    offset += write_int32(data, offset, field_type->is_array, true);
-    offset += write_int32(data, offset, field_type->version, true);
     offset += write_int32(data, offset, field_type->meta_flag, true);
     
     return offset - start;
@@ -83,17 +84,17 @@ size_t field_type_save(unsigned char* data, size_t start, struct field_type* fie
 size_t field_type_list_load(unsigned char* data, size_t start, struct field_type_list* field_type_list)
 {
     size_t offset = start;
+    offset += read_int32(data, offset, &field_type_list->num_fields, true);
+    offset += read_int32(data, offset, &field_type_list->string_table_len, true);
     
-    offset += field_type_load(data, offset, &field_type_list->field_type);
-    offset += read_int32(data, offset, &field_type_list->children_count, true);
-    
-    if (field_type_list->children_count > 0) {
-        field_type_list->children_field_type_list = (struct field_type_list*)calloc(field_type_list->children_count, sizeof(*field_type_list->children_field_type_list));
-        for (size_t i = 0; i < field_type_list->children_count; ++i) {
-            offset += field_type_list_load(data, offset, field_type_list->children_field_type_list + i);
+    if (field_type_list->num_fields > 0) {
+        field_type_list->field_type_nodes = (struct field_type*)calloc(field_type_list->num_fields, sizeof(*field_type_list->field_type_nodes));
+        for (size_t i = 0; i < field_type_list->num_fields; ++i) {
+            offset += field_type_load(data, offset, field_type_list->field_type_nodes + i);
         }
     }
     
+    offset += read_buffer(data, offset, &field_type_list->type_name_table, field_type_list->string_table_len);
     return offset - start;
 }
 
@@ -101,25 +102,23 @@ size_t field_type_list_save(unsigned char* data, size_t start, struct field_type
 {
     size_t offset = start;
     
-    offset += field_type_save(data, offset, &field_type_list->field_type);
-    offset += write_int32(data, offset, field_type_list->children_count, true);
+    offset += write_int32(data, offset, field_type_list->num_fields, true);
+    offset += write_int32(data, offset, field_type_list->string_table_len, true);
     
-    for (size_t i = 0; i < field_type_list->children_count; ++i) {
-        offset += field_type_list_save(data, offset, field_type_list->children_field_type_list + i);
+    for (size_t i = 0; i < field_type_list->num_fields; ++i) {
+        offset += field_type_save(data, offset, field_type_list->field_type_nodes + i);
     }
     
+    offset += write_buffer(data, offset, field_type_list->type_name_table, field_type_list->string_table_len);
+
     return offset - start;
 }
 
 
 void field_type_list_destroy(struct field_type_list* field_type_list)
 {
-    for (size_t i = 0; i < field_type_list->children_count; ++i) {
-        field_type_list_destroy(field_type_list->children_field_type_list + i);
-    }
-    
-    if (field_type_list->children_field_type_list)
-        free(field_type_list->children_field_type_list);
+    if (field_type_list->field_type_nodes)
+        free(field_type_list->field_type_nodes);
 }
 
 size_t typetree_struct_load(struct assetfile* file, unsigned char* data, size_t offset)

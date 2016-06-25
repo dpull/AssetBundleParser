@@ -1,3 +1,13 @@
+Unity5.x支持正在移植中
+
+移植进度：
+
+1. TypeTreeV3 （移植完成）
+1. TypeV2 （移植完成）
+1. ObjectInfoTableV2 (正在进行)
+1. ObjectInfoV3 (正在进行)
+1. 。。。。。。。
+
 # License:  #
 Released under MIT license. 
 

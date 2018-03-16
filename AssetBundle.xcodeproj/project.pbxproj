@@ -8,12 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		87096FDA1A6A4C4600409D52 /* filemapping.c in Sources */ = {isa = PBXBuildFile; fileRef = 87096FD81A6A4C4600409D52 /* filemapping.c */; };
+		8710E7AE205BFAD5006B3F71 /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8710E7A0205BF8BC006B3F71 /* gtest.framework */; };
 		874C1E9B1A69026600EB9999 /* assetfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 874C1E991A69026600EB9999 /* assetfile.c */; };
 		874EBDE21AC65A38001B6AF8 /* platform.c in Sources */ = {isa = PBXBuildFile; fileRef = 874EBDE11AC65A38001B6AF8 /* platform.c */; };
 		8769BB131A67E491000BFF71 /* assetbundle.c in Sources */ = {isa = PBXBuildFile; fileRef = 8769BB111A67E491000BFF71 /* assetbundle.c */; };
 		8774AFEA1A70B64B0040BB8B /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 8774AFE91A70B64B0040BB8B /* md5.c */; };
 		8774AFF11A722F240040BB8B /* debug_tree.c in Sources */ = {isa = PBXBuildFile; fileRef = 8774AFEE1A722F240040BB8B /* debug_tree.c */; };
-		879C5D3C1AD4CFA300A1BDDB /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 879C5D291AD4BAAC00A1BDDB /* gtest.framework */; };
 		879C5D3E1AD4DA9A00A1BDDB /* test_assetbundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 879C5D3D1AD4DA9A00A1BDDB /* test_assetbundle.cpp */; };
 		879C5D401AD4DB6D00A1BDDB /* test_filemapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 879C5D3F1AD4DB6D00A1BDDB /* test_filemapping.cpp */; };
 		87A0227F1AAFF1350008438E /* object_class.c in Sources */ = {isa = PBXBuildFile; fileRef = 87A0227D1AAFF1350008438E /* object_class.c */; };
@@ -26,51 +26,51 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		879C5D281AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
+		8710E79F205BF8BC006B3F71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
+			containerPortal = 8710E793205BF8BC006B3F71 /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 4539C8FF0EC27F6400A70F4C;
 			remoteInfo = "gtest-framework";
 		};
-		879C5D2A1AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
+		8710E7A1205BF8BC006B3F71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
+			containerPortal = 8710E793205BF8BC006B3F71 /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 40C848FA101A209C0083642A;
 			remoteInfo = "gtest-static";
 		};
-		879C5D2C1AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
+		8710E7A3205BF8BC006B3F71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
+			containerPortal = 8710E793205BF8BC006B3F71 /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 40C8490B101A217E0083642A;
 			remoteInfo = "gtest_main-static";
 		};
-		879C5D2E1AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
+		8710E7A5205BF8BC006B3F71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
+			containerPortal = 8710E793205BF8BC006B3F71 /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 40899F430FFA7184000B29AE;
 			remoteInfo = "gtest_unittest-framework";
 		};
-		879C5D301AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
+		8710E7A7205BF8BC006B3F71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
+			containerPortal = 8710E793205BF8BC006B3F71 /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 40C84987101A36850083642A;
 			remoteInfo = "gtest_unittest-static";
 		};
-		879C5D321AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
+		8710E7A9205BF8BC006B3F71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
+			containerPortal = 8710E793205BF8BC006B3F71 /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 4089A0130FFACEFC000B29AE;
 			remoteInfo = "sample1_unittest-framework";
 		};
-		879C5D341AD4BAAC00A1BDDB /* PBXContainerItemProxy */ = {
+		8710E7AB205BF8BC006B3F71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
+			containerPortal = 8710E793205BF8BC006B3F71 /* gtest.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 40C84997101A36A60083642A;
 			remoteInfo = "sample1_unittest-static";
@@ -94,6 +94,7 @@
 		87096FD81A6A4C4600409D52 /* filemapping.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = filemapping.c; sourceTree = "<group>"; };
 		87096FD91A6A4C4600409D52 /* filemapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filemapping.h; sourceTree = "<group>"; };
 		871022E51AC3B08E003451E2 /* assetbundle_diff_imp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetbundle_diff_imp.h; sourceTree = "<group>"; };
+		8710E793205BF8BC006B3F71 /* gtest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gtest.xcodeproj; path = GoogleTest/googletest/xcode/gtest.xcodeproj; sourceTree = "<group>"; };
 		874C1E991A69026600EB9999 /* assetfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = assetfile.c; sourceTree = "<group>"; };
 		874C1E9A1A69026600EB9999 /* assetfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = assetfile.h; sourceTree = "<group>"; };
 		874EBDE11AC65A38001B6AF8 /* platform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = platform.c; sourceTree = "<group>"; };
@@ -104,7 +105,6 @@
 		8774AFEE1A722F240040BB8B /* debug_tree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = debug_tree.c; sourceTree = "<group>"; };
 		8774AFEF1A722F240040BB8B /* debug_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = debug_tree.h; sourceTree = "<group>"; };
 		8774AFF01A722F240040BB8B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
-		879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = gtest.xcodeproj; path = GoogleTest/xcode/gtest.xcodeproj; sourceTree = "<group>"; };
 		879C5D3D1AD4DA9A00A1BDDB /* test_assetbundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_assetbundle.cpp; sourceTree = "<group>"; };
 		879C5D3F1AD4DB6D00A1BDDB /* test_filemapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_filemapping.cpp; sourceTree = "<group>"; };
 		87A0227D1AAFF1350008438E /* object_class.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = object_class.c; sourceTree = "<group>"; };
@@ -127,21 +127,43 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				879C5D3C1AD4CFA300A1BDDB /* gtest.framework in Frameworks */,
+				8710E7AE205BFAD5006B3F71 /* gtest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8710E794205BF8BC006B3F71 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8710E7A0205BF8BC006B3F71 /* gtest.framework */,
+				8710E7A2205BF8BC006B3F71 /* libgtest.a */,
+				8710E7A4205BF8BC006B3F71 /* libgtest_main.a */,
+				8710E7A6205BF8BC006B3F71 /* gtest_unittest-framework */,
+				8710E7A8205BF8BC006B3F71 /* gtest_unittest */,
+				8710E7AA205BF8BC006B3F71 /* sample1_unittest-framework */,
+				8710E7AC205BF8BC006B3F71 /* sample1_unittest-static */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8710E7AD205BFAD5006B3F71 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		8769BAFE1A67C7F4000BFF71 = {
 			isa = PBXGroup;
 			children = (
-				879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */,
+				8710E793205BF8BC006B3F71 /* gtest.xcodeproj */,
 				8769BB091A67C7F4000BFF71 /* AssetBundle */,
 				87E0149C1AD41DB300D74BAD /* Test */,
 				87E014BC1AD41F3500D74BAD /* TestData */,
 				8769BB081A67C7F4000BFF71 /* Products */,
+				8710E7AD205BFAD5006B3F71 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -188,20 +210,6 @@
 				87DC4BCC1AAAFFD100317403 /* traversedir.h */,
 			);
 			path = utils;
-			sourceTree = "<group>";
-		};
-		879C5D1D1AD4BAAC00A1BDDB /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				879C5D291AD4BAAC00A1BDDB /* gtest.framework */,
-				879C5D2B1AD4BAAC00A1BDDB /* libgtest.a */,
-				879C5D2D1AD4BAAC00A1BDDB /* libgtest_main.a */,
-				879C5D2F1AD4BAAC00A1BDDB /* gtest_unittest-framework */,
-				879C5D311AD4BAAC00A1BDDB /* gtest_unittest */,
-				879C5D331AD4BAAC00A1BDDB /* sample1_unittest-framework */,
-				879C5D351AD4BAAC00A1BDDB /* sample1_unittest-static */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		87E0149C1AD41DB300D74BAD /* Test */ = {
@@ -261,8 +269,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 879C5D1D1AD4BAAC00A1BDDB /* Products */;
-					ProjectRef = 879C5D1C1AD4BAAC00A1BDDB /* gtest.xcodeproj */;
+					ProductGroup = 8710E794205BF8BC006B3F71 /* Products */;
+					ProjectRef = 8710E793205BF8BC006B3F71 /* gtest.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -273,53 +281,53 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		879C5D291AD4BAAC00A1BDDB /* gtest.framework */ = {
+		8710E7A0205BF8BC006B3F71 /* gtest.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = gtest.framework;
-			remoteRef = 879C5D281AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
+			remoteRef = 8710E79F205BF8BC006B3F71 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		879C5D2B1AD4BAAC00A1BDDB /* libgtest.a */ = {
+		8710E7A2205BF8BC006B3F71 /* libgtest.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libgtest.a;
-			remoteRef = 879C5D2A1AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
+			remoteRef = 8710E7A1205BF8BC006B3F71 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		879C5D2D1AD4BAAC00A1BDDB /* libgtest_main.a */ = {
+		8710E7A4205BF8BC006B3F71 /* libgtest_main.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libgtest_main.a;
-			remoteRef = 879C5D2C1AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
+			remoteRef = 8710E7A3205BF8BC006B3F71 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		879C5D2F1AD4BAAC00A1BDDB /* gtest_unittest-framework */ = {
+		8710E7A6205BF8BC006B3F71 /* gtest_unittest-framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = "gtest_unittest-framework";
-			remoteRef = 879C5D2E1AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
+			remoteRef = 8710E7A5205BF8BC006B3F71 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		879C5D311AD4BAAC00A1BDDB /* gtest_unittest */ = {
+		8710E7A8205BF8BC006B3F71 /* gtest_unittest */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = gtest_unittest;
-			remoteRef = 879C5D301AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
+			remoteRef = 8710E7A7205BF8BC006B3F71 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		879C5D331AD4BAAC00A1BDDB /* sample1_unittest-framework */ = {
+		8710E7AA205BF8BC006B3F71 /* sample1_unittest-framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = "sample1_unittest-framework";
-			remoteRef = 879C5D321AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
+			remoteRef = 8710E7A9205BF8BC006B3F71 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		879C5D351AD4BAAC00A1BDDB /* sample1_unittest-static */ = {
+		8710E7AC205BF8BC006B3F71 /* sample1_unittest-static */ = {
 			isa = PBXReferenceProxy;
 			fileType = "compiled.mach-o.executable";
 			path = "sample1_unittest-static";
-			remoteRef = 879C5D341AD4BAAC00A1BDDB /* PBXContainerItemProxy */;
+			remoteRef = 8710E7AB205BF8BC006B3F71 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -441,10 +449,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CLANG_ENABLE_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/GoogleTest/googletest/include",
+					"$(SRCROOT)/AssetBundle",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DDEBUG=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -455,10 +470,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CLANG_CXX_LIBRARY = "libstdc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CLANG_ENABLE_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/GoogleTest/googletest/include",
+					"$(SRCROOT)/AssetBundle",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
 				OTHER_CFLAGS = "-DDEBUG=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
